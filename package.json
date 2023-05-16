@@ -1,0 +1,39 @@
+{
+	"name": "web-next-metalmart",
+	"description": "DBFS Project",
+	"author": "zS1L3NT <zechariahtan144@gmail.com> (https://www.zectan.com)",
+	"license": "GPL-3.0",
+	"scripts": {
+		"dev": "next dev",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@mantine/core": "^6.0.10",
+		"@mantine/form": "^6.0.10",
+		"@mantine/hooks": "^6.0.10",
+		"@mantine/modals": "^6.0.10",
+		"@reduxjs/toolkit": "^1.9.5",
+		"@tabler/icons-react": "^2.18.0",
+		"@types/node": "20.1.5",
+		"@types/react": "18.2.6",
+		"@types/react-dom": "18.2.4",
+		"arktype": "1.0.14-alpha",
+		"axios": "^1.4.0",
+		"eslint-config-next": "13.4.2",
+		"next": "13.4.2",
+		"react": "18.2.0",
+		"react-dom": "18.2.0",
+		"react-redux": "^8.0.5",
+		"react-router-dom": "^6.11.1",
+		"typescript": "5.0.4"
+	},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "^5.59.6",
+		"@typescript-eslint/parser": "^5.59.6",
+		"eslint": "8.40.0",
+		"eslint-plugin-prettier": "^4.2.1",
+		"eslint-plugin-react": "^7.32.2"
+	}
+}

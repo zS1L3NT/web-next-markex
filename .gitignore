@@ -1,0 +1,7 @@
+**/node_modules
+**/.idea
+**/dist
+**/.env
+**/*.test.ts
+**/.vscode
+**/.next
