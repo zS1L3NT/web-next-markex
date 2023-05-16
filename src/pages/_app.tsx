@@ -1,12 +1,15 @@
+import { AppProps } from "next/app"
 import { Provider as ReduxProvider } from "react-redux"
 
+import { AuthProvider } from "@/contexts/AuthContext"
 import store from "@/store"
 
-import type { AppProps } from "next/app"
 export default function App({ Component, pageProps }: AppProps) {
 	return (
 		<ReduxProvider store={store}>
-			<Component {...pageProps} />
+			<AuthProvider>
+				<Component {...pageProps} />
+			</AuthProvider>
 		</ReduxProvider>
 	)
 }
