@@ -5,21 +5,21 @@ const users = api.injectEndpoints({
 	endpoints: builder => ({
 		getCustomers: builder.query<FidorCollection<typeof FidorCustomer.infer>, RequireToken>({
 			query: ({ token }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/customers",
+				url: "https://api.tp.sandbox.fidorfzco.com/customers",
 				method: "GET",
 				token
 			})
 		}),
 		getCurrentUser: builder.query<typeof FidorUser.infer, RequireToken>({
 			query: ({ token }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/users/current",
+				url: "https://api.tp.sandbox.fidorfzco.com/users/current",
 				method: "GET",
 				token
 			})
 		}),
 		getAccounts: builder.query<FidorCollection<typeof FidorAccount.infer>, RequireToken>({
 			query: ({ token }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/accounts",
+				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
 				method: "GET",
 				token
 			})

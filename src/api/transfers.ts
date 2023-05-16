@@ -8,7 +8,7 @@ const transfers = api.injectEndpoints({
 			typeof FidorInternalTransfer.infer & RequireToken
 		>({
 			query: ({ token, ...transfer }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/internal_transfers",
+				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers",
 				method: "POST",
 				body: transfer,
 				token
@@ -19,7 +19,7 @@ const transfers = api.injectEndpoints({
 			RequireToken
 		>({
 			query: ({ token }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/internal_transfers",
+				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers",
 				method: "GET",
 				token
 			})
@@ -29,7 +29,7 @@ const transfers = api.injectEndpoints({
 			RequireToken & { id: string }
 		>({
 			query: ({ token, id }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/internal_transfers/" + id,
+				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers/" + id,
 				method: "GET",
 				token
 			})
@@ -39,7 +39,7 @@ const transfers = api.injectEndpoints({
 			typeof FidorSepaCreditTransfer.infer & RequireToken
 		>({
 			query: ({ token, ...transfer }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/sepa_credit_transfers",
+				url: "https://api.tp.sandbox.fidorfzco.com/sepa_credit_transfers",
 				method: "POST",
 				body: transfer,
 				token
@@ -50,7 +50,7 @@ const transfers = api.injectEndpoints({
 			RequireToken
 		>({
 			query: ({ token }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/sepa_credit_transfers",
+				url: "https://api.tp.sandbox.fidorfzco.com/sepa_credit_transfers",
 				method: "GET",
 				token
 			})
@@ -60,7 +60,7 @@ const transfers = api.injectEndpoints({
 			RequireToken & { id: string }
 		>({
 			query: ({ token, id }) => ({
-				url: process.env.VITE_PUBLIC_FIDOR_API_URI + "/sepa_credit_transfers/" + id,
+				url: "https://api.tp.sandbox.fidorfzco.com/sepa_credit_transfers/" + id,
 				method: "GET",
 				token
 			})

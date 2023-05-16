@@ -14,22 +14,15 @@ export const ApiError = type({
 	})
 })
 
-export default (async ({ url, method, body, params, token }) => {
+export default (async config => {
 	try {
-		const result = await axios({
-			url,
-			headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-			method,
-			params,
-			data: body
-		})
+		const result = await axios.post("/api/proxy", config)
 		return { data: result.data }
 	} catch (e) {
 		const error = <AxiosError>e
 		console.error(error)
 
 		const result = ApiError(error.response?.data)
-
 		return {
 			error: {
 				message: result.data?.message ?? error.message,
