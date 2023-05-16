@@ -5,19 +5,16 @@ import { ApiError } from "@/utils/axiosBaseQuery"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === "POST") {
-		const { url, method, body, params, token } = req.body
+		const { url, method, body, params, headers, token } = req.body
 
 		try {
 			const result = await axios({
 				url,
-				headers: token
-					? {
-							Authorization: `Bearer ${token}`,
-							Accept: "application/vnd.fidor.de; version=1,text/json"
-					  }
-					: {
-							Accept: "application/vnd.fidor.de; version=1,text/json"
-					  },
+				headers: {
+					Accept: "application/vnd.fidor.de; version=1,text/json",
+					...(token ? { Authorization: `Bearer ${token}` } : {}),
+					...headers
+				},
 				method,
 				params,
 				data: body

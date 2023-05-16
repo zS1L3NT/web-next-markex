@@ -36,8 +36,9 @@ export default (async config => {
 	{
 		url: string
 		method: AxiosRequestConfig["method"]
-		body?: object
+		body?: AxiosRequestConfig["data"]
 		params?: AxiosRequestConfig["params"]
+		headers?: AxiosRequestConfig["headers"]
 		token?: string | null | undefined
 	},
 	unknown,
