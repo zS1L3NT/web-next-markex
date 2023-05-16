@@ -1,16 +1,15 @@
+import { useRouter } from "next/router"
 import { useContext, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
 
 import AuthContext from "@/contexts/AuthContext"
 
 const useOnlyUnauthenticated = (redirect = "/dashboard") => {
 	const { token } = useContext(AuthContext)
-
-	const navigate = useNavigate()
+	const router = useRouter()
 
 	useEffect(() => {
 		if (token !== null) {
-			navigate(redirect)
+			router.push(redirect)
 		}
 	}, [token])
 }
