@@ -1,0 +1,25 @@
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Transaction {
+    id            String   @id @default(uuid())
+    from_currency String?
+    to_currency   String
+    amount        Float
+    price         Float
+    createdAt     DateTime @default(now())
+}
+
+model Balance {
+    user_id  String
+    currency String
+    amount   Float
+
+    @@unique([user_id, currency])
+}
