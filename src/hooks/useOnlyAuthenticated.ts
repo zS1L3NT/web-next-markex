@@ -13,9 +13,8 @@ const useOnlyAuthenticated = () => {
 
 	useEffect(() => {
 		if (token === null) {
-			if (location.pathname !== "/login") {
-				router.push("/login?continue=" + encodeURIComponent(router.pathname))
-			}
+			if (location.pathname !== "/") router.push("/")
+
 			dispatch(
 				setError({
 					message: "You must be logged in to access this page."

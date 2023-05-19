@@ -1,4 +1,4 @@
-import { getCookie, setCookie, deleteCookie } from "cookies-next"
+import { deleteCookie, getCookie, setCookie } from "cookies-next"
 import { createContext, PropsWithChildren, useEffect, useState } from "react"
 
 import { FidorUser } from "@/@types/fidor"

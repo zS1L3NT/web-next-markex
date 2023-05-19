@@ -11,12 +11,9 @@ export default function Login({ error }: Props) {
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
-	const {
-		code,
-		error,
-		state,
-		continue: continue_
-	} = Object.fromEntries(new URLSearchParams(context.req.url?.substring(7) ?? ""))
+	const { code, error } = Object.fromEntries(
+		new URLSearchParams(context.req.url?.substring(7) ?? "")
+	)
 
 	if (code) {
 		try {
@@ -44,7 +41,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 
 			return {
 				redirect: {
-					destination: state ?? "/dashboard"
+					destination: "/dashboard"
 				},
 				props: {}
 			}
@@ -69,7 +66,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 			response_type: "code",
 			client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
 			redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
-			state: continue_ ?? "/dashboard"
+			state: "123"
 		})
 
 		return {

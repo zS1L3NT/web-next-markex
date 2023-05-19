@@ -1,7 +1,7 @@
-import { useEffect } from "react"
+import Head from "next/head"
 
 import { useGetCandlesQuery } from "@/api/prices"
-import { useGetInternalTransfersQuery } from "@/api/transfers"
+import { useGetInternalTransfersQuery } from "@/api/transactions"
 import useOnlyAuthenticated from "@/hooks/useOnlyAuthenticated"
 
 export default function Dashboard() {
@@ -13,13 +13,11 @@ export default function Dashboard() {
 		period: "H1"
 	})
 
-	useEffect(() => {
-		console.log(transactions)
-	}, [transactions])
-
-	useEffect(() => {
-		console.log(candles)
-	}, [candles])
-
-	return <></>
+	return (
+		<>
+			<Head>
+				<title>Markex | Dashboard</title>
+			</Head>
+		</>
+	)
 }

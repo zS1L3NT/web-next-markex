@@ -1,4 +1,4 @@
-import { FidorCollection, FidorInternalTransfer, FidorSepaCreditTransfer } from "@/@types/fidor"
+import { FidorCollection, FidorInternalTransfer, FidorTransaction } from "@/@types/fidor"
 import api, { RequireToken } from "@/api/api"
 
 const transfers = api.injectEndpoints({
@@ -34,49 +34,37 @@ const transfers = api.injectEndpoints({
 				token
 			})
 		}),
-		createSEPACreditTransfer: builder.mutation<
-			typeof FidorSepaCreditTransfer.infer,
-			typeof FidorSepaCreditTransfer.infer & RequireToken
-		>({
-			query: ({ token, ...transfer }) => ({
-				url: "https://api.tp.sandbox.fidorfzco.com/sepa_credit_transfers",
-				method: "POST",
-				body: transfer,
-				token
-			})
-		}),
-		getSEPACreditTransfers: builder.query<
-			FidorCollection<typeof FidorSepaCreditTransfer.infer>,
+		getTransactions: builder.query<
+			FidorCollection<typeof FidorTransaction.infer>,
 			RequireToken
 		>({
 			query: ({ token }) => ({
-				url: "https://api.tp.sandbox.fidorfzco.com/sepa_credit_transfers",
+				url: "https://api.tp.sandbox.fidorfzco.com/transactions",
 				method: "GET",
 				token
 			})
 		}),
-		getSEPACreditTransfer: builder.query<
-			typeof FidorSepaCreditTransfer.infer,
+		getTransaction: builder.query<
+			typeof FidorTransaction.infer,
 			RequireToken & { id: string }
 		>({
 			query: ({ token, id }) => ({
-				url: "https://api.tp.sandbox.fidorfzco.com/sepa_credit_transfers/" + id,
+				url: "https://api.tp.sandbox.fidorfzco.com/transactions/" + id,
 				method: "GET",
 				token
 			})
-		})
+		}),
 	})
 })
 
 export const {
 	useCreateInternalTransferMutation,
-	useCreateSEPACreditTransferMutation,
 	useGetInternalTransferQuery,
 	useGetInternalTransfersQuery,
-	useGetSEPACreditTransferQuery,
-	useGetSEPACreditTransfersQuery,
+	useGetTransactionQuery,
+	useGetTransactionsQuery,
 	useLazyGetInternalTransferQuery,
 	useLazyGetInternalTransfersQuery,
-	useLazyGetSEPACreditTransferQuery,
-	useLazyGetSEPACreditTransfersQuery
+	useLazyGetTransactionQuery,
+	useLazyGetTransactionsQuery
 } = transfers
