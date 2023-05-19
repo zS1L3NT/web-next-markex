@@ -2,7 +2,7 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 
-import { CURRENCIES } from "@/constants"
+import { CURRENCY_PAIRS } from "@/constants"
 import AuthContext from "@/contexts/AuthContext"
 import { Avatar, Box, Button, Flex, Header as MantineHeader, Menu, Select } from "@mantine/core"
 import { IconLogout, IconSearch, IconUser } from "@tabler/icons-react"
@@ -24,7 +24,7 @@ export default function Header() {
 						icon={<IconSearch />}
 						searchable
 						nothingFound="No currencies found"
-						data={[...new Set(CURRENCIES.map(c => c.split("_")).flat())]}
+						data={[...new Set(CURRENCY_PAIRS.map(c => c.split("_")).flat())]}
 						variant="filled"
 						onChange={console.log}
 					/>

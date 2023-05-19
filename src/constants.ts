@@ -1,4 +1,4 @@
-export const CURRENCIES = [
+export const CURRENCY_PAIRS = [
 	"EUR_USD",
 	"GBP_USD",
 	"USD_CAD",
@@ -58,37 +58,25 @@ export const CURRENCIES = [
 	"NZD_JPY",
 	"NZD_SGD",
 	"TRY_JPY"
+] as const
 
-	// Metals
-	// "XAG_JPY",
-	// "XAU_JPY",
-	// "XAG_USD",
-	// "XAU_USD",
-
-	// Crypto
-	// "BTC_USD",
-	// "BCH_USD",
-	// "ETH_USD",
-	// "LTC_USD",
-]
-
-export const COUNTRY_FLAGS: Record<string, string> = {
-	"EUR": "🇪🇺",
-	"USD": "🇺🇸",
-	"GBP": "🇬🇧",
-	"CAD": "🇨🇦",
-	"CHF": "🇨🇭",
-	"JPY": "🇯🇵",
-	"AUD": "🇦🇺",
-	"CZK": "🇨🇿",
-	"HUF": "🇭🇺",
-	"NZD": "🇳🇿",
-	"SEK": "🇸🇪",
-	"SGD": "🇸🇬",
-	"DKK": "🇩🇰",
-	"NOK": "🇳🇴",
-	"PLN": "🇵🇱",
-	"TRY": "🇹🇷",
-	"ZAR": "🇿🇦",
-	"CNH": "🇨🇳",
-}
+export const COUNTRY_FLAGS = {
+	EUR: "🇪🇺",
+	USD: "🇺🇸",
+	GBP: "🇬🇧",
+	CAD: "🇨🇦",
+	CHF: "🇨🇭",
+	JPY: "🇯🇵",
+	AUD: "🇦🇺",
+	CZK: "🇨🇿",
+	HUF: "🇭🇺",
+	NZD: "🇳🇿",
+	SEK: "🇸🇪",
+	SGD: "🇸🇬",
+	DKK: "🇩🇰",
+	NOK: "🇳🇴",
+	PLN: "🇵🇱",
+	TRY: "🇹🇷",
+	ZAR: "🇿🇦",
+	CNH: "🇨🇳"
+} as const

@@ -1,4 +1,6 @@
-import { COUNTRY_FLAGS, CURRENCIES } from "@/constants"
+import Link from "next/link"
+
+import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
 import {
 	Button, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack, Text, useMantineTheme
 } from "@mantine/core"
@@ -16,7 +18,10 @@ const useStyles = createStyles(() => ({
 }))
 
 function Currency({ currency }: { currency: string }) {
-	const [currencyA, currencyB] = currency.split("_") as [string, string]
+	const [currencyA, currencyB] = currency.split("_") as [
+		keyof typeof COUNTRY_FLAGS,
+		keyof typeof COUNTRY_FLAGS
+	]
 
 	return (
 		<Button
@@ -96,7 +101,9 @@ export default function Navbar() {
 						variant="subtle"
 						color="gray"
 						size="md"
-						leftIcon={<IconList />}>
+						leftIcon={<IconList />}
+						component={Link}
+						href="/currency-pairs">
 						All Currency Pairs
 					</Button>
 
@@ -114,7 +121,7 @@ export default function Navbar() {
 						color={theme.colors.dark[5]}
 					/>
 
-					{CURRENCIES.slice(0, 8).map(c => (
+					{CURRENCY_PAIRS.slice(0, 8).map(c => (
 						<Currency
 							key={c}
 							currency={c}

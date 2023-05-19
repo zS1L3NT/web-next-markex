@@ -1,9 +1,10 @@
+import { OandaCandlePrice } from "@/@types/oanda"
 import api from "@/api/api"
 
 const prices = api.injectEndpoints({
 	endpoints: builder => ({
 		getCandles: builder.query<
-			{ time: Date; mid: { o: number; c: number; h: number; l: number } }[],
+			(typeof OandaCandlePrice.infer)[],
 			{ currencies: string; period: "H1" | "D" | "M" | "Y" }
 		>({
 			query: ({ currencies, period }) => ({
@@ -19,9 +20,7 @@ const prices = api.injectEndpoints({
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded"
 				}
-			}),
-			transformResponse: data =>
-				data.candles.map((c: any) => ({ time: new Date(c.time), mid: c.mid }))
+			})
 		})
 	})
 })
