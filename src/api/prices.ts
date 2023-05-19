@@ -1,5 +1,7 @@
+import { arrayOf } from "arktype"
+
 import { OandaCandlePrice } from "@/@types/oanda"
-import api from "@/api/api"
+import api, { ensureResponseType } from "@/api/api"
 
 const prices = api.injectEndpoints({
 	endpoints: builder => ({
@@ -20,7 +22,8 @@ const prices = api.injectEndpoints({
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded"
 				}
-			})
+			}),
+			transformResponse: ensureResponseType(arrayOf(OandaCandlePrice))
 		})
 	})
 })
