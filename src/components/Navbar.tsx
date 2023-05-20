@@ -92,8 +92,10 @@ export default function Navbar() {
 						variant="subtle"
 						color="gray"
 						size="md"
-						leftIcon={<IconDashboard />}>
-						Live Dashboard
+						leftIcon={<IconDashboard size={20} />}
+						component={Link}
+						href="/dashboard">
+						Dashboard
 					</Button>
 
 					<Button
@@ -101,10 +103,10 @@ export default function Navbar() {
 						variant="subtle"
 						color="gray"
 						size="md"
-						leftIcon={<IconList />}
+						leftIcon={<IconList size={20} />}
 						component={Link}
 						href="/currency-pairs">
-						All Currency Pairs
+						Currency Pairs
 					</Button>
 
 					<Button
@@ -112,8 +114,10 @@ export default function Navbar() {
 						variant="subtle"
 						color="gray"
 						size="md"
-						leftIcon={<IconWallet />}>
-						My Assets
+						leftIcon={<IconWallet size={20} />}
+						component={Link}
+						href="/wallet">
+						My Wallet
 					</Button>
 
 					<Divider
