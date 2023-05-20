@@ -23,7 +23,7 @@ const prices = api.injectEndpoints({
 		}),
 		getCandles: builder.query<
 			(typeof OandaCandle.infer)[],
-			{ currencyPair: string; period: "H1" | "D" | "M" | "Y" }
+			{ currencyPair: string; period: "H1" | "D" | "W" | "M" }
 		>({
 			query: ({ currencyPair, period }) => ({
 				url:
@@ -39,7 +39,7 @@ const prices = api.injectEndpoints({
 					"Content-Type": "application/x-www-form-urlencoded"
 				}
 			}),
-			transformResponse: ensureResponseType(arrayOf(OandaCandle))
+			transformResponse: res => ensureResponseType(arrayOf(OandaCandle))(res.candles)
 		})
 	})
 })
