@@ -3,7 +3,7 @@ import Highcharts from "highcharts/highstock"
 import { useEffect, useRef } from "react"
 
 import { useGetCandlesQuery } from "@/api/prices"
-import { useMantineTheme } from "@mantine/core"
+import { Flex, Loader, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 
 export default function CandlestickChart({
@@ -154,5 +154,18 @@ export default function CandlestickChart({
 				} satisfies Highcharts.Options
 			}
 		/>
-	) : null
+	) : (
+		<Flex
+			sx={{
+				width: "100%",
+				height: 400,
+				justifyContent: "center",
+				alignItems: "center"
+			}}>
+			<Loader
+				size={24}
+				color="gray"
+			/>
+		</Flex>
+	)
 }
