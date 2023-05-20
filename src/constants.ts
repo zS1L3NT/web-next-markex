@@ -32,7 +32,6 @@ export const CURRENCY_PAIRS = [
 	"USD_CZK",
 	"USD_HKD",
 	"USD_NOK",
-	"USD_SAR",
 	"USD_SGD",
 	"USD_TRY",
 	"GBP_AUD",
@@ -78,5 +77,8 @@ export const COUNTRY_FLAGS = {
 	PLN: "🇵🇱",
 	TRY: "🇹🇷",
 	ZAR: "🇿🇦",
-	CNH: "🇨🇳"
+	CNH: "🇨🇳",
+	HKD: "🇭🇰",
+	THB: "🇹🇭",
+	MXN: "🇲🇽"
 } as const

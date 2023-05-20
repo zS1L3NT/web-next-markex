@@ -17,8 +17,8 @@ const useStyles = createStyles(() => ({
 	}
 }))
 
-function Currency({ currency }: { currency: string }) {
-	const [currencyA, currencyB] = currency.split("_") as [
+function CurrencyPair({ currencyPair }: { currencyPair: string }) {
+	const [countryA, countryB] = currencyPair.split("_") as [
 		keyof typeof COUNTRY_FLAGS,
 		keyof typeof COUNTRY_FLAGS
 	]
@@ -39,15 +39,15 @@ function Currency({ currency }: { currency: string }) {
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">
-				<Text fz="1.5rem">{COUNTRY_FLAGS[currencyA]}</Text>
-				{currencyA}
+				<Text fz="1.5rem">{COUNTRY_FLAGS[countryA]}</Text>
+				{countryA}
 			</Stack>
 			<IconArrowsHorizontal />
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">
-				{currencyB}
-				<Text fz="1.5rem">{COUNTRY_FLAGS[currencyB]}</Text>
+				{countryB}
+				<Text fz="1.5rem">{COUNTRY_FLAGS[countryB]}</Text>
 			</Stack>
 		</Button>
 	)
@@ -122,9 +122,9 @@ export default function Navbar() {
 					/>
 
 					{CURRENCY_PAIRS.slice(0, 8).map(c => (
-						<Currency
+						<CurrencyPair
 							key={c}
-							currency={c}
+							currencyPair={c}
 						/>
 					))}
 				</Stack>

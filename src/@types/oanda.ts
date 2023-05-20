@@ -4,7 +4,9 @@ export const OandaLivePrice = type({
 	s: "number",
 	b: "number",
 	l: "number",
-	h: "number"
+	h: "number",
+	c: "number",
+	sp: "number"
 })
 
 export const OandaCandlePrice = type({
