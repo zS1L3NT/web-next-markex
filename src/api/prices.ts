@@ -1,31 +1,52 @@
 import { arrayOf } from "arktype"
 
-import { OandaCandlePrice } from "@/@types/oanda"
+import { OandaCandle, OandaPrice } from "@/@types/oanda"
 import api, { ensureResponseType } from "@/api/api"
 
 const prices = api.injectEndpoints({
 	endpoints: builder => ({
+		getPrice: builder.query<typeof OandaPrice.infer, { currencyPair: string }>({
+			query: ({ currencyPair }) => ({
+				url:
+					"https://dashboard.acuitytrading.com/OandaPriceApi/GetPrice?apikey=" +
+					process.env.NEXT_PUBLIC_OANDA_API_KEY,
+				method: "POST",
+				body: new URLSearchParams({
+					region: "OAP",
+					instrumentName: currencyPair
+				}).toString(),
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded"
+				}
+			}),
+			transformResponse: ensureResponseType(OandaPrice)
+		}),
 		getCandles: builder.query<
-			(typeof OandaCandlePrice.infer)[],
-			{ currencies: string; period: "H1" | "D" | "M" | "Y" }
+			(typeof OandaCandle.infer)[],
+			{ currencyPair: string; period: "H1" | "D" | "M" | "Y" }
 		>({
-			query: ({ currencies, period }) => ({
+			query: ({ currencyPair, period }) => ({
 				url:
 					"https://dashboard.acuitytrading.com/OandaPriceApi/GetCandles?apikey=" +
 					process.env.NEXT_PUBLIC_OANDA_API_KEY,
 				method: "POST",
 				body: new URLSearchParams({
 					region: "OAP",
-					instrumentName: currencies,
+					instrumentName: currencyPair,
 					granularity: period
 				}).toString(),
 				headers: {
 					"Content-Type": "application/x-www-form-urlencoded"
 				}
 			}),
-			transformResponse: ensureResponseType(arrayOf(OandaCandlePrice))
+			transformResponse: ensureResponseType(arrayOf(OandaCandle))
 		})
 	})
 })
 
-export const { useGetCandlesQuery, useLazyGetCandlesQuery } = prices
+export const {
+	useGetCandlesQuery,
+	useGetPriceQuery,
+	useLazyGetCandlesQuery,
+	useLazyGetPriceQuery
+} = prices

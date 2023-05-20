@@ -9,7 +9,7 @@ export default function Dashboard() {
 
 	const { data: transactions, error: transactionsError } = useGetInternalTransfersQuery({ token })
 	const { data: candles, error: candlesError } = useGetCandlesQuery({
-		currencies: "USD_MXN",
+		currencyPair: "USD_MXN",
 		period: "H1"
 	})
 

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 
-import { OandaLivePrice } from "@/@types/oanda"
+import { OandaPrice } from "@/@types/oanda"
 import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
 import useCurrencyPairLivePrices from "@/hooks/useCurrencyPairLivePrices"
 import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
@@ -12,7 +12,7 @@ function CurrencyPair({
 	price
 }: {
 	currencyPair: (typeof CURRENCY_PAIRS)[number]
-	price: typeof OandaLivePrice.infer | null
+	price: typeof OandaPrice.infer | null
 }) {
 	const [countryA, countryB] = currencyPair.split("_") as [
 		keyof typeof COUNTRY_FLAGS,

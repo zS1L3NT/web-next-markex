@@ -1,6 +1,6 @@
 import { type } from "arktype"
 
-export const OandaLivePrice = type({
+export const OandaPrice = type({
 	s: "number",
 	b: "number",
 	l: "number",
@@ -9,7 +9,7 @@ export const OandaLivePrice = type({
 	sp: "number"
 })
 
-export const OandaCandlePrice = type({
+export const OandaCandle = type({
 	time: "string",
 	mid: {
 		o: "number",

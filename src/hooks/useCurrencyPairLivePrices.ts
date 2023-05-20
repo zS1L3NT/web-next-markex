@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react"
 
-import { OandaLivePrice } from "@/@types/oanda"
+import { OandaPrice } from "@/@types/oanda"
+import { useLazyGetPriceQuery } from "@/api/prices"
 import { CURRENCY_PAIRS } from "@/constants"
 
 const CHAR = ""
 
 const useCurrencyPairLivePrices = (currencyPairs: readonly (typeof CURRENCY_PAIRS)[number][]) => {
+	const [getPrice] = useLazyGetPriceQuery()
+
 	const [prices, setPrices] = useState(
-		{} as Record<(typeof CURRENCY_PAIRS)[number], typeof OandaLivePrice.infer>
+		{} as Record<(typeof CURRENCY_PAIRS)[number], typeof OandaPrice.infer>
 	)
 
 	useEffect(() => {
@@ -16,12 +19,18 @@ const useCurrencyPairLivePrices = (currencyPairs: readonly (typeof CURRENCY_PAIR
 			"wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets"
 		)
 
+		for (const currencyPair of currencyPairs) {
+			getPrice({ currencyPair }).then(data =>
+				setPrices(prices => ({ ...prices, [currencyPair]: data.data! }))
+			)
+		}
+
 		socket.onmessage = event => {
 			for (const subevent of event.data.split(CHAR).slice(0, -1)) {
 				try {
 					const data = JSON.parse(subevent)
 					if (data.arguments?.[0]) {
-						const result = OandaLivePrice(data.arguments[0])
+						const result = OandaPrice(data.arguments[0])
 						if (result.data) {
 							setPrices(prices => ({
 								...prices,
