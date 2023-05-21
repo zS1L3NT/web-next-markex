@@ -1,4 +1,4 @@
-import { withIronSessionSsr } from "iron-session/next/dist"
+import { withIronSessionSsr } from "iron-session/next"
 
 export default function Logout() {
 	return <></>

@@ -4,6 +4,7 @@ import Head from "next/head"
 import { SessionUser } from "@/@types/iron-session"
 import { useGetCandlesQuery } from "@/api/prices"
 import { useGetInternalTransfersQuery } from "@/api/transactions"
+import Shell from "@/components/Shell"
 
 type Props = {
 	user: SessionUser
@@ -17,18 +18,18 @@ export default function Dashboard({ user }: Props) {
 	})
 
 	return (
-		<>
+		<Shell user={user}>
 			<Head>
 				<title>Markex | Dashboard</title>
 			</Head>
-		</>
+		</Shell>
 	)
 }
 
 export const getServerSideProps = withIronSessionSsr<Props>(
 	async function handle({ req, res }) {
 		const user = req.session.user
-		
+
 		if (user) {
 			return {
 				props: {

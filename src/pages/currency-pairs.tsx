@@ -1,13 +1,21 @@
+import { withIronSessionSsr } from "iron-session/next"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 
+import { SessionUser } from "@/@types/iron-session"
 import { OandaPrice } from "@/@types/oanda"
+import Shell from "@/components/Shell"
 import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
+import UserContext from "@/contexts/UserContext"
 import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
+
+type Props = {
+	user: SessionUser | null
+}
 
 function CurrencyPair({
 	currencyPair,
@@ -21,6 +29,7 @@ function CurrencyPair({
 		keyof typeof COUNTRY_FLAGS
 	]
 
+	const user = useContext(UserContext)
 	const router = useRouter()
 
 	const [seconds, setSeconds] = useState(0)
@@ -46,22 +55,14 @@ function CurrencyPair({
 
 	return (
 		<tr>
-			{null ? (
+			{user ? (
 				<td>
-					{null ? (
-						<ActionIcon>
-							<IconBookmark
-								fill={CURRENCY_PAIRS.indexOf(currencyPair) < 8 ? "white" : ""}
-								size={20}
-							/>
-						</ActionIcon>
-					) : (
-						<Loader
-							sx={{ display: "block", margin: "auto" }}
+					<ActionIcon>
+						<IconBookmark
+							fill={CURRENCY_PAIRS.indexOf(currencyPair) < 8 ? "white" : ""}
 							size={20}
-							color="gray"
 						/>
-					)}
+					</ActionIcon>
 				</td>
 			) : null}
 			<td
@@ -96,7 +97,7 @@ function CurrencyPair({
 	)
 }
 
-export default function CurrencyPairs() {
+export default function CurrencyPairs({ user }: Props) {
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
 
@@ -105,7 +106,7 @@ export default function CurrencyPairs() {
 	}, [])
 
 	return (
-		<>
+		<Shell user={user}>
 			<Head>
 				<title>Markex | Currency Pairs</title>
 			</Head>
@@ -117,7 +118,7 @@ export default function CurrencyPairs() {
 				withColumnBorders>
 				<thead>
 					<tr>
-						{null ? <th style={{ width: 20 }}></th> : null}
+						{user ? <th style={{ width: 20 }}></th> : null}
 						<th>Currency Pair</th>
 						<th style={{ width: "10%" }}>Change</th>
 						<th style={{ width: "10%" }}>Buy</th>
@@ -138,6 +139,23 @@ export default function CurrencyPairs() {
 					))}
 				</tbody>
 			</Table>
-		</>
+		</Shell>
 	)
 }
+
+export const getServerSideProps = withIronSessionSsr<Props>(
+	async function handle({ req, res }) {
+		return {
+			props: {
+				user: req.session.user ?? null
+			}
+		}
+	},
+	{
+		cookieName: process.env.COOKIE_NAME,
+		password: process.env.COOKIE_PASSWORD,
+		cookieOptions: {
+			secure: process.env.NODE_ENV === "production"
+		}
+	}
+)

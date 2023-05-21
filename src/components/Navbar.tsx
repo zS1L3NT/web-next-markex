@@ -1,8 +1,10 @@
 import Link from "next/link"
+import { useContext } from "react"
 
 import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
+import UserContext from "@/contexts/UserContext"
 import {
-	Button, Center, createStyles, Divider, Loader, Navbar as MantineNavbar, ScrollArea, Stack, Text,
+	Button, Center, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack, Text,
 	useMantineTheme
 } from "@mantine/core"
 import {
@@ -58,6 +60,8 @@ function CurrencyPair({ currencyPair }: { currencyPair: string }) {
 
 export default function Navbar() {
 	const theme = useMantineTheme()
+	const user = useContext(UserContext)
+
 	const { classes } = useStyles()
 
 	return (
@@ -92,7 +96,7 @@ export default function Navbar() {
 				p="md"
 				grow>
 				<Stack spacing="0.5rem">
-					{null && (
+					{user && (
 						<Button
 							className={classes.button}
 							variant="subtle"
@@ -116,7 +120,7 @@ export default function Navbar() {
 						Currency Pairs
 					</Button>
 
-					{null && (
+					{user && (
 						<Button
 							className={classes.button}
 							variant="subtle"
@@ -134,21 +138,13 @@ export default function Navbar() {
 						color={theme.colors.dark[5]}
 					/>
 
-					{null ? (
-						null ? (
-							CURRENCY_PAIRS.slice(0, 8).map(c => (
-								<CurrencyPair
-									key={c}
-									currencyPair={c}
-								/>
-							))
-						) : (
-							<Loader
-								sx={{ margin: "auto", marginTop: "0.5rem" }}
-								size={20}
-								color="gray"
+					{user ? (
+						user.app.bookmarks.map(c => (
+							<CurrencyPair
+								key={c}
+								currencyPair={c}
 							/>
-						)
+						))
 					) : (
 						<>
 							{CURRENCY_PAIRS.slice(0, 8).map(c => (
