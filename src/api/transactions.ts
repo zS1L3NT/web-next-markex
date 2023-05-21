@@ -3,30 +3,30 @@ import { arrayOf, type } from "arktype"
 import {
 	FidorCollection, FidorInternalTransfer, FidorPageableCollection, FidorTransaction
 } from "@/@types/fidor"
-import api, { ensureResponseType, RequireToken } from "@/api/api"
+import api, { ensureResponseType } from "@/api/api"
 
 const transfers = api.injectEndpoints({
 	endpoints: builder => ({
 		createInternalTransfer: builder.mutation<
 			typeof FidorInternalTransfer.infer,
-			typeof FidorInternalTransfer.infer & RequireToken
+			typeof FidorInternalTransfer.infer
 		>({
-			query: ({ token, ...transfer }) => ({
+			query: transfer => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers",
 				method: "POST",
 				body: transfer,
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(FidorInternalTransfer)
 		}),
 		getInternalTransfers: builder.query<
 			FidorCollection<typeof FidorInternalTransfer.infer>,
-			RequireToken
+			void
 		>({
-			query: ({ token }) => ({
+			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers",
 				method: "GET",
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(
 				type({
@@ -35,25 +35,19 @@ const transfers = api.injectEndpoints({
 				})
 			)
 		}),
-		getInternalTransfer: builder.query<
-			typeof FidorInternalTransfer.infer,
-			RequireToken & { id: string }
-		>({
-			query: ({ token, id }) => ({
+		getInternalTransfer: builder.query<typeof FidorInternalTransfer.infer, { id: string }>({
+			query: ({ id }) => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers/" + id,
 				method: "GET",
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(FidorInternalTransfer)
 		}),
-		getTransactions: builder.query<
-			FidorCollection<typeof FidorTransaction.infer>,
-			RequireToken
-		>({
-			query: ({ token }) => ({
+		getTransactions: builder.query<FidorCollection<typeof FidorTransaction.infer>, void>({
+			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/transactions",
 				method: "GET",
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(
 				type({
@@ -62,16 +56,14 @@ const transfers = api.injectEndpoints({
 				})
 			)
 		}),
-		getTransaction: builder.query<typeof FidorTransaction.infer, RequireToken & { id: string }>(
-			{
-				query: ({ token, id }) => ({
-					url: "https://api.tp.sandbox.fidorfzco.com/transactions/" + id,
-					method: "GET",
-					token
-				}),
-				transformResponse: ensureResponseType(FidorTransaction)
-			}
-		)
+		getTransaction: builder.query<typeof FidorTransaction.infer, { id: string }>({
+			query: ({ id }) => ({
+				url: "https://api.tp.sandbox.fidorfzco.com/transactions/" + id,
+				method: "GET",
+				auth: true
+			}),
+			transformResponse: ensureResponseType(FidorTransaction)
+		})
 	})
 })
 

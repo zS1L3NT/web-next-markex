@@ -39,7 +39,7 @@ export default (async config => {
 		body?: AxiosRequestConfig["data"]
 		params?: AxiosRequestConfig["params"]
 		headers?: AxiosRequestConfig["headers"]
-		token?: string | null | undefined
+		auth?: boolean
 	},
 	unknown,
 	typeof ApiError.infer
