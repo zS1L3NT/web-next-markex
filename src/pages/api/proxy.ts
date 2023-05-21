@@ -23,7 +23,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 				url,
 				headers: {
 					Accept: "application/vnd.fidor.de; version=1,text/json",
-					...(session?.user ? { Authorization: "Bearer " + session.user.token } : {}),
+					...(session?.user
+						? { Authorization: "Bearer " + session.fidor_access_token }
+						: {}),
 					...headers
 				},
 				method,

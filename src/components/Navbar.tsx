@@ -1,8 +1,6 @@
 import Link from "next/link"
-import { useContext } from "react"
 
 import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
-import AuthContext from "@/contexts/AuthContext"
 import {
 	Button, Center, createStyles, Divider, Loader, Navbar as MantineNavbar, ScrollArea, Stack, Text,
 	useMantineTheme
@@ -62,8 +60,6 @@ export default function Navbar() {
 	const theme = useMantineTheme()
 	const { classes } = useStyles()
 
-	const { token, user } = useContext(AuthContext)
-
 	return (
 		<MantineNavbar width={{ base: 280 }}>
 			<MantineNavbar.Section p="md">
@@ -96,7 +92,7 @@ export default function Navbar() {
 				p="md"
 				grow>
 				<Stack spacing="0.5rem">
-					{token && (
+					{null && (
 						<Button
 							className={classes.button}
 							variant="subtle"
@@ -120,7 +116,7 @@ export default function Navbar() {
 						Currency Pairs
 					</Button>
 
-					{token && (
+					{null && (
 						<Button
 							className={classes.button}
 							variant="subtle"
@@ -138,8 +134,8 @@ export default function Navbar() {
 						color={theme.colors.dark[5]}
 					/>
 
-					{token ? (
-						user ? (
+					{null ? (
+						null ? (
 							CURRENCY_PAIRS.slice(0, 8).map(c => (
 								<CurrencyPair
 									key={c}

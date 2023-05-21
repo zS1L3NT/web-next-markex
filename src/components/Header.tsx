@@ -3,12 +3,10 @@ import { useRouter } from "next/router"
 import { useContext } from "react"
 
 import { CURRENCY_PAIRS } from "@/constants"
-import AuthContext from "@/contexts/AuthContext"
 import { Avatar, Box, Button, Flex, Header as MantineHeader, Menu, Select } from "@mantine/core"
 import { IconLogout, IconSearch, IconUser } from "@tabler/icons-react"
 
 export default function Header() {
-	const { user } = useContext(AuthContext)
 	const router = useRouter()
 
 	return (
@@ -30,7 +28,7 @@ export default function Header() {
 					/>
 				</Box>
 
-				{user ? (
+				{null ? (
 					<Menu width={200}>
 						<Menu.Target>
 							<Avatar

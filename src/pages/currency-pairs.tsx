@@ -4,7 +4,6 @@ import { useContext, useEffect, useState } from "react"
 
 import { OandaPrice } from "@/@types/oanda"
 import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
-import AuthContext from "@/contexts/AuthContext"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
@@ -22,7 +21,6 @@ function CurrencyPair({
 		keyof typeof COUNTRY_FLAGS
 	]
 
-	const { token, user } = useContext(AuthContext)
 	const router = useRouter()
 
 	const [seconds, setSeconds] = useState(0)
@@ -48,9 +46,9 @@ function CurrencyPair({
 
 	return (
 		<tr>
-			{token ? (
+			{null ? (
 				<td>
-					{user ? (
+					{null ? (
 						<ActionIcon>
 							<IconBookmark
 								fill={CURRENCY_PAIRS.indexOf(currencyPair) < 8 ? "white" : ""}
@@ -99,7 +97,6 @@ function CurrencyPair({
 }
 
 export default function CurrencyPairs() {
-	const { token } = useContext(AuthContext)
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
 
@@ -120,7 +117,7 @@ export default function CurrencyPairs() {
 				withColumnBorders>
 				<thead>
 					<tr>
-						{token ? <th style={{ width: 20 }}></th> : null}
+						{null ? <th style={{ width: 20 }}></th> : null}
 						<th>Currency Pair</th>
 						<th style={{ width: "10%" }}>Change</th>
 						<th style={{ width: "10%" }}>Buy</th>
