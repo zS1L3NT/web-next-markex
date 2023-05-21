@@ -11,7 +11,12 @@ export default function Shell({ user, children }: PropsWithChildren<{ user: Sess
 	return (
 		<UserContext.Provider value={user}>
 			<AppShell
-				sx={{ background: "rgb(20, 21, 23)", overflowX: "hidden" }}
+				sx={{
+					background: "rgb(20, 21, 23)",
+					"& .mantine-AppShell-main": {
+						width: "100%"
+					}
+				}}
 				navbar={<Navbar />}
 				header={<Header />}
 				layout="alt">
