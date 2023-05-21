@@ -39,9 +39,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 				}
 			)
 
-			const {
-				data: { id }
-			} = await axios.get<typeof FidorUser.infer>(
+			const { data: fidorUser } = await axios.get<typeof FidorUser.infer>(
 				"https://api.tp.sandbox.fidorfzco.com/users/current",
 				{
 					headers: {
@@ -59,9 +57,14 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 				}
 			})
 
+			session.fidor_access_token = access_token
 			session.user = {
-				id: id!,
-				token: access_token
+				id: fidorUser.id!,
+				app: {
+					bookmarks: [],
+					balances: {}
+				},
+				fidor: fidorUser
 			}
 			await session.save()
 
