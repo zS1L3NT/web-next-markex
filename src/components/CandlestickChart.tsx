@@ -1,11 +1,12 @@
 import HighchartsReact from "highcharts-react-official"
 import Highcharts from "highcharts/highstock"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { useGetCandlesQuery } from "@/api/prices"
 import { Flex, Loader, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 
+// There is some bug where charts show the full extremes for a split second before setting the extremes
 export default function CandlestickChart({
 	type,
 	currencyPair,
@@ -29,6 +30,7 @@ export default function CandlestickChart({
 		{ skip: !currencyPair }
 	)
 
+	const [opacity, setOpacity] = useState(0)
 	const ref = useRef<HighchartsReact.RefObject>(null)
 
 	/**
@@ -61,8 +63,31 @@ export default function CandlestickChart({
 			}
 
 			navigator.setExtremes(start.getTime(), end.getTime(), true, !candlesWereFetching)
+
+			// After 10ms, set the opacity of the chart to 1
+			// This delay is needed so that the chart can rerender the extremes before being displayed
+			setTimeout(() => setOpacity(1), 10)
 		}
 	}, [ref, candles, period, candlesWereFetching])
+
+	useEffect(() => {
+		// Every time the user changes the period
+		// Hide the chart IF the candles are being fetched
+		// This ensures that if the data is new (being fetched), the chart is hidden until the extremes are set
+		// If the data has already been fetched, I don't want to hide the chart since the charts animate into each other
+		setOpacity(candlesAreFetching ? 0 : 1)
+	}, [candlesAreFetching, period])
+
+	// Every time the opacity changes, update the DOM accordingly
+	// This needs to be done manually since the Highcharts is not rendered in React
+	useEffect(() => {
+		const chartContainer = document.querySelector<HTMLDivElement>(".highcharts-container")
+		const chartRoot = document.querySelector<SVGElement>(".highcharts-root")
+		if (chartContainer && chartRoot) {
+			chartContainer.style.opacity = opacity + ""
+			chartRoot.style.opacity = opacity + ""
+		}
+	}, [opacity])
 
 	return candles && !candlesAreFetching ? (
 		<HighchartsReact
@@ -78,7 +103,10 @@ export default function CandlestickChart({
 						backgroundColor: theme.colors.dark[8],
 						height: 500,
 						style: {
-							fontFamily: "inherit"
+							fontFamily: "inherit",
+							// Default all chart opacities to 0, then animate them to 1
+							opacity: 0,
+							transition: "opacity 0.5s ease"
 						}
 					},
 					rangeSelector: {

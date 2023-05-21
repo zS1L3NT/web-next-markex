@@ -18,7 +18,7 @@ export default function App({ Component, pageProps }: AppProps) {
 				<AuthProvider>
 					<CurrencyPairPricesProvider>
 						<AppShell
-							sx={{ background: "rgb(20, 21, 23)" }}
+							sx={{ background: "rgb(20, 21, 23)", overflowX: "hidden" }}
 							navbar={<Navbar />}
 							header={<Header />}
 							layout="alt">
