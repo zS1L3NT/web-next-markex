@@ -1,4 +1,3 @@
-import { withIronSessionSsr } from "iron-session/next"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
@@ -9,6 +8,7 @@ import Shell from "@/components/Shell"
 import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
+import { PublicRoute } from "@/utils/authenticators"
 import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
@@ -143,19 +143,4 @@ export default function CurrencyPairs({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withIronSessionSsr<Props>(
-	async function handle({ req, res }) {
-		return {
-			props: {
-				user: req.session.user ?? null
-			}
-		}
-	},
-	{
-		cookieName: process.env.COOKIE_NAME,
-		password: process.env.COOKIE_PASSWORD,
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production"
-		}
-	}
-)
+export const getServerSideProps = PublicRoute
