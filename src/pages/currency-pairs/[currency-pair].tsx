@@ -27,7 +27,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 
 	useEffect(() => {
 		setCurrencyPairs([currencyPair])
-	}, [])
+	}, [currencyPair])
 
 	const price = prices[currencyPair]
 	const buyColor =
