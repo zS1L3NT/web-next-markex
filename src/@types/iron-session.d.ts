@@ -1,11 +1,14 @@
 import "iron-session"
+
+import { COUNTRY_FLAGS, CURRENCY_PAIR } from "@/constants"
+
 import { FidorUser } from "./fidor"
 
 declare type SessionUser = {
 	id: string
 	app: {
-		bookmarks: string[]
-		balances: Record<string, number>
+		bookmarks: CURRENCY_PAIR[]
+		balances: Record<keyof typeof COUNTRY_FLAGS, number | undefined>
 	}
 	fidor: typeof FidorUser.infer
 }

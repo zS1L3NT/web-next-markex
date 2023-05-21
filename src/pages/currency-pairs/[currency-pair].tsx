@@ -1,4 +1,3 @@
-import { withIronSessionSsr } from "iron-session/next"
 import Head from "next/head"
 import { useContext, useEffect, useState } from "react"
 
@@ -7,6 +6,7 @@ import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
 import { CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
+import withSession from "@/utils/withSession"
 import {
 	Box, Center, Flex, Loader, SegmentedControl, Stack, Text, useMantineTheme
 } from "@mantine/core"
@@ -261,20 +261,11 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	)
 }
 
-export const getServerSideProps = withIronSessionSsr<Props>(
-	async function handle({ req, res, params }) {
-		return {
-			props: {
-				user: req.session.user ?? null,
-				currencyPair: params!["currency-pair"] as CURRENCY_PAIR
-			}
-		}
-	},
-	{
-		cookieName: process.env.COOKIE_NAME,
-		password: process.env.COOKIE_PASSWORD,
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production"
+export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+	return {
+		props: {
+			user: session.user ?? null,
+			currencyPair: params!["currency-pair"] as CURRENCY_PAIR
 		}
 	}
-)
+})

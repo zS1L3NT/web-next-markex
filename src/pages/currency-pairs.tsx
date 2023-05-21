@@ -8,7 +8,7 @@ import Shell from "@/components/Shell"
 import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
-import { PublicRoute } from "@/utils/authenticators"
+import withSession from "@/utils/withSession"
 import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
@@ -143,4 +143,10 @@ export default function CurrencyPairs({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = PublicRoute
+export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+	return {
+		props: {
+			user: session.user ?? null
+		}
+	}
+})

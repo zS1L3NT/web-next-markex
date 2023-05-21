@@ -3,7 +3,7 @@ import Head from "next/head"
 import { SessionUser } from "@/@types/iron-session"
 import { useGetCandlesQuery } from "@/api/prices"
 import Shell from "@/components/Shell"
-import { PublicRoute } from "@/utils/authenticators"
+import withSession from "@/utils/withSession"
 
 type Props = {
 	user: SessionUser | null
@@ -24,4 +24,10 @@ export default function Dashboard({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = PublicRoute
+export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+	return {
+		props: {
+			user: session.user ?? null
+		}
+	}
+})

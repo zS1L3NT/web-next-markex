@@ -1,25 +1,16 @@
-import { withIronSessionSsr } from "iron-session/next"
+import withSession from "@/utils/withSession"
 
 export default function Logout() {
 	return <></>
 }
 
-export const getServerSideProps = withIronSessionSsr(
-	async function handle({ req, res }) {
-		req.session?.destroy()
+export const getServerSideProps = withSession(async ({ session }) => {
+	session?.destroy()
 
-		return {
-			redirect: {
-				destination: "/"
-			},
-			props: {}
-		}
-	},
-	{
-		cookieName: process.env.COOKIE_NAME,
-		password: process.env.COOKIE_PASSWORD,
-		cookieOptions: {
-			secure: process.env.NODE_ENV === "production"
+	return {
+		redirect: {
+			destination: "/",
+			permanent: false
 		}
 	}
-)
+})
