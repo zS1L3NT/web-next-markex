@@ -1,13 +1,14 @@
-import { SessionUser } from "@/@types/iron-session"
-import Shell from "@/components/Shell"
-import { PublicRoute } from "@/utils/authenticators"
+import { GetServerSideProps } from "next"
 
-type Props = {
-	user: SessionUser | null
+export default function Home() {
+	return <></>
 }
 
-export default function Home({ user }: Props) {
-	return <Shell user={user}></Shell>
+export const getServerSideProps: GetServerSideProps = async context => {
+	return {
+		redirect: {
+			destination: "/dashboard"
+		},
+		props: {}
+	}
 }
-
-export const getServerSideProps = PublicRoute

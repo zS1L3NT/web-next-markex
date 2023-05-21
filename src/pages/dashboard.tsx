@@ -2,16 +2,14 @@ import Head from "next/head"
 
 import { SessionUser } from "@/@types/iron-session"
 import { useGetCandlesQuery } from "@/api/prices"
-import { useGetInternalTransfersQuery } from "@/api/transactions"
 import Shell from "@/components/Shell"
-import { ProtectedRoute } from "@/utils/authenticators"
+import { PublicRoute } from "@/utils/authenticators"
 
 type Props = {
-	user: SessionUser
+	user: SessionUser | null
 }
 
 export default function Dashboard({ user }: Props) {
-	const { data: transactions, error: transactionsError } = useGetInternalTransfersQuery()
 	const { data: candles, error: candlesError } = useGetCandlesQuery({
 		currencyPair: "USD_MXN",
 		period: "H1"
@@ -26,4 +24,4 @@ export default function Dashboard({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = ProtectedRoute
+export const getServerSideProps = PublicRoute

@@ -96,18 +96,16 @@ export default function Navbar() {
 				p="md"
 				grow>
 				<Stack spacing="0.5rem">
-					{user && (
-						<Button
-							className={classes.button}
-							variant="subtle"
-							color="gray"
-							size="md"
-							leftIcon={<IconDashboard size={20} />}
-							component={Link}
-							href="/dashboard">
-							Dashboard
-						</Button>
-					)}
+					<Button
+						className={classes.button}
+						variant="subtle"
+						color="gray"
+						size="md"
+						leftIcon={<IconDashboard size={20} />}
+						component={Link}
+						href="/dashboard">
+						Dashboard
+					</Button>
 
 					<Button
 						className={classes.button}
