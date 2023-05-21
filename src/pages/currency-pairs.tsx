@@ -1,3 +1,5 @@
+import Head from "next/head"
+import { useRouter } from "next/router"
 import { useEffect, useState } from "react"
 
 import { OandaPrice } from "@/@types/oanda"
@@ -18,6 +20,8 @@ function CurrencyPair({
 		keyof typeof COUNTRY_FLAGS,
 		keyof typeof COUNTRY_FLAGS
 	]
+
+	const router = useRouter()
 
 	const [seconds, setSeconds] = useState(0)
 	const previousPrice = usePrevious(price)
@@ -50,7 +54,9 @@ function CurrencyPair({
 					/>
 				</ActionIcon>
 			</td>
-			<td>
+			<td
+				style={{ cursor: "pointer" }}
+				onClick={() => router.push("/currency-pairs/" + currencyPair)}>
 				<Flex
 					align="center"
 					gap="sm">
@@ -81,11 +87,16 @@ function CurrencyPair({
 }
 
 export default function CurrencyPairs() {
-	const prices = useCurrencyPairLivePrices(CURRENCY_PAIRS)
 	const theme = useMantineTheme()
+
+	const prices = useCurrencyPairLivePrices(CURRENCY_PAIRS)
 
 	return (
 		<>
+			<Head>
+				<title>Markex | Currency Pairs</title>
+			</Head>
+
 			<Table
 				bg={theme.colors.dark[7]}
 				highlightOnHover

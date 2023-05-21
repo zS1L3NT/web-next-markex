@@ -10,7 +10,7 @@ const useCurrencyPairLivePrices = (currencyPairs: readonly (typeof CURRENCY_PAIR
 	const [getPrice] = useLazyGetPriceQuery()
 
 	const [prices, setPrices] = useState(
-		{} as Record<(typeof CURRENCY_PAIRS)[number], typeof OandaPrice.infer>
+		{} as Record<(typeof CURRENCY_PAIRS)[number], typeof OandaPrice.infer | undefined>
 	)
 
 	useEffect(() => {
