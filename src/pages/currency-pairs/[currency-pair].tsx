@@ -21,6 +21,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 
 	const price = useCurrencyPairLivePrices([currencyPair])[currencyPair]
 
+	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")
 	const previousPrice = usePrevious(price)
 
@@ -221,6 +222,15 @@ export default function CurrencyPair({ currencyPair }: Props) {
 
 				<SegmentedControl
 					data={[
+						{ label: "Candlestick", value: "candlestick" },
+						{ label: "OHLC", value: "ohlc" }
+					]}
+					value={type}
+					onChange={t => setType(t as typeof type)}
+				/>
+
+				<SegmentedControl
+					data={[
 						{ label: "Hourly", value: "H1" },
 						{ label: "Daily", value: "D" },
 						{ label: "Weekly", value: "W" },
@@ -231,6 +241,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 				/>
 
 				<CandlestickChart
+					type={type}
 					currencyPair={currencyPair}
 					period={period}
 				/>

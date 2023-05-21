@@ -7,9 +7,11 @@ import { Flex, Loader, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 
 export default function CandlestickChart({
+	type,
 	currencyPair,
 	period
 }: {
+	type: "candlestick" | "ohlc"
 	currencyPair: string | null
 	period: "H1" | "D" | "W" | "M"
 }) {
@@ -74,6 +76,7 @@ export default function CandlestickChart({
 					},
 					chart: {
 						backgroundColor: theme.colors.dark[8],
+						height: 500,
 						style: {
 							fontFamily: "inherit"
 						}
@@ -86,6 +89,10 @@ export default function CandlestickChart({
 							color: theme.colors.red[5],
 							upColor: theme.colors.green[5],
 							lineColor: theme.colors.gray[0]
+						},
+						ohlc: {
+							color: theme.colors.red[5],
+							upColor: theme.colors.green[5]
 						}
 					},
 					xAxis: {
@@ -132,7 +139,7 @@ export default function CandlestickChart({
 					},
 					series: [
 						{
-							type: "candlestick",
+							type,
 							name: currencyPair?.replace("_", " / ") ?? "",
 							data: candles.map(c => [
 								new Date(c.time).getTime(),
@@ -158,7 +165,7 @@ export default function CandlestickChart({
 		<Flex
 			sx={{
 				width: "100%",
-				height: 400,
+				height: 500,
 				justifyContent: "center",
 				alignItems: "center"
 			}}>
