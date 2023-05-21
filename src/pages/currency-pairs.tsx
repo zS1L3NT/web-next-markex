@@ -1,10 +1,10 @@
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 import { OandaPrice } from "@/@types/oanda"
-import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
-import useCurrencyPairLivePrices from "@/hooks/useCurrencyPairLivePrices"
+import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
+import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
@@ -13,7 +13,7 @@ function CurrencyPair({
 	currencyPair,
 	price
 }: {
-	currencyPair: (typeof CURRENCY_PAIRS)[number]
+	currencyPair: CURRENCY_PAIR
 	price: typeof OandaPrice.infer | null
 }) {
 	const [countryA, countryB] = currencyPair.split("_") as [
@@ -87,9 +87,12 @@ function CurrencyPair({
 }
 
 export default function CurrencyPairs() {
+	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
 
-	const prices = useCurrencyPairLivePrices(CURRENCY_PAIRS)
+	useEffect(() => {
+		setCurrencyPairs([...CURRENCY_PAIRS])
+	}, [])
 
 	return (
 		<>

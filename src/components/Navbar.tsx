@@ -35,7 +35,9 @@ function CurrencyPair({ currencyPair }: { currencyPair: string }) {
 			variant="subtle"
 			color="gray"
 			size="md"
-			px="md">
+			px="md"
+			component={Link}
+			href={"/currency-pairs/" + currencyPair}>
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">

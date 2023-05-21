@@ -1,10 +1,10 @@
 import { GetServerSideProps } from "next"
 import Head from "next/head"
-import { useState } from "react"
+import { useContext, useEffect, useState } from "react"
 
 import CandlestickChart from "@/components/CandlestickChart"
-import { CURRENCY_PAIRS } from "@/constants"
-import useCurrencyPairLivePrices from "@/hooks/useCurrencyPairLivePrices"
+import { CURRENCY_PAIR } from "@/constants"
+import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import {
 	Box, Center, Flex, Loader, SegmentedControl, Stack, Text, useMantineTheme
 } from "@mantine/core"
@@ -12,27 +12,32 @@ import { usePrevious } from "@mantine/hooks"
 import { IconCaretUp } from "@tabler/icons-react"
 
 type Props = {
-	currencyPair: (typeof CURRENCY_PAIRS)[number]
+	currencyPair: CURRENCY_PAIR
 }
 
 export default function CurrencyPair({ currencyPair }: Props) {
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const theme = useMantineTheme()
-
-	const price = useCurrencyPairLivePrices([currencyPair])[currencyPair]
+	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")
-	const previousPrice = usePrevious(price)
+	const previousCurrencyPair = usePrevious(currencyPair)
+	const previousPrice = usePrevious(prices[currencyPair])
 
+	useEffect(() => {
+		setCurrencyPairs([currencyPair])
+	}, [])
+
+	const price = prices[currencyPair]
 	const buyColor =
-		price && previousPrice && price.b !== previousPrice.b
+		price && previousPrice && currencyPair === previousCurrencyPair && price.b !== previousPrice.b
 			? price.b > previousPrice.b
 				? theme.colors.red[5]
 				: theme.colors.green[5]
 			: theme.colors.yellow[5]
 	const sellColor =
-		price && previousPrice && price.s !== previousPrice.s
+		price && previousPrice && currencyPair === previousCurrencyPair && price.s !== previousPrice.s
 			? price.s > previousPrice.s
 				? theme.colors.green[5]
 				: theme.colors.red[5]
@@ -59,16 +64,13 @@ export default function CurrencyPair({ currencyPair }: Props) {
 								sx={{
 									display: "flex",
 									alignItems: "center",
-									color:
-										price?.c > 0 ? theme.colors.green[5] : theme.colors.red[5]
+									color: price.c > 0 ? theme.colors.green[5] : theme.colors.red[5]
 								}}>
 								<IconCaretUp
 									color="transparent"
-									fill={
-										price?.c > 0 ? theme.colors.green[5] : theme.colors.red[5]
-									}
+									fill={price.c > 0 ? theme.colors.green[5] : theme.colors.red[5]}
 								/>
-								<span>{price?.c}%</span>
+								<span>{price.c}%</span>
 							</Text>
 						)}
 					</Box>
@@ -170,7 +172,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 								)}
 								<Text
 									fz="sm"
-									color={buyColor}>
+									color={sellColor}>
 									Sell
 								</Text>
 							</Box>
@@ -253,7 +255,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 export const getServerSideProps: GetServerSideProps<Props> = async context => {
 	return {
 		props: {
-			currencyPair: context.params!["currency-pair"] as (typeof CURRENCY_PAIRS)[number]
+			currencyPair: context.params!["currency-pair"] as CURRENCY_PAIR
 		}
 	}
 }

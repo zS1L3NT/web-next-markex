@@ -59,6 +59,8 @@ export const CURRENCY_PAIRS = [
 	"TRY_JPY"
 ] as const
 
+export type CURRENCY_PAIR = typeof CURRENCY_PAIRS[number]
+
 export const COUNTRY_FLAGS = {
 	EUR: "🇪🇺",
 	USD: "🇺🇸",

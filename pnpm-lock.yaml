@@ -43,6 +43,9 @@ dependencies:
   eslint-config-next:
     specifier: 13.4.2
     version: 13.4.2(eslint@8.40.0)(typescript@5.0.4)
+  fast-array-diff:
+    specifier: ^1.1.0
+    version: 1.1.0
   highcharts:
     specifier: ^11.0.1
     version: 11.0.1
@@ -1704,6 +1707,10 @@ packages:
       onetime: 6.0.0
       signal-exit: 3.0.7
       strip-final-newline: 3.0.0
+    dev: false
+
+  /fast-array-diff@1.1.0:
+    resolution: {integrity: sha512-muSPyZa/yHCoDQhah9th57AmLENB1nekbrUoLAqOpQXdl1Kw8VbH24Syl5XLscaQJlx7KRU95bfTDPvVB5BJvw==}
     dev: false
 
   /fast-deep-equal@3.1.3:
