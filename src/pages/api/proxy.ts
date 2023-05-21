@@ -1,18 +1,31 @@
 import axios, { AxiosError } from "axios"
+import { getIronSession } from "iron-session/edge"
 import { NextApiRequest, NextApiResponse } from "next"
 
 import { ApiError } from "@/utils/axiosBaseQuery"
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
 	if (req.method === "POST") {
-		const { url, method, body, params, headers, token } = req.body
+		const { url, method, body, params, headers, auth } = req.body
+
+		const session = auth
+			? await getIronSession(req, res, {
+					cookieName: process.env.COOKIE_NAME,
+					password: process.env.COOKIE_PASSWORD,
+					cookieOptions: {
+						secure: process.env.NODE_ENV === "production"
+					}
+			  })
+			: null
 
 		try {
 			const result = await axios({
 				url,
 				headers: {
 					Accept: "application/vnd.fidor.de; version=1,text/json",
-					...(token ? { Authorization: `Bearer ${token}` } : {}),
+					...(session?.user
+						? { Authorization: "Bearer " + session.fidor_access_token }
+						: {}),
 					...headers
 				},
 				method,

@@ -1,10 +1,12 @@
-import { GetServerSideProps } from "next"
 import Head from "next/head"
 import { useContext, useEffect, useState } from "react"
 
+import { SessionUser } from "@/@types/iron-session"
 import CandlestickChart from "@/components/CandlestickChart"
+import Shell from "@/components/Shell"
 import { CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
+import withSession from "@/utils/withSession"
 import {
 	Box, Center, Flex, Loader, SegmentedControl, Stack, Text, useMantineTheme
 } from "@mantine/core"
@@ -12,10 +14,11 @@ import { usePrevious } from "@mantine/hooks"
 import { IconCaretUp } from "@tabler/icons-react"
 
 type Props = {
+	user: SessionUser | null
 	currencyPair: CURRENCY_PAIR
 }
 
-export default function CurrencyPair({ currencyPair }: Props) {
+export default function CurrencyPair({ user, currencyPair }: Props) {
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const theme = useMantineTheme()
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
@@ -31,20 +34,26 @@ export default function CurrencyPair({ currencyPair }: Props) {
 
 	const price = prices[currencyPair]
 	const buyColor =
-		price && previousPrice && currencyPair === previousCurrencyPair && price.b !== previousPrice.b
+		price &&
+		previousPrice &&
+		currencyPair === previousCurrencyPair &&
+		price.b !== previousPrice.b
 			? price.b > previousPrice.b
 				? theme.colors.red[5]
 				: theme.colors.green[5]
 			: theme.colors.yellow[5]
 	const sellColor =
-		price && previousPrice && currencyPair === previousCurrencyPair && price.s !== previousPrice.s
+		price &&
+		previousPrice &&
+		currencyPair === previousCurrencyPair &&
+		price.s !== previousPrice.s
 			? price.s > previousPrice.s
 				? theme.colors.green[5]
 				: theme.colors.red[5]
 			: theme.colors.yellow[5]
 
 	return (
-		<>
+		<Shell user={user}>
 			<Head>
 				<title>{"Markex | " + currencyPairPretty}</title>
 			</Head>
@@ -248,14 +257,15 @@ export default function CurrencyPair({ currencyPair }: Props) {
 					period={period}
 				/>
 			</Stack>
-		</>
+		</Shell>
 	)
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async context => {
+export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
 	return {
 		props: {
-			currencyPair: context.params!["currency-pair"] as CURRENCY_PAIR
+			user: session.user ?? null,
+			currencyPair: params!["currency-pair"] as CURRENCY_PAIR
 		}
 	}
-}
+})

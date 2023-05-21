@@ -1,6 +1,8 @@
 import axios from "axios"
-import { setCookie } from "cookies-next"
+import { getIronSession } from "iron-session/edge"
 import { GetServerSideProps } from "next"
+
+import { FidorUser } from "@/@types/fidor"
 
 type Props = {
 	error?: string
@@ -10,14 +12,14 @@ export default function Login({ error }: Props) {
 	return <>Error: {error ?? ""}</>
 }
 
-export const getServerSideProps: GetServerSideProps<Props> = async context => {
-	const { code, error } = Object.fromEntries(
-		new URLSearchParams(context.req.url?.substring(7) ?? "")
-	)
+export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }) => {
+	const { code, error } = Object.fromEntries(new URLSearchParams(req.url?.substring(7) ?? ""))
 
 	if (code) {
 		try {
-			const result = await axios.post(
+			const {
+				data: { access_token }
+			} = await axios.post(
 				"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
 				{
 					code,
@@ -37,7 +39,34 @@ export const getServerSideProps: GetServerSideProps<Props> = async context => {
 				}
 			)
 
-			setCookie("token", result.data.access_token, context)
+			const { data: fidorUser } = await axios.get<typeof FidorUser.infer>(
+				"https://api.tp.sandbox.fidorfzco.com/users/current",
+				{
+					headers: {
+						Accept: "application/vnd.fidor.de; version=1,text/json",
+						Authorization: `Bearer ${access_token}`
+					}
+				}
+			)
+
+			const session = await getIronSession(req, res, {
+				cookieName: process.env.COOKIE_NAME,
+				password: process.env.COOKIE_PASSWORD,
+				cookieOptions: {
+					secure: process.env.NODE_ENV === "production"
+				}
+			})
+
+			session.fidor_access_token = access_token
+			session.user = {
+				id: fidorUser.id!,
+				app: {
+					bookmarks: [],
+					balances: {}
+				},
+				fidor: fidorUser
+			}
+			await session.save()
 
 			return {
 				redirect: {

@@ -1,23 +1,33 @@
 import Head from "next/head"
 
+import { SessionUser } from "@/@types/iron-session"
 import { useGetCandlesQuery } from "@/api/prices"
-import { useGetInternalTransfersQuery } from "@/api/transactions"
-import useOnlyAuthenticated from "@/hooks/useOnlyAuthenticated"
+import Shell from "@/components/Shell"
+import withSession from "@/utils/withSession"
 
-export default function Dashboard() {
-	const { token } = useOnlyAuthenticated()
+type Props = {
+	user: SessionUser | null
+}
 
-	const { data: transactions, error: transactionsError } = useGetInternalTransfersQuery({ token })
+export default function Dashboard({ user }: Props) {
 	const { data: candles, error: candlesError } = useGetCandlesQuery({
 		currencyPair: "USD_MXN",
 		period: "H1"
 	})
 
 	return (
-		<>
+		<Shell user={user}>
 			<Head>
 				<title>Markex | Dashboard</title>
 			</Head>
-		</>
+		</Shell>
 	)
 }
+
+export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+	return {
+		props: {
+			user: session.user ?? null
+		}
+	}
+})

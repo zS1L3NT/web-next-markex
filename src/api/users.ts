@@ -3,15 +3,15 @@ import { arrayOf, type } from "arktype"
 import {
 	FidorAccount, FidorCollection, FidorCustomer, FidorPageableCollection, FidorUser
 } from "@/@types/fidor"
-import api, { ensureResponseType, RequireToken } from "@/api/api"
+import api, { ensureResponseType } from "@/api/api"
 
 const users = api.injectEndpoints({
 	endpoints: builder => ({
-		getCustomers: builder.query<FidorCollection<typeof FidorCustomer.infer>, RequireToken>({
-			query: ({ token }) => ({
+		getCustomers: builder.query<FidorCollection<typeof FidorCustomer.infer>, void>({
+			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/customers",
 				method: "GET",
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(
 				type({
@@ -20,19 +20,19 @@ const users = api.injectEndpoints({
 				})
 			)
 		}),
-		getCurrentUser: builder.query<typeof FidorUser.infer, RequireToken>({
-			query: ({ token }) => ({
+		getCurrentUser: builder.query<typeof FidorUser.infer, void>({
+			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/users/current",
 				method: "GET",
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(FidorUser)
 		}),
-		getAccounts: builder.query<FidorCollection<typeof FidorAccount.infer>, RequireToken>({
-			query: ({ token }) => ({
+		getAccounts: builder.query<FidorCollection<typeof FidorAccount.infer>, void>({
+			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
 				method: "GET",
-				token
+				auth: true
 			}),
 			transformResponse: ensureResponseType(
 				type({
