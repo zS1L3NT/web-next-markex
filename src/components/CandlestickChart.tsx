@@ -44,7 +44,7 @@ export default function CandlestickChart({
 		const navigator = ref.current?.chart?.xAxis?.[0]
 		const latestCandle = candles?.at(-1)
 		if (navigator && latestCandle) {
-			const start = new Date()
+			const start = new Date(latestCandle.time)
 			const end = new Date(latestCandle.time)
 
 			switch (period) {
