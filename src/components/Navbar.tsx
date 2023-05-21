@@ -1,8 +1,11 @@
 import Link from "next/link"
+import { useContext } from "react"
 
 import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
+import AuthContext from "@/contexts/AuthContext"
 import {
-	Button, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack, Text, useMantineTheme
+	Button, Center, createStyles, Divider, Loader, Navbar as MantineNavbar, ScrollArea, Stack, Text,
+	useMantineTheme
 } from "@mantine/core"
 import {
 	IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet
@@ -59,25 +62,29 @@ export default function Navbar() {
 	const theme = useMantineTheme()
 	const { classes } = useStyles()
 
+	const { token, user } = useContext(AuthContext)
+
 	return (
 		<MantineNavbar width={{ base: 280 }}>
 			<MantineNavbar.Section p="md">
-				<Stack
+				<Center
 					sx={{
-						flexDirection: "row",
-						justifyContent: "center",
+						width: "fit-content",
+						margin: "auto",
 						alignItems: "center",
-						userSelect: "none"
+						color: "white",
+						textDecoration: "none"
 					}}
-					spacing="0.5rem">
+					component={Link}
+					href="/">
 					<IconCurrency size="1.5rem" />
 					<Text
-						mr="xs"
+						ml="sm"
 						fz="1.5rem"
 						weight={600}>
 						MARKEX
 					</Text>
-				</Stack>
+				</Center>
 			</MantineNavbar.Section>
 
 			<MantineNavbar.Section
@@ -89,16 +96,18 @@ export default function Navbar() {
 				p="md"
 				grow>
 				<Stack spacing="0.5rem">
-					<Button
-						className={classes.button}
-						variant="subtle"
-						color="gray"
-						size="md"
-						leftIcon={<IconDashboard size={20} />}
-						component={Link}
-						href="/dashboard">
-						Dashboard
-					</Button>
+					{token && (
+						<Button
+							className={classes.button}
+							variant="subtle"
+							color="gray"
+							size="md"
+							leftIcon={<IconDashboard size={20} />}
+							component={Link}
+							href="/dashboard">
+							Dashboard
+						</Button>
+					)}
 
 					<Button
 						className={classes.button}
@@ -111,28 +120,57 @@ export default function Navbar() {
 						Currency Pairs
 					</Button>
 
-					<Button
-						className={classes.button}
-						variant="subtle"
-						color="gray"
-						size="md"
-						leftIcon={<IconWallet size={20} />}
-						component={Link}
-						href="/wallet">
-						My Wallet
-					</Button>
+					{token && (
+						<Button
+							className={classes.button}
+							variant="subtle"
+							color="gray"
+							size="md"
+							leftIcon={<IconWallet size={20} />}
+							component={Link}
+							href="/wallet">
+							My Wallet
+						</Button>
+					)}
 
 					<Divider
 						my="0.5rem"
 						color={theme.colors.dark[5]}
 					/>
 
-					{CURRENCY_PAIRS.slice(0, 8).map(c => (
-						<CurrencyPair
-							key={c}
-							currencyPair={c}
-						/>
-					))}
+					{token ? (
+						user ? (
+							CURRENCY_PAIRS.slice(0, 8).map(c => (
+								<CurrencyPair
+									key={c}
+									currencyPair={c}
+								/>
+							))
+						) : (
+							<Loader
+								sx={{ margin: "auto", marginTop: "0.5rem" }}
+								size={20}
+								color="gray"
+							/>
+						)
+					) : (
+						<>
+							{CURRENCY_PAIRS.slice(0, 8).map(c => (
+								<CurrencyPair
+									key={c}
+									currencyPair={c}
+								/>
+							))}
+							<Text
+								align="center"
+								fz="xs"
+								color={theme.colors.gray[7]}>
+								Sign in to customise bookmarked
+								<br />
+								currency pairs
+							</Text>
+						</>
+					)}
 				</Stack>
 			</MantineNavbar.Section>
 		</MantineNavbar>
