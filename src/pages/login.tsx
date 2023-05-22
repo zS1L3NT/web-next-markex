@@ -3,6 +3,9 @@ import { getIronSession } from "iron-session/edge"
 import { GetServerSideProps } from "next"
 
 import { FidorUser } from "@/@types/fidor"
+import { SessionUser } from "@/@types/iron-session"
+import { COUNTRY_FLAGS, CURRENCY_PAIR } from "@/constants"
+import prisma from "@/prisma"
 
 type Props = {
 	error?: string
@@ -12,43 +15,74 @@ export default function Login({ error }: Props) {
 	return <>Error: {error ?? ""}</>
 }
 
+const getAccessToken = async (code: string): Promise<string> => {
+	const res = await axios.post(
+		"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
+		{
+			code,
+			client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
+			redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
+			grant_type: "authorization_code"
+		},
+		{
+			headers: {
+				Authorization: `Basic ${Buffer.from(
+					process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
+						":" +
+						process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
+					"utf-8"
+				).toString("base64")}`
+			}
+		}
+	)
+
+	return res.data.access_token
+}
+
+const getSessionUser = async (accessToken: string): Promise<SessionUser> => {
+	const { data: fidorUser } = await axios.get<typeof FidorUser.infer>(
+		"https://api.tp.sandbox.fidorfzco.com/users/current",
+		{
+			headers: {
+				Accept: "application/vnd.fidor.de; version=1,text/json",
+				Authorization: `Bearer ${accessToken}`
+			}
+		}
+	)
+
+	const id = fidorUser.id!
+
+	return {
+		id,
+		app: {
+			bookmarks: await prisma.bookmark
+				.findMany({ select: { currency_pair: true }, where: { user_id: id } })
+				.then(bs => bs.map(b => b.currency_pair as CURRENCY_PAIR)),
+			balances: await prisma.balance
+				.findMany({ where: { user_id: id } })
+				.then(
+					bs =>
+						Object.fromEntries(bs.map(b => [b.currency, b.amount])) as Record<
+							keyof typeof COUNTRY_FLAGS,
+							number | undefined
+						>
+				),
+			transactions: await prisma.transaction.findMany({
+				where: { user_id: id },
+				orderBy: { created_at: "asc" }
+			})
+		},
+		fidor: fidorUser
+	}
+}
+
 export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }) => {
 	const { code, error } = Object.fromEntries(new URLSearchParams(req.url?.substring(7) ?? ""))
 
 	if (code) {
 		try {
-			const {
-				data: { access_token }
-			} = await axios.post(
-				"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
-				{
-					code,
-					client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
-					redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
-					grant_type: "authorization_code"
-				},
-				{
-					headers: {
-						Authorization: `Basic ${Buffer.from(
-							process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
-								":" +
-								process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
-							"utf-8"
-						).toString("base64")}`
-					}
-				}
-			)
-
-			const { data: fidorUser } = await axios.get<typeof FidorUser.infer>(
-				"https://api.tp.sandbox.fidorfzco.com/users/current",
-				{
-					headers: {
-						Accept: "application/vnd.fidor.de; version=1,text/json",
-						Authorization: `Bearer ${access_token}`
-					}
-				}
-			)
-
+			const accessToken = await getAccessToken(code)
+			const user = await getSessionUser(accessToken)
 			const session = await getIronSession(req, res, {
 				cookieName: process.env.COOKIE_NAME,
 				password: process.env.COOKIE_PASSWORD,
@@ -57,15 +91,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 				}
 			})
 
-			session.fidor_access_token = access_token
-			session.user = {
-				id: fidorUser.id!,
-				app: {
-					bookmarks: [],
-					balances: {}
-				},
-				fidor: fidorUser
-			}
+			session.fidor_access_token = accessToken
+			session.user = user
 			await session.save()
 
 			return {
