@@ -137,12 +137,21 @@ export default function Navbar() {
 					/>
 
 					{user ? (
-						user.app.bookmarks.map(c => (
-							<CurrencyPair
-								key={c}
-								currencyPair={c}
-							/>
-						))
+						user.app.bookmarks.length ? (
+							user.app.bookmarks.map(c => (
+								<CurrencyPair
+									key={c}
+									currencyPair={c}
+								/>
+							))
+						) : (
+							<Text
+								align="center"
+								fz="xs"
+								color={theme.colors.gray[7]}>
+								No bookmarks
+							</Text>
+						)
 					) : (
 						<>
 							{CURRENCY_PAIRS.slice(0, 8).map(c => (
