@@ -18,12 +18,12 @@ type Props = {
 	currencyPair: CURRENCY_PAIR
 }
 
-function BuySellBox({
+function BidAskBox({
 	type,
 	price,
 	color
 }: {
-	type: "Buy" | "Sell"
+	type: "Bid" | "Ask"
 	price: number | null
 	color: "green" | "red" | "white"
 }) {
@@ -36,20 +36,20 @@ function BuySellBox({
 			sx={{
 				flex: 1,
 				padding: "0.25rem 0.5rem",
-				textAlign: type === "Buy" ? "start" : "end",
+				textAlign: type === "Bid" ? "start" : "end",
 				border: `1px solid ${mantineColor}`,
 				backgroundColor: `${mantineColor}22`
 			}}>
 			{price ? (
 				<Flex
-					direction={type === "Buy" ? "row" : "row-reverse"}
+					direction={type === "Bid" ? "row" : "row-reverse"}
 					align="center">
 					<Text
 						sx={{ width: "fit-content" }}
 						fz="lg"
 						color={mantineColor}
 						weight={700}>
-						{price.toFixed(5)}
+						{price}
 					</Text>
 
 					{color === "green" && (
@@ -70,7 +70,7 @@ function BuySellBox({
 				<Skeleton
 					width="60%"
 					height={27.9}
-					ml={type === "Buy" ? 0 : "auto"}
+					ml={type === "Bid" ? 0 : "auto"}
 				/>
 			)}
 			<Text
@@ -92,7 +92,7 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 			}}>
 			<Text fz="sm">{type}</Text>
 			{price ? (
-				<Text weight={700}>{price.toFixed(5)}</Text>
+				<Text weight={700}>{price}</Text>
 			) : (
 				<Skeleton
 					width="60%"
@@ -112,8 +112,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")
-	const [buyColor, setBuyColor] = useState<"green" | "red" | "white">("white")
-	const [sellColor, setSellColor] = useState<"green" | "red" | "white">("white")
+	const [bidColor, setBidColor] = useState<"green" | "red" | "white">("white")
+	const [askColor, setAskColor] = useState<"green" | "red" | "white">("white")
 	const previousCurrencyPair = usePrevious(currencyPair)
 	const previousPrice = usePrevious(prices[currencyPair])
 
@@ -124,11 +124,11 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	useEffect(() => {
 		if (price && previousPrice && currencyPair === previousCurrencyPair) {
 			if (price.b !== previousPrice.b) {
-				setBuyColor(price.b > previousPrice.b ? "green" : "red")
+				setAskColor(price.b > previousPrice.b ? "green" : "red")
 			}
 
 			if (price.s !== previousPrice.s) {
-				setSellColor(price.s > previousPrice.s ? "green" : "red")
+				setBidColor(price.s > previousPrice.s ? "green" : "red")
 			}
 		}
 	}, [previousCurrencyPair, currencyPair, price, previousPrice])
@@ -176,14 +176,14 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 						<Flex
 							sx={{ position: "relative" }}
 							gap="xs">
-							<BuySellBox
-								type="Buy"
-								price={price?.b ?? null}
-								color={buyColor}
+							<BidAskBox
+								type="Bid"
+								price={price?.s ?? null}
+								color={askColor}
 							/>
 							<Box
 								sx={{
-									width: "30%",
+									width: "25%",
 									height: "60%",
 									border: `1px solid ${theme.colors.blue[5]}`,
 									backgroundColor: theme.colors.dark[7],
@@ -213,10 +213,10 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									)}
 								</Center>
 							</Box>
-							<BuySellBox
-								type="Sell"
-								price={price?.s ?? null}
-								color={sellColor}
+							<BidAskBox
+								type="Ask"
+								price={price?.b ?? null}
+								color={bidColor}
 							/>
 						</Flex>
 						<Flex gap="xs">

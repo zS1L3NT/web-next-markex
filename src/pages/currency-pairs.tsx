@@ -39,8 +39,8 @@ function CurrencyPair({
 
 	const [updateAppUser, { isLoading: updateAppUserIsLoading }] = useUpdateAppUserMutation()
 
-	const [buyStyle, setBuyStyle] = useState<CSSProperties>({})
-	const [sellStyle, setSellStyle] = useState<CSSProperties>({})
+	const [bidStyle, setBidStyle] = useState<CSSProperties>({})
+	const [askStyle, setAskStyle] = useState<CSSProperties>({})
 	const [seconds, setSeconds] = useState(0)
 	const previousPrice = usePrevious(price)
 
@@ -56,12 +56,12 @@ function CurrencyPair({
 	useEffect(() => {
 		if (price && previousPrice) {
 			if (price.b !== previousPrice.b) {
-				setBuyStyle({
+				setAskStyle({
 					backgroundColor:
 						price.b > previousPrice.b ? theme.colors.green[5] : theme.colors.green[5]
 				})
 				setTimeout(() => {
-					setBuyStyle({
+					setAskStyle({
 						transition: "background-color 1s ease",
 						backgroundColor: "transparent"
 					})
@@ -69,12 +69,12 @@ function CurrencyPair({
 			}
 
 			if (price.s !== previousPrice.s) {
-				setSellStyle({
+				setBidStyle({
 					backgroundColor:
 						price.s > previousPrice.s ? theme.colors.green[5] : theme.colors.red[5]
 				})
 				setTimeout(() => {
-					setSellStyle({
+					setBidStyle({
 						transition: "background-color 1s ease",
 						backgroundColor: "transparent"
 					})
@@ -169,8 +169,8 @@ function CurrencyPair({
 				}}>
 				{price ? `${price.c}%` : loader}
 			</td>
-			<td style={buyStyle}>{price?.b || loader}</td>
-			<td style={sellStyle}>{price?.s || loader}</td>
+			<td style={bidStyle}>{price?.s || loader}</td>
+			<td style={askStyle}>{price?.b || loader}</td>
 			<td>{price?.l || loader}</td>
 			<td>{price?.h || loader}</td>
 			<td>{price?.sp || loader}</td>
@@ -208,8 +208,8 @@ export default function CurrencyPairs({ user }: Props) {
 						{user ? <th style={{ width: 20 }}></th> : null}
 						<th>Currency Pair</th>
 						<th style={numericHeaderStyle}>Change</th>
-						<th style={numericHeaderStyle}>Buy</th>
-						<th style={numericHeaderStyle}>Sell</th>
+						<th style={numericHeaderStyle}>Bid</th>
+						<th style={numericHeaderStyle}>Ask</th>
 						<th style={numericHeaderStyle}>Low</th>
 						<th style={numericHeaderStyle}>High</th>
 						<th style={numericHeaderStyle}>Spread</th>
