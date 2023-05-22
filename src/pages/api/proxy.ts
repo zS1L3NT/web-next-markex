@@ -1,31 +1,24 @@
 import axios, { AxiosError } from "axios"
-import { getIronSession } from "iron-session/edge"
-import { NextApiRequest, NextApiResponse } from "next"
 
 import { ApiError } from "@/utils/axiosBaseQuery"
+import withApiSession from "@/utils/withApiSession"
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default withApiSession(async ({ req, res, session }) => {
 	if (req.method === "POST") {
 		const { url, method, body, params, headers, auth } = req.body
 
-		const session = auth
-			? await getIronSession(req, res, {
-					cookieName: process.env.COOKIE_NAME,
-					password: process.env.COOKIE_PASSWORD,
-					cookieOptions: {
-						secure: process.env.NODE_ENV === "production"
-					}
-			  })
-			: null
+		if (auth && (!session.fidor_access_token || !session.user)) {
+			return res.status(401).send({
+				message: "Cannot access authorized route without an existing session"
+			})
+		}
 
 		try {
 			const result = await axios({
 				url,
 				headers: {
 					Accept: "application/vnd.fidor.de; version=1,text/json",
-					...(session?.user
-						? { Authorization: "Bearer " + session.fidor_access_token }
-						: {}),
+					...(auth ? { Authorization: "Bearer " + session.fidor_access_token } : {}),
 					...headers
 				},
 				method,
@@ -47,4 +40,4 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 			})
 		}
 	}
-}
+})

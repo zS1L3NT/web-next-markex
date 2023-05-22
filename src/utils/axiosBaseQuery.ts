@@ -16,7 +16,18 @@ export const ApiError = type({
 
 export default (async config => {
 	try {
-		const result = await axios.post("/api/proxy", config)
+		let result: any
+		if ("url" in config) {
+			result = await axios.post("/api/proxy", config)
+		} else {
+			result = await axios({
+				url: config.path,
+				method: config.method,
+				data: config.body,
+				params: config.params,
+				headers: config.headers
+			})
+		}
 		return { data: result.data }
 	} catch (e) {
 		const error = <AxiosError>e
@@ -33,8 +44,7 @@ export default (async config => {
 		}
 	}
 }) satisfies BaseQueryFn<
-	{
-		url: string
+	({ url: string } | { path: string }) & {
 		method: AxiosRequestConfig["method"]
 		body?: AxiosRequestConfig["data"]
 		params?: AxiosRequestConfig["params"]

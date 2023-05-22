@@ -9,11 +9,12 @@ generator client {
 
 model Transaction {
     id            String   @id @default(uuid())
-    from_currency String?
+    user_id       String
+    from_currency String
     to_currency   String
     amount        Float
     price         Float
-    createdAt     DateTime @default(now())
+    created_at     DateTime @default(now())
 }
 
 model Balance {
@@ -22,4 +23,11 @@ model Balance {
     amount   Float
 
     @@unique([user_id, currency])
+}
+
+model Bookmark {
+    user_id       String
+    currency_pair String
+
+    @@unique([user_id, currency_pair])
 }
