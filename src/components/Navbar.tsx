@@ -60,7 +60,7 @@ function CurrencyPair({ currencyPair }: { currencyPair: string }) {
 
 export default function Navbar() {
 	const theme = useMantineTheme()
-	const user = useContext(UserContext)
+	const { user } = useContext(UserContext)
 
 	const { classes } = useStyles()
 

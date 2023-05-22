@@ -8,7 +8,7 @@ import { Avatar, Box, Button, Flex, Header as MantineHeader, Menu, Select } from
 import { IconLogout, IconSearch, IconUser } from "@tabler/icons-react"
 
 export default function Header() {
-	const user = useContext(UserContext)
+	const { user } = useContext(UserContext)
 	const router = useRouter()
 
 	return (

@@ -4,6 +4,7 @@ import { CSSProperties, useContext, useEffect, useState } from "react"
 
 import { SessionUser } from "@/@types/iron-session"
 import { OandaPrice } from "@/@types/oanda"
+import { useUpdateAppUserMutation } from "@/api/users"
 import Shell from "@/components/Shell"
 import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
@@ -30,8 +31,10 @@ function CurrencyPair({
 	]
 
 	const theme = useMantineTheme()
-	const user = useContext(UserContext)
+	const { user, setUser } = useContext(UserContext)
 	const router = useRouter()
+
+	const [updateAppUser, { isLoading: updateAppUserIsLoading }] = useUpdateAppUserMutation()
 
 	const [buyStyle, setBuyStyle] = useState<CSSProperties>({})
 	const [sellStyle, setSellStyle] = useState<CSSProperties>({})
@@ -77,6 +80,23 @@ function CurrencyPair({
 		}
 	}, [theme, price, previousPrice])
 
+	const toggleBookmark = async () => {
+		if (!user) return
+
+		const appUser = await updateAppUser({
+			bookmarks: user.app.bookmarks.includes(currencyPair)
+				? user.app.bookmarks.filter(b => b !== currencyPair)
+				: [...user.app.bookmarks, currencyPair]
+		})
+
+		if ("data" in appUser) {
+			setUser({
+				...user,
+				app: appUser.data
+			})
+		}
+	}
+
 	const loader = (
 		<Loader
 			display="block"
@@ -90,12 +110,26 @@ function CurrencyPair({
 		<tr style={{ textAlign: "center" }}>
 			{user ? (
 				<td>
-					<ActionIcon>
-						<IconBookmark
-							fill={CURRENCY_PAIRS.indexOf(currencyPair) < 8 ? "white" : ""}
-							size={20}
+					{!updateAppUserIsLoading ? (
+						<ActionIcon onClick={toggleBookmark}>
+							<IconBookmark
+								fill={
+									user.app.bookmarks.includes(currencyPair)
+										? "white"
+										: "transparent"
+								}
+								size={20}
+							/>
+						</ActionIcon>
+					) : (
+						<Loader
+							size={28}
+							color="gray"
+							display="block"
+							m="auto"
+							p={4}
 						/>
-					</ActionIcon>
+					)}
 				</td>
 			) : null}
 			<td
