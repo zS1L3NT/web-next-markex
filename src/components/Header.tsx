@@ -1,5 +1,4 @@
 import Link from "next/link"
-import { useRouter } from "next/router"
 import { useContext } from "react"
 
 import { CURRENCY_PAIRS } from "@/constants"
@@ -9,7 +8,6 @@ import { IconLogout, IconSearch, IconUser } from "@tabler/icons-react"
 
 export default function Header() {
 	const { user } = useContext(UserContext)
-	const router = useRouter()
 
 	return (
 		<MantineHeader
@@ -43,12 +41,14 @@ export default function Header() {
 						<Menu.Dropdown>
 							<Menu.Item
 								icon={<IconUser size={14} />}
-								onClick={() => router.push("/profile")}>
+								component={Link}
+								href="/profile">
 								Profile
 							</Menu.Item>
 							<Menu.Item
 								icon={<IconLogout size={14} />}
-								onClick={() => router.push("/logout")}>
+								component={Link}
+								href="/logout">
 								Logout
 							</Menu.Item>
 						</Menu.Dropdown>

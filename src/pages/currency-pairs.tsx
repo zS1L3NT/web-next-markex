@@ -1,4 +1,5 @@
 import Head from "next/head"
+import Link from "next/link"
 import { useRouter } from "next/router"
 import { CSSProperties, useContext, useEffect, useState } from "react"
 
@@ -132,26 +133,31 @@ function CurrencyPair({
 					)}
 				</td>
 			) : null}
-			<td
-				style={{ cursor: "pointer" }}
-				onClick={() => router.push("/currency-pairs/" + currencyPair)}>
-				<Flex
-					align="center"
-					gap="sm">
-					<Stack
-						sx={{ flexDirection: "row", alignItems: "center" }}
-						spacing="0.5rem">
-						<Text fz="1.25rem">{COUNTRY_FLAGS[countryA]}</Text>
-						{countryA}
-					</Stack>
-					<IconArrowsHorizontal size={16} />
-					<Stack
-						sx={{ flexDirection: "row", alignItems: "center" }}
-						spacing="0.5rem">
-						{countryB}
-						<Text fz="1.25rem">{COUNTRY_FLAGS[countryB]}</Text>
-					</Stack>
-				</Flex>
+			<td>
+				<Link
+					style={{
+						color: "white",
+						textDecoration: "none"
+					}}
+					href={"/currency-pairs/" + currencyPair}>
+					<Flex
+						align="center"
+						gap="sm">
+						<Stack
+							sx={{ flexDirection: "row", alignItems: "center" }}
+							spacing="0.5rem">
+							<Text fz="1.25rem">{COUNTRY_FLAGS[countryA]}</Text>
+							{countryA}
+						</Stack>
+						<IconArrowsHorizontal size={16} />
+						<Stack
+							sx={{ flexDirection: "row", alignItems: "center" }}
+							spacing="0.5rem">
+							{countryB}
+							<Text fz="1.25rem">{COUNTRY_FLAGS[countryB]}</Text>
+						</Stack>
+					</Flex>
+				</Link>
 			</td>
 			<td
 				style={{
