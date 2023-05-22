@@ -157,12 +157,16 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							weight={700}>
 							{currencyPairPretty}
 						</Text>
-						{price && (
+						{price && price.c !== 0 && (
 							<Text
 								sx={{
 									display: "flex",
 									alignItems: "center",
-									color: price.c > 0 ? theme.colors.green[5] : theme.colors.red[5]
+									color: price.c
+										? price.c > 0
+											? theme.colors.green[5]
+											: theme.colors.red[5]
+										: "white"
 								}}>
 								<IconCaretUp
 									color="transparent"

@@ -42,27 +42,15 @@ export default function CandlestickChart({
 
 	useEffect(() => {
 		const navigator = ref.current?.chart?.xAxis?.[0]
-		const latestCandle = candles?.at(-1)
-		if (navigator && latestCandle) {
-			const start = new Date(latestCandle.time)
-			const end = new Date(latestCandle.time)
-
-			switch (period) {
-				case "H1":
-					start.setHours(end.getHours() - 50)
-					break
-				case "D":
-					start.setDate(end.getDate() - 50)
-					break
-				case "W":
-					start.setDate(end.getDate() - 350)
-					break
-				case "M":
-					start.setMonth(end.getMonth() - 50)
-					break
-			}
-
-			navigator.setExtremes(start.getTime(), end.getTime(), true, !candlesWereFetching)
+		const start = candles?.at(-50)
+		const end = candles?.at(-1)
+		if (navigator && start && end) {
+			navigator.setExtremes(
+				new Date(start.time).getTime(),
+				new Date(end.time).getTime(),
+				true,
+				!candlesWereFetching
+			)
 
 			// After 10ms, set the opacity of the chart to 1
 			// This delay is needed so that the chart can rerender the extremes before being displayed
