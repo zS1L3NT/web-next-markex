@@ -132,7 +132,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	useEffect(() => {
 		if (price && previousPrice && currencyPair === previousCurrencyPair) {
 			if (price.b !== previousPrice.b) {
-				setBuyColor(price.b > previousPrice.b ? "red" : "green")
+				setBuyColor(price.b > previousPrice.b ? "green" : "red")
 			}
 
 			if (price.s !== previousPrice.s) {

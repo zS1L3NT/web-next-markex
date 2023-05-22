@@ -1,6 +1,6 @@
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { useContext, useEffect, useState } from "react"
+import { CSSProperties, useContext, useEffect, useState } from "react"
 
 import { SessionUser } from "@/@types/iron-session"
 import { OandaPrice } from "@/@types/oanda"
@@ -29,9 +29,12 @@ function CurrencyPair({
 		keyof typeof COUNTRY_FLAGS
 	]
 
+	const theme = useMantineTheme()
 	const user = useContext(UserContext)
 	const router = useRouter()
 
+	const [buyStyle, setBuyStyle] = useState<CSSProperties>({})
+	const [sellStyle, setSellStyle] = useState<CSSProperties>({})
 	const [seconds, setSeconds] = useState(0)
 	const previousPrice = usePrevious(price)
 
@@ -44,17 +47,47 @@ function CurrencyPair({
 		return () => clearInterval(interval)
 	}, [price])
 
+	useEffect(() => {
+		if (price && previousPrice) {
+			if (price.b !== previousPrice.b) {
+				setBuyStyle({
+					backgroundColor:
+						price.b > previousPrice.b ? theme.colors.green[5] : theme.colors.green[5]
+				})
+				setTimeout(() => {
+					setBuyStyle({
+						transition: "background-color 1s ease",
+						backgroundColor: "transparent"
+					})
+				}, 10)
+			}
+
+			if (price.s !== previousPrice.s) {
+				setSellStyle({
+					backgroundColor:
+						price.s > previousPrice.s ? theme.colors.green[5] : theme.colors.red[5]
+				})
+				setTimeout(() => {
+					setSellStyle({
+						transition: "background-color 1s ease",
+						backgroundColor: "transparent"
+					})
+				}, 10)
+			}
+		}
+	}, [theme, price, previousPrice])
+
 	const loader = (
 		<Loader
+			display="block"
+			m="auto"
 			color="gray"
 			size="xs"
-			display="block"
-			my="auto"
 		/>
 	)
 
 	return (
-		<tr>
+		<tr style={{ textAlign: "center" }}>
 			{user ? (
 				<td>
 					<ActionIcon>
@@ -86,9 +119,18 @@ function CurrencyPair({
 					</Stack>
 				</Flex>
 			</td>
-			<td>{price ? `${price.c}%` : loader}</td>
-			<td>{price?.b || loader}</td>
-			<td>{price?.s || loader}</td>
+			<td
+				style={{
+					color: price?.c
+						? price.c > 0
+							? theme.colors.green[5]
+							: theme.colors.red[5]
+						: "white"
+				}}>
+				{price ? `${price.c}%` : loader}
+			</td>
+			<td style={buyStyle}>{price?.b || loader}</td>
+			<td style={sellStyle}>{price?.s || loader}</td>
 			<td>{price?.l || loader}</td>
 			<td>{price?.h || loader}</td>
 			<td>{price?.sp || loader}</td>
@@ -105,6 +147,11 @@ export default function CurrencyPairs({ user }: Props) {
 		setCurrencyPairs([...CURRENCY_PAIRS])
 	}, [])
 
+	const numericHeaderStyle: CSSProperties = {
+		width: "10%",
+		textAlign: "center"
+	}
+
 	return (
 		<Shell user={user}>
 			<Head>
@@ -120,13 +167,13 @@ export default function CurrencyPairs({ user }: Props) {
 					<tr>
 						{user ? <th style={{ width: 20 }}></th> : null}
 						<th>Currency Pair</th>
-						<th style={{ width: "10%" }}>Change</th>
-						<th style={{ width: "10%" }}>Buy</th>
-						<th style={{ width: "10%" }}>Sell</th>
-						<th style={{ width: "10%" }}>Low</th>
-						<th style={{ width: "10%" }}>High</th>
-						<th style={{ width: "10%" }}>Spread</th>
-						<th style={{ width: "10%" }}>Updated</th>
+						<th style={numericHeaderStyle}>Change</th>
+						<th style={numericHeaderStyle}>Buy</th>
+						<th style={numericHeaderStyle}>Sell</th>
+						<th style={numericHeaderStyle}>Low</th>
+						<th style={numericHeaderStyle}>High</th>
+						<th style={numericHeaderStyle}>Spread</th>
+						<th style={numericHeaderStyle}>Updated</th>
 					</tr>
 				</thead>
 				<tbody>
