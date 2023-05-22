@@ -18,6 +18,7 @@ declare type SessionUser = {
 declare module "iron-session" {
 	interface IronSessionData {
 		fidor_access_token?: string
+		fidor_refresh_token?: string
 		user?: SessionUser
 	}
 }

@@ -1,43 +1,94 @@
 import axios, { AxiosError } from "axios"
+import { IronSession } from "iron-session"
+import { NextApiRequest, NextApiResponse } from "next"
 
 import { ApiError } from "@/utils/axiosBaseQuery"
 import withApiSession from "@/utils/withApiSession"
 
+const getRefreshedAccessToken = async (
+	session: IronSession
+): Promise<{
+	access_token: string
+	refresh_token: string
+}> => {
+	return await axios
+		.post(
+			"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
+			{
+				grant_type: "refresh_token",
+				refresh_token: session.fidor_refresh_token
+			},
+			{
+				headers: {
+					Authorization: `Basic ${Buffer.from(
+						process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
+							":" +
+							process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
+						"utf-8"
+					).toString("base64")}`
+				}
+			}
+		)
+		.then(res => res.data)
+}
+
+const handleRequest = async (req: NextApiRequest, res: NextApiResponse, session: IronSession) => {
+	const { url, method, body, params, headers, auth } = req.body
+	res.status(200).send(
+		await axios({
+			url,
+			headers: {
+				Accept: "application/vnd.fidor.de; version=1,text/json",
+				...(auth ? { Authorization: "Bearer " + session.fidor_access_token } : {}),
+				...headers
+			},
+			method,
+			params,
+			data: body
+		}).then(res => res.data)
+	)
+}
+
+const handleError = (res: NextApiResponse, error: AxiosError) => {
+	console.error(error)
+
+	const result = ApiError(error.response?.data)
+	res.status(400).send({
+		type: result.data?.type ?? "Unknown error",
+		message: result.data?.message ?? error.message,
+		details: result.data?.details ?? undefined
+	})
+}
+
 export default withApiSession(async ({ req, res, session }) => {
 	if (req.method === "POST") {
-		const { url, method, body, params, headers, auth } = req.body
-
-		if (auth && (!session.fidor_access_token || !session.user)) {
+		if (
+			req.body.auth &&
+			(!session.fidor_access_token || !session.fidor_refresh_token || !session.user)
+		) {
 			return res.status(401).send({
 				message: "Cannot access authorized route without an existing session"
 			})
 		}
 
 		try {
-			const result = await axios({
-				url,
-				headers: {
-					Accept: "application/vnd.fidor.de; version=1,text/json",
-					...(auth ? { Authorization: "Bearer " + session.fidor_access_token } : {}),
-					...headers
-				},
-				method,
-				params,
-				data: body
-			})
-
-			res.status(200).send(result.data)
+			await handleRequest(req, res, session)
 		} catch (e) {
 			const error = <AxiosError>e
-			console.error(error)
+			if (req.body.auth && error.status === 401) {
+				const { access_token, refresh_token } = await getRefreshedAccessToken(session)
+				session.fidor_access_token = access_token
+				session.fidor_refresh_token = refresh_token
+				await session.save()
 
-			const result = ApiError(error.response?.data)
-			res.status(400).send({
-				message: result.data?.message ?? error.message,
-				key: result.data?.key ?? [],
-				code: result.data?.code ?? error.code ? +error.code! : 500,
-				errors: result.data?.errors ?? []
-			})
+				try {
+					await handleRequest(req, res, session)
+				} catch (e) {
+					handleError(res, e as AxiosError)
+				}
+			} else {
+				handleError(res, error)
+			}
 		}
 	}
 })

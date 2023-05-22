@@ -7,7 +7,7 @@ import withApiSession from "@/utils/withApiSession"
 
 export default withApiSession(async ({ req, res, session }) => {
 	if (req.method === "PUT") {
-		if (!session.fidor_access_token || !session.user) {
+		if (!session.fidor_access_token || !session.fidor_refresh_token || !session.user) {
 			return res.status(401).send({
 				message: "Cannot update user without an existing session"
 			})

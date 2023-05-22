@@ -15,28 +15,30 @@ export default function Login({ error }: Props) {
 	return <>Error: {error ?? ""}</>
 }
 
-const getAccessToken = async (code: string): Promise<string> => {
-	const res = await axios.post(
-		"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
-		{
-			code,
-			client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
-			redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
-			grant_type: "authorization_code"
-		},
-		{
-			headers: {
-				Authorization: `Basic ${Buffer.from(
-					process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
-						":" +
-						process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
-					"utf-8"
-				).toString("base64")}`
+const getTokens = async (
+	code: string
+): Promise<{ access_token: string; refresh_token: string }> => {
+	return await axios
+		.post(
+			"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
+			{
+				code,
+				client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
+				redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
+				grant_type: "authorization_code"
+			},
+			{
+				headers: {
+					Authorization: `Basic ${Buffer.from(
+						process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
+							":" +
+							process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
+						"utf-8"
+					).toString("base64")}`
+				}
 			}
-		}
-	)
-
-	return res.data.access_token
+		)
+		.then(res => res.data)
 }
 
 const getSessionUser = async (accessToken: string): Promise<SessionUser | undefined> => {
@@ -86,8 +88,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 
 	if (code) {
 		try {
-			const accessToken = await getAccessToken(code)
-			const user = await getSessionUser(accessToken)
+			const { access_token, refresh_token } = await getTokens(code)
+			const user = await getSessionUser(access_token)
 			const session = await getIronSession(req, res, {
 				cookieName: process.env.COOKIE_NAME,
 				password: process.env.COOKIE_PASSWORD,
@@ -96,7 +98,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 				}
 			})
 
-			session.fidor_access_token = accessToken
+			session.fidor_access_token = access_token
+			session.fidor_refresh_token = refresh_token
 			session.user = user
 			await session.save()
 
