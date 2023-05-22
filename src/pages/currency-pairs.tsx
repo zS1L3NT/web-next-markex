@@ -11,7 +11,9 @@ import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
 import withSession from "@/utils/withSession"
-import { ActionIcon, Flex, Loader, Stack, Table, Text, useMantineTheme } from "@mantine/core"
+import {
+	ActionIcon, Flex, Loader, Skeleton, Stack, Table, Text, useMantineTheme
+} from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
 
@@ -99,11 +101,9 @@ function CurrencyPair({
 	}
 
 	const loader = (
-		<Loader
-			display="block"
-			m="auto"
-			color="gray"
-			size="xs"
+		<Skeleton
+			width="100%"
+			height={30}
 		/>
 	)
 

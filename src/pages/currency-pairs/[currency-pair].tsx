@@ -8,7 +8,7 @@ import { CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import withSession from "@/utils/withSession"
 import {
-	Box, Center, Flex, Loader, SegmentedControl, Stack, Text, useMantineTheme
+	Box, Center, Flex, SegmentedControl, Skeleton, Stack, Text, useMantineTheme
 } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconCaretDown, IconCaretUp } from "@tabler/icons-react"
@@ -67,14 +67,10 @@ function BuySellBox({
 					)}
 				</Flex>
 			) : (
-				<Loader
-					sx={{
-						display: "block",
-						marginLeft: type === "Buy" ? "0" : "auto",
-						padding: "0.25rem 0"
-					}}
-					size={27.9}
-					color="white"
+				<Skeleton
+					width="60%"
+					height={27.9}
+					ml={type === "Buy" ? 0 : "auto"}
 				/>
 			)}
 			<Text
@@ -98,14 +94,10 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 			{price ? (
 				<Text weight={700}>{price.toFixed(5)}</Text>
 			) : (
-				<Loader
-					sx={{
-						display: "block",
-						marginLeft: type === "Low" ? "0" : "auto",
-						padding: "0.25rem 0"
-					}}
-					size={24.8}
-					color="white"
+				<Skeleton
+					width="60%"
+					height={24.8}
+					ml={type === "Low" ? 0 : "auto"}
 				/>
 			)}
 		</Box>
@@ -214,8 +206,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 											{price.sp}
 										</Text>
 									) : (
-										<Loader
-											sx={{ padding: "0.25rem 0" }}
+										<Skeleton
+											width="60%"
 											height={24.8}
 										/>
 									)}
