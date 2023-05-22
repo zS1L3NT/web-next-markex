@@ -5,7 +5,7 @@ import api, { ensureResponseType } from "@/api/api"
 
 const prices = api.injectEndpoints({
 	endpoints: builder => ({
-		getPrice: builder.query<typeof OandaPrice.infer, { currencyPair: string }>({
+		getOandaPrice: builder.query<typeof OandaPrice.infer, { currencyPair: string }>({
 			query: ({ currencyPair }) => ({
 				url:
 					"https://dashboard.acuitytrading.com/OandaPriceApi/GetPrice?apikey=" +
@@ -21,7 +21,7 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: ensureResponseType(OandaPrice)
 		}),
-		getCandles: builder.query<
+		getOandaCandles: builder.query<
 			(typeof OandaCandle.infer)[],
 			{ currencyPair: string; period: "H1" | "D" | "W" | "M" }
 		>({
@@ -45,8 +45,8 @@ const prices = api.injectEndpoints({
 })
 
 export const {
-	useGetCandlesQuery,
-	useGetPriceQuery,
-	useLazyGetCandlesQuery,
-	useLazyGetPriceQuery
+	useGetOandaCandlesQuery,
+	useGetOandaPriceQuery,
+	useLazyGetOandaCandlesQuery,
+	useLazyGetOandaPriceQuery
 } = prices

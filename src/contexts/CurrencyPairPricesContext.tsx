@@ -2,8 +2,8 @@ import { diff } from "fast-array-diff"
 import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react"
 
 import { OandaPrice } from "@/@types/oanda"
+import { useLazyGetOandaPriceQuery } from "@/api/prices"
 import { CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
-import { useLazyGetPriceQuery } from "@/api/prices"
 
 const CHAR = ""
 
@@ -16,7 +16,7 @@ const CurrencyPairPricesContext = createContext<{
 })
 
 export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) => {
-	const [getPrice] = useLazyGetPriceQuery()
+	const [getOandaPrice] = useLazyGetOandaPriceQuery()
 
 	const socket = useMemo(
 		() => new WebSocket("wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets"),
@@ -118,7 +118,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 	useEffect(() => {
 		if (connected) {
 			for (const currencyPair of currencyPairs) {
-				getPrice({ currencyPair }).then(price => {
+				getOandaPrice({ currencyPair }).then(price => {
 					setPrices(prices => ({
 						...prices,
 						[currencyPair]: price.data ?? null

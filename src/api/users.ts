@@ -8,7 +8,7 @@ import api, { ensureResponseType } from "@/api/api"
 
 const users = api.injectEndpoints({
 	endpoints: builder => ({
-		getCustomers: builder.query<FidorCollection<typeof FidorCustomer.infer>, void>({
+		getFidorCustomers: builder.query<FidorCollection<typeof FidorCustomer.infer>, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/customers",
 				method: "GET",
@@ -21,7 +21,7 @@ const users = api.injectEndpoints({
 				})
 			)
 		}),
-		getCurrentUser: builder.query<typeof FidorUser.infer, void>({
+		getFidorCurrentUser: builder.query<typeof FidorUser.infer, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/users/current",
 				method: "GET",
@@ -29,7 +29,7 @@ const users = api.injectEndpoints({
 			}),
 			transformResponse: ensureResponseType(FidorUser)
 		}),
-		getAccounts: builder.query<FidorCollection<typeof FidorAccount.infer>, void>({
+		getFidorAccounts: builder.query<FidorCollection<typeof FidorAccount.infer>, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
 				method: "GET",
@@ -57,11 +57,11 @@ const users = api.injectEndpoints({
 })
 
 export const {
-	useGetAccountsQuery,
-	useGetCurrentUserQuery,
-	useGetCustomersQuery,
-	useLazyGetAccountsQuery,
-	useLazyGetCurrentUserQuery,
-	useLazyGetCustomersQuery,
+	useGetFidorAccountsQuery,
+	useGetFidorCurrentUserQuery,
+	useGetFidorCustomersQuery,
+	useLazyGetFidorAccountsQuery,
+	useLazyGetFidorCurrentUserQuery,
+	useLazyGetFidorCustomersQuery,
 	useUpdateAppUserMutation
 } = users

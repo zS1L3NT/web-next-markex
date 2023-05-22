@@ -2,7 +2,7 @@ import HighchartsReact from "highcharts-react-official"
 import Highcharts from "highcharts/highstock"
 import { useEffect, useRef, useState } from "react"
 
-import { useGetCandlesQuery } from "@/api/prices"
+import { useGetOandaCandlesQuery } from "@/api/prices"
 import { Flex, Loader, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 
@@ -22,13 +22,7 @@ export default function CandlestickChart({
 		data: candles,
 		isFetching: candlesAreFetching,
 		status: candlesStatus
-	} = useGetCandlesQuery(
-		{
-			currencyPair: currencyPair!,
-			period
-		},
-		{ skip: !currencyPair }
-	)
+	} = useGetOandaCandlesQuery({ currencyPair: currencyPair!, period }, { skip: !currencyPair })
 
 	const [opacity, setOpacity] = useState(0)
 	const ref = useRef<HighchartsReact.RefObject>(null)

@@ -7,7 +7,7 @@ import api, { ensureResponseType } from "@/api/api"
 
 const transfers = api.injectEndpoints({
 	endpoints: builder => ({
-		createInternalTransfer: builder.mutation<
+		createFidorInternalTransfer: builder.mutation<
 			typeof FidorInternalTransfer.infer,
 			typeof FidorInternalTransfer.infer
 		>({
@@ -19,7 +19,7 @@ const transfers = api.injectEndpoints({
 			}),
 			transformResponse: ensureResponseType(FidorInternalTransfer)
 		}),
-		getInternalTransfers: builder.query<
+		getFidorInternalTransfers: builder.query<
 			FidorCollection<typeof FidorInternalTransfer.infer>,
 			void
 		>({
@@ -35,15 +35,17 @@ const transfers = api.injectEndpoints({
 				})
 			)
 		}),
-		getInternalTransfer: builder.query<typeof FidorInternalTransfer.infer, { id: string }>({
-			query: ({ id }) => ({
-				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers/" + id,
-				method: "GET",
-				auth: true
-			}),
-			transformResponse: ensureResponseType(FidorInternalTransfer)
-		}),
-		getTransactions: builder.query<FidorCollection<typeof FidorTransaction.infer>, void>({
+		getFidorInternalTransfer: builder.query<typeof FidorInternalTransfer.infer, { id: string }>(
+			{
+				query: ({ id }) => ({
+					url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers/" + id,
+					method: "GET",
+					auth: true
+				}),
+				transformResponse: ensureResponseType(FidorInternalTransfer)
+			}
+		),
+		getFidorTransactions: builder.query<FidorCollection<typeof FidorTransaction.infer>, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/transactions",
 				method: "GET",
@@ -56,7 +58,7 @@ const transfers = api.injectEndpoints({
 				})
 			)
 		}),
-		getTransaction: builder.query<typeof FidorTransaction.infer, { id: string }>({
+		getFidorTransaction: builder.query<typeof FidorTransaction.infer, { id: string }>({
 			query: ({ id }) => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/transactions/" + id,
 				method: "GET",
@@ -68,13 +70,13 @@ const transfers = api.injectEndpoints({
 })
 
 export const {
-	useCreateInternalTransferMutation,
-	useGetInternalTransferQuery,
-	useGetInternalTransfersQuery,
-	useGetTransactionQuery,
-	useGetTransactionsQuery,
-	useLazyGetInternalTransferQuery,
-	useLazyGetInternalTransfersQuery,
-	useLazyGetTransactionQuery,
-	useLazyGetTransactionsQuery
+	useCreateFidorInternalTransferMutation,
+	useGetFidorInternalTransferQuery,
+	useGetFidorInternalTransfersQuery,
+	useGetFidorTransactionQuery,
+	useGetFidorTransactionsQuery,
+	useLazyGetFidorInternalTransferQuery,
+	useLazyGetFidorInternalTransfersQuery,
+	useLazyGetFidorTransactionQuery,
+	useLazyGetFidorTransactionsQuery
 } = transfers
