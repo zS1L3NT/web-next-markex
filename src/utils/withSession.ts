@@ -17,7 +17,7 @@ const withSession = <Props extends Record<string, any> = {}>(
 					...context.req.session,
 					user: context.req.session.fidor_access_token
 						? await getSessionUser(context.req.session.fidor_access_token)
-						: context.req.session.user
+						: context.req.session.user ?? undefined
 				}
 			}),
 		{

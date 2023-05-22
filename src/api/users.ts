@@ -3,6 +3,7 @@ import { arrayOf, type } from "arktype"
 import {
 	FidorAccount, FidorCollection, FidorCustomer, FidorPageableCollection, FidorUser
 } from "@/@types/fidor"
+import { SessionUser } from "@/@types/iron-session"
 import api, { ensureResponseType } from "@/api/api"
 
 const users = api.injectEndpoints({
@@ -40,6 +41,17 @@ const users = api.injectEndpoints({
 					collection: FidorPageableCollection
 				})
 			)
+		}),
+		updateAppUser: builder.mutation<
+			SessionUser["app"],
+			Partial<Exclude<SessionUser["app"], "transactions">>
+		>({
+			query: user => ({
+				path: "/api/user",
+				method: "PUT",
+				body: user,
+				auth: true
+			})
 		})
 	})
 })
@@ -50,5 +62,6 @@ export const {
 	useGetCustomersQuery,
 	useLazyGetAccountsQuery,
 	useLazyGetCurrentUserQuery,
-	useLazyGetCustomersQuery
+	useLazyGetCustomersQuery,
+	useUpdateAppUserMutation
 } = users
