@@ -199,7 +199,7 @@ export default function CurrencyPairs({ user }: Props) {
 			</Head>
 
 			<Table
-				bg={theme.colors.dark[7]}
+				bg={theme.colors.dark[6]}
 				highlightOnHover
 				withBorder
 				withColumnBorders>
