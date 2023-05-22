@@ -11,20 +11,117 @@ import {
 	Box, Center, Flex, Loader, SegmentedControl, Stack, Text, useMantineTheme
 } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
-import { IconCaretUp } from "@tabler/icons-react"
+import { IconCaretDown, IconCaretUp } from "@tabler/icons-react"
 
 type Props = {
 	user: SessionUser | null
 	currencyPair: CURRENCY_PAIR
 }
 
+function BuySellBox({
+	type,
+	price,
+	color
+}: {
+	type: "Buy" | "Sell"
+	price: number | null
+	color: "green" | "red" | "white"
+}) {
+	const theme = useMantineTheme()
+
+	const mantineColor = color === "white" ? "white" : theme.colors[color][5]
+
+	return (
+		<Box
+			sx={{
+				flex: 1,
+				padding: "0.25rem 0.5rem",
+				textAlign: type === "Buy" ? "start" : "end",
+				border: `1px solid ${mantineColor}`,
+				backgroundColor: `${mantineColor}22`
+			}}>
+			{price ? (
+				<Flex
+					direction={type === "Buy" ? "row" : "row-reverse"}
+					align="center">
+					<Text
+						sx={{ width: "fit-content" }}
+						fz="lg"
+						color={mantineColor}
+						weight={700}>
+						{price.toFixed(5)}
+					</Text>
+
+					{color === "green" && (
+						<IconCaretUp
+							color="transparent"
+							fill={mantineColor}
+						/>
+					)}
+
+					{color === "red" && (
+						<IconCaretDown
+							color="transparent"
+							fill={mantineColor}
+						/>
+					)}
+				</Flex>
+			) : (
+				<Loader
+					sx={{
+						display: "block",
+						marginLeft: type === "Buy" ? "0" : "auto",
+						padding: "0.25rem 0"
+					}}
+					size={27.9}
+					color="white"
+				/>
+			)}
+			<Text
+				fz="sm"
+				color={mantineColor}>
+				{type}
+			</Text>
+		</Box>
+	)
+}
+
+function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | null }) {
+	return (
+		<Box
+			sx={{
+				flex: 1,
+				padding: "0 0.5rem",
+				textAlign: type === "Low" ? "start" : "end"
+			}}>
+			<Text fz="sm">{type}</Text>
+			{price ? (
+				<Text weight={700}>{price.toFixed(5)}</Text>
+			) : (
+				<Loader
+					sx={{
+						display: "block",
+						marginLeft: type === "Low" ? "0" : "auto",
+						padding: "0.25rem 0"
+					}}
+					size={24.8}
+					color="white"
+				/>
+			)}
+		</Box>
+	)
+}
+
 export default function CurrencyPair({ user, currencyPair }: Props) {
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const theme = useMantineTheme()
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
+	const price = prices[currencyPair]
 
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")
+	const [buyColor, setBuyColor] = useState<"green" | "red" | "white">("white")
+	const [sellColor, setSellColor] = useState<"green" | "red" | "white">("white")
 	const previousCurrencyPair = usePrevious(currencyPair)
 	const previousPrice = usePrevious(prices[currencyPair])
 
@@ -32,25 +129,17 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 		setCurrencyPairs([currencyPair])
 	}, [currencyPair])
 
-	const price = prices[currencyPair]
-	const buyColor =
-		price &&
-		previousPrice &&
-		currencyPair === previousCurrencyPair &&
-		price.b !== previousPrice.b
-			? price.b > previousPrice.b
-				? theme.colors.red[5]
-				: theme.colors.green[5]
-			: theme.colors.yellow[5]
-	const sellColor =
-		price &&
-		previousPrice &&
-		currencyPair === previousCurrencyPair &&
-		price.s !== previousPrice.s
-			? price.s > previousPrice.s
-				? theme.colors.green[5]
-				: theme.colors.red[5]
-			: theme.colors.yellow[5]
+	useEffect(() => {
+		if (price && previousPrice && currencyPair === previousCurrencyPair) {
+			if (price.b !== previousPrice.b) {
+				setBuyColor(price.b > previousPrice.b ? "red" : "green")
+			}
+
+			if (price.s !== previousPrice.s) {
+				setSellColor(price.s > previousPrice.s ? "green" : "red")
+			}
+		}
+	}, [previousCurrencyPair, currencyPair, price, previousPrice])
 
 	return (
 		<Shell user={user}>
@@ -91,36 +180,11 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 						<Flex
 							sx={{ position: "relative" }}
 							gap="xs">
-							<Box
-								sx={{
-									flex: 1,
-									padding: "0.25rem 0.5rem",
-									border: `1px solid ${buyColor}`,
-									backgroundColor: `${buyColor}22`
-								}}>
-								{price ? (
-									<Text
-										fz="lg"
-										color={buyColor}
-										weight={700}>
-										{price.b.toFixed(5)}
-									</Text>
-								) : (
-									<Loader
-										sx={{
-											display: "block",
-											padding: "0.25rem 0"
-										}}
-										size={27.9}
-										color="yellow"
-									/>
-								)}
-								<Text
-									fz="sm"
-									color={buyColor}>
-									Buy
-								</Text>
-							</Box>
+							<BuySellBox
+								type="Buy"
+								price={price?.b ?? null}
+								color={buyColor}
+							/>
 							<Box
 								sx={{
 									width: "30%",
@@ -153,80 +217,21 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									)}
 								</Center>
 							</Box>
-							<Box
-								sx={{
-									flex: 1,
-									padding: "0.25rem 0.5rem",
-									textAlign: "end",
-									border: `1px solid ${sellColor}`,
-									backgroundColor: `${sellColor}22`
-								}}>
-								{price ? (
-									<Text
-										fz="lg"
-										color={sellColor}
-										weight={700}>
-										{price.s.toFixed(5)}
-									</Text>
-								) : (
-									<Loader
-										sx={{
-											display: "block",
-											marginLeft: "auto",
-											padding: "0.25rem 0"
-										}}
-										size={27.9}
-										color="yellow"
-									/>
-								)}
-								<Text
-									fz="sm"
-									color={sellColor}>
-									Sell
-								</Text>
-							</Box>
+							<BuySellBox
+								type="Sell"
+								price={price?.s ?? null}
+								color={sellColor}
+							/>
 						</Flex>
 						<Flex gap="xs">
-							<Box
-								sx={{
-									flex: 1,
-									padding: "0 0.5rem"
-								}}>
-								<Text fz="sm">Low</Text>
-								{price ? (
-									<Text weight={700}>{price.l.toFixed(5)}</Text>
-								) : (
-									<Loader
-										sx={{
-											display: "block",
-											padding: "0.25rem 0"
-										}}
-										size={24.8}
-										color="white"
-									/>
-								)}
-							</Box>
-							<Box
-								sx={{
-									flex: 1,
-									padding: "0 0.5rem",
-									textAlign: "end"
-								}}>
-								<Text fz="sm">High</Text>
-								{price ? (
-									<Text weight={700}>{price.h.toFixed(5)}</Text>
-								) : (
-									<Loader
-										sx={{
-											display: "block",
-											marginLeft: "auto",
-											padding: "0.25rem 0"
-										}}
-										size={24.8}
-										color="white"
-									/>
-								)}
-							</Box>
+							<LowHighBox
+								type="Low"
+								price={price?.l ?? null}
+							/>
+							<LowHighBox
+								type="High"
+								price={price?.h ?? null}
+							/>
 						</Flex>
 					</Flex>
 				</Flex>
