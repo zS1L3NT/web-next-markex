@@ -27,7 +27,7 @@ export default function Dashboard({ user }: Props) {
 
 	const [page, setPage] = useState(1)
 	const [startDate, setStartDate] = useState(new Date())
-	const [endDate, setEndDate] = useState(new Date(Date.now() + 1000 * 60 * 60 * 24))
+	const [endDate, setEndDate] = useState(new Date())
 	const [impact, setImpact] = useState<number>(1)
 	const [countries, setCountries] = useState([...CURRENCIES])
 	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery()
