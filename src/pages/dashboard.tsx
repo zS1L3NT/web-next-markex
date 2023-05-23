@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Head from "next/head"
 import Link from "next/link"
-import { Fragment, useEffect, useState } from "react"
+import { useEffect, useMemo, useState } from "react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
 import { SessionUser } from "@/@types/iron-session"
@@ -11,7 +11,7 @@ import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewportState from "@/hooks/useIsInViewportState"
 import withSession from "@/utils/withSession"
 import {
-	ActionIcon, Badge, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
+	ActionIcon, Badge, Box, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
 	useMantineTheme
 } from "@mantine/core"
 import { IconCalendar, IconFilter } from "@tabler/icons-react"
@@ -38,9 +38,16 @@ export default function Dashboard({ user }: Props) {
 	})
 
 	// Allows the UI to have time to update before re-rendering the loader
+	const [isAtBottom, setIsAtBottom, ref] = useIsInViewportState()
 	const [isFetchingLock, setIsFetchingLock] = useState(false)
 	const [events, setEvents] = useState<[string, FXEmpireEvent[]][]>([])
-	const [isAtBottom, setIsAtBottom, ref] = useIsInViewportState()
+	const eventsOrDates = useMemo(() => {
+		const map = Object.fromEntries(events) as Record<string, FXEmpireEvent[]>
+		return Object.keys(map)
+			.sort()
+			.map(d => [new Date(d), ...map[d]!])
+			.flat()
+	}, [events])
 
 	useEffect(() => {
 		if (!newsAreLoading && !isFetchingLock && isAtBottom && eventsQuery?.next) {
@@ -65,7 +72,6 @@ export default function Dashboard({ user }: Props) {
 			})
 			setIsAtBottom(false)
 			setIsFetchingLock(false)
-			debugger
 		}
 	}, [eventsQuery, page])
 
@@ -182,8 +188,6 @@ export default function Dashboard({ user }: Props) {
 
 			<AnimatePresence>
 				<Table
-					bg={theme.colors.dark[6]}
-					highlightOnHover
 					withBorder
 					withColumnBorders
 					sx={{
@@ -192,7 +196,7 @@ export default function Dashboard({ user }: Props) {
 						}
 					}}>
 					<thead>
-						<tr>
+						<tr style={{ background: theme.colors.dark[6] }}>
 							<th>Time</th>
 							<th>Currency</th>
 							<th style={{ width: "40%" }}>Event</th>
@@ -203,75 +207,96 @@ export default function Dashboard({ user }: Props) {
 						</tr>
 					</thead>
 					<tbody>
-						{events.map(([day, events]) => (
-							<Fragment key={day}>
-								<motion.tr
-									layoutId={day}
-									transition={{ duration: 0.5 }}>
-									<Text
-										bg={theme.colors.dark[5]}
-										weight={700}
-										component="td"
-										colSpan={7}>
-										{new Date(day).toLocaleDateString("en-SG", {
-											weekday: "long",
-											day: "2-digit",
-											month: "long",
-											year: "numeric"
-										})}
-									</Text>
-								</motion.tr>
-								{events.map(e => {
-									const currency = CURRENCIES.find(
-										c => e.country === FXEMPIRE_COUNTRIES[c]
-									)!
-									return (
-										<motion.tr
-											key={e.id}
-											layoutId={e.id + ""}
-											transition={{ duration: 0.5 }}>
-											<td>
-												{new Date(e.date).toLocaleTimeString("en-SG", {
-													hour: "2-digit",
-													minute: "2-digit"
-												})}
-											</td>
-											<td>
-												{CURRENCY_FLAGS[currency]}
-												{" " + currency}
-											</td>
-											<td>{e.name}</td>
-											<td>
-												<Badge
-													color={
-														([, "yellow", "orange", "red"] as const)[
-															e.impact
-														]!
-													}>
-													{[, "Low", "Medium", "High"][e.impact]}
-												</Badge>
-											</td>
-											<td
-												style={{
-													color: {
-														above: theme.colors.green[5],
-														below: theme.colors.red[5],
-														none: theme.colors.dark[0]
-													}[e.color]
-												}}>
-												{e.actual}
-											</td>
-											<td>{e.forecast}</td>
-											<td>{e.previous}</td>
-										</motion.tr>
-									)
-								})}
-							</Fragment>
-						))}
+						{eventsOrDates.map(eod => {
+							if (eod instanceof Date) {
+								const date = new Date(eod).toLocaleDateString("en-SG", {
+									weekday: "long",
+									day: "2-digit",
+									month: "long",
+									year: "numeric"
+								})
+								return (
+									<motion.tr
+										key={date}
+										layoutId={date}
+										transition={{ duration: 0.5 }}
+										style={{ background: theme.colors.dark[6] }}>
+										<Text
+											bg={theme.colors.dark[5]}
+											weight={700}
+											component="td"
+											colSpan={7}>
+											{date}
+										</Text>
+									</motion.tr>
+								)
+							} else {
+								const event = eod
+								const currency = CURRENCIES.find(
+									c => event.country === FXEMPIRE_COUNTRIES[c]
+								)!
+								return (
+									<Box
+										key={event.id}
+										sx={{
+											background: theme.colors.dark[6],
+											":hover": {
+												background: theme.colors.dark[5]
+											}
+										}}
+										component={motion.tr}
+										layoutId={event.id + ""}
+										transition={{ duration: 0.5 }}>
+										<td>
+											{new Date(event.date).toLocaleTimeString("en-SG", {
+												hour: "2-digit",
+												minute: "2-digit"
+											})}
+										</td>
+										<td>
+											{CURRENCY_FLAGS[currency]}
+											{" " + currency}
+										</td>
+										<td>{event.name}</td>
+										<td>
+											<Badge
+												color={
+													([, "yellow", "orange", "red"] as const)[
+														event.impact
+													]!
+												}>
+												{[, "Low", "Medium", "High"][event.impact]}
+											</Badge>
+										</td>
+										<td
+											style={{
+												color: {
+													above: theme.colors.green[5],
+													below: theme.colors.red[5],
+													none: theme.colors.dark[0]
+												}[event.color]
+											}}>
+											{event.actual}
+										</td>
+										<td>{event.forecast}</td>
+										<td>{event.previous}</td>
+									</Box>
+								)
+							}
+						})}
+
 						{eventsQuery?.next && (
-							<motion.tr
+							<Box
 								ref={ref}
-								layoutId="loader">
+								sx={{
+									background: theme.colors.dark[6],
+									":hover": {
+										background: theme.colors.dark[5]
+									}
+								}}
+								component={motion.tr}
+								layoutId="loader"
+								transition={{ duration: 0.5 }}>
 								<td colSpan={7}>
 									<Loader
 										size={20}
@@ -280,7 +305,7 @@ export default function Dashboard({ user }: Props) {
 										m="auto"
 									/>
 								</td>
-							</motion.tr>
+							</Box>
 						)}
 					</tbody>
 				</Table>
