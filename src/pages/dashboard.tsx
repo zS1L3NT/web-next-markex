@@ -1,11 +1,13 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Head from "next/head"
 import Link from "next/link"
-import { useEffect, useMemo, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
 import { SessionUser } from "@/@types/iron-session"
 import { useGetFXStreetEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
+import EventDatesModal, { EventDatesModalRef } from "@/components/Modals/EventDatesModal"
+import EventFiltersModal, { EventFiltersModalRef } from "@/components/Modals/EventFiltersModal"
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewportState from "@/hooks/useIsInViewportState"
@@ -27,7 +29,7 @@ export default function Dashboard({ user }: Props) {
 	const [startDate, setStartDate] = useState(new Date())
 	const [endDate, setEndDate] = useState(new Date(Date.now() + 1000 * 60 * 60 * 24))
 	const [impact, setImpact] = useState<number>(1)
-	const [countries, setCountries] = useState(CURRENCIES)
+	const [countries, setCountries] = useState([...CURRENCIES])
 	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery()
 	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXStreetEventsQuery({
 		page,
@@ -38,7 +40,7 @@ export default function Dashboard({ user }: Props) {
 	})
 
 	// Allows the UI to have time to update before re-rendering the loader
-	const [isAtBottom, setIsAtBottom, ref] = useIsInViewportState()
+	const [isAtBottom, setIsAtBottom, loaderRef] = useIsInViewportState()
 	const [isFetchingLock, setIsFetchingLock] = useState(false)
 	const [events, setEvents] = useState<[string, FXEmpireEvent[]][]>([])
 	const eventsOrDates = useMemo(() => {
@@ -48,6 +50,8 @@ export default function Dashboard({ user }: Props) {
 			.map(d => [new Date(d), ...map[d]!])
 			.flat()
 	}, [events])
+	const eventFiltersModalRef = useRef<EventFiltersModalRef>(null)
+	const eventDatesModalRef = useRef<EventDatesModalRef>(null)
 
 	useEffect(() => {
 		if (!newsAreLoading && !isFetchingLock && isAtBottom && eventsQuery?.next) {
@@ -155,12 +159,14 @@ export default function Dashboard({ user }: Props) {
 			</Text>
 
 			<Flex
+				align="center"
 				mb="md"
 				gap="sm">
 				<ActionIcon
 					variant="filled"
 					color="blue"
 					size="lg"
+					onClick={eventFiltersModalRef.current?.open}
 					disabled={eventsAreFetching}>
 					<IconFilter size="1.5rem" />
 				</ActionIcon>
@@ -169,11 +175,16 @@ export default function Dashboard({ user }: Props) {
 					variant="filled"
 					color="blue"
 					size="lg"
+					onClick={eventDatesModalRef.current?.open}
 					disabled={eventsAreFetching}>
 					<IconCalendar size="1.5rem" />
 				</ActionIcon>
 
 				<SegmentedControl
+					sx={{
+						height: "100%",
+						transform: "scale(1.07)"
+					}}
 					color={theme.colors.blue[5]}
 					data={[
 						{ value: "1", label: "Low" },
@@ -194,7 +205,8 @@ export default function Dashboard({ user }: Props) {
 						"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
 							textAlign: "center !important" as "center"
 						}
-					}}>
+					}}
+					mb="xl">
 					<thead>
 						<tr style={{ background: theme.colors.dark[6] }}>
 							<th>Time</th>
@@ -287,7 +299,7 @@ export default function Dashboard({ user }: Props) {
 
 						{eventsQuery?.next && (
 							<Box
-								ref={ref}
+								ref={loaderRef}
 								sx={{
 									background: theme.colors.dark[6],
 									":hover": {
@@ -310,6 +322,23 @@ export default function Dashboard({ user }: Props) {
 					</tbody>
 				</Table>
 			</AnimatePresence>
+
+			<EventFiltersModal
+				{...{
+					ref: eventFiltersModalRef,
+					countries,
+					setCountries
+				}}
+			/>
+			<EventDatesModal
+				{...{
+					ref: eventDatesModalRef,
+					startDate,
+					endDate,
+					setStartDate,
+					setEndDate
+				}}
+			/>
 		</Shell>
 	)
 }
