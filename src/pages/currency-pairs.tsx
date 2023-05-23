@@ -1,13 +1,12 @@
 import Head from "next/head"
 import Link from "next/link"
-import { useRouter } from "next/router"
 import { CSSProperties, useContext, useEffect, useState } from "react"
 
 import { SessionUser } from "@/@types/iron-session"
 import { OandaPrice } from "@/@types/oanda"
 import { useUpdateAppUserMutation } from "@/api/users"
 import Shell from "@/components/Shell"
-import { COUNTRY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
+import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
 import withSession from "@/utils/withSession"
@@ -26,16 +25,12 @@ function CurrencyPair({
 	price
 }: {
 	currencyPair: CURRENCY_PAIR
-	price: typeof OandaPrice.infer | null
+	price: OandaPrice | null
 }) {
-	const [countryA, countryB] = currencyPair.split("_") as [
-		keyof typeof COUNTRY_FLAGS,
-		keyof typeof COUNTRY_FLAGS
-	]
+	const [currencyA, currencyB] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
 	const theme = useMantineTheme()
 	const { user, setUser } = useContext(UserContext)
-	const router = useRouter()
 
 	const [updateAppUser, { isLoading: updateAppUserIsLoading }] = useUpdateAppUserMutation()
 
@@ -146,15 +141,15 @@ function CurrencyPair({
 						<Stack
 							sx={{ flexDirection: "row", alignItems: "center" }}
 							spacing="0.5rem">
-							<Text fz="1.25rem">{COUNTRY_FLAGS[countryA]}</Text>
-							{countryA}
+							<Text fz="1.25rem">{CURRENCY_FLAGS[currencyA]}</Text>
+							{currencyA}
 						</Stack>
 						<IconArrowsHorizontal size={16} />
 						<Stack
 							sx={{ flexDirection: "row", alignItems: "center" }}
 							spacing="0.5rem">
-							{countryB}
-							<Text fz="1.25rem">{COUNTRY_FLAGS[countryB]}</Text>
+							{currencyB}
+							<Text fz="1.25rem">{CURRENCY_FLAGS[currencyB]}</Text>
 						</Stack>
 					</Flex>
 				</Link>

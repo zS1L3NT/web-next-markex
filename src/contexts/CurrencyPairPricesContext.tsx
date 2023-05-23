@@ -8,10 +8,10 @@ import { CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 const CHAR = ""
 
 const CurrencyPairPricesContext = createContext<{
-	prices: Record<CURRENCY_PAIR, typeof OandaPrice.infer | null>
+	prices: Record<CURRENCY_PAIR, OandaPrice | null>
 	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => void
 }>({
-	prices: {} as Record<CURRENCY_PAIR, typeof OandaPrice.infer | null>,
+	prices: {} as Record<CURRENCY_PAIR, OandaPrice | null>,
 	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => {}
 })
 
@@ -28,7 +28,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 	const [prices, setPrices] = useState(
 		Object.fromEntries(CURRENCY_PAIRS.map(cp => [cp, null])) as Record<
 			CURRENCY_PAIR,
-			typeof OandaPrice.infer | null
+			OandaPrice | null
 		>
 	)
 

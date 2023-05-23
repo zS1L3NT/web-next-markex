@@ -3,11 +3,11 @@ import { arrayOf, type } from "arktype"
 import { FXEmpireEvent } from "@/@types/fxempire"
 import { FXStreetNews } from "@/@types/fxstreet"
 import api, { ensureResponseType } from "@/api/api"
-import { FXEMPIRE_COUNTRIES } from "@/constants"
+import { CURRENCY, FXEMPIRE_COUNTRIES } from "@/constants"
 
 const news = api.injectEndpoints({
 	endpoints: builder => ({
-		getFXStreetNews: builder.query<(typeof FXStreetNews.infer)[], void>({
+		getFXStreetNews: builder.query<FXStreetNews[], void>({
 			query: () => ({
 				url: "https://50dev6p9k0-1.algolianet.com/1/indexes/*/queries?x-algolia-agent=Algolia%20for%20vanilla%20JavaScript%20(lite)%203.25.1%3Binstantsearch.js%202.6.3%3BJS%20Helper%202.24.0&x-algolia-application-id=50DEV6P9K0&x-algolia-api-key=cd2dd138c8d64f40f6d06a60508312b0",
 				method: "POST",
@@ -28,7 +28,7 @@ const news = api.injectEndpoints({
 		}),
 		getFXStreetEvents: builder.query<
 			{
-				events: [string, (typeof FXEmpireEvent.infer)[]][]
+				events: [string, FXEmpireEvent[]][]
 				next: boolean
 			},
 			{
@@ -36,7 +36,7 @@ const news = api.injectEndpoints({
 				from: Date
 				to: Date
 				impact: number
-				countries: (typeof FXEMPIRE_COUNTRIES)[keyof typeof FXEMPIRE_COUNTRIES][]
+				countries: FXEMPIRE_COUNTRIES[CURRENCY][]
 			}
 		>({
 			query: ({ page, from, to, impact, countries }) => ({

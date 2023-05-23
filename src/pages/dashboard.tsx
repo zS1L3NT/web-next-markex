@@ -6,7 +6,7 @@ import { FXEmpireEvent } from "@/@types/fxempire"
 import { SessionUser } from "@/@types/iron-session"
 import { useGetFXStreetEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
 import Shell from "@/components/Shell"
-import { COUNTRY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
+import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewport from "@/hooks/useIsInViewport"
 import withSession from "@/utils/withSession"
 import {
@@ -24,9 +24,7 @@ export default function Dashboard({ user }: Props) {
 	const [startDate, setStartDate] = useState(new Date())
 	const [endDate, setEndDate] = useState(new Date(Date.now() + 1000 * 60 * 60 * 24))
 	const [impact, setImpact] = useState<number>(2)
-	const [countries, setCountries] = useState(
-		Object.keys(COUNTRY_FLAGS) as (keyof typeof COUNTRY_FLAGS)[]
-	)
+	const [countries, setCountries] = useState(CURRENCIES)
 	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery()
 	const { data: eventsQuery } = useGetFXStreetEventsQuery({
 		page,
@@ -36,7 +34,7 @@ export default function Dashboard({ user }: Props) {
 		countries: countries.map(c => FXEMPIRE_COUNTRIES[c])
 	})
 
-	const [events, setEvents] = useState<[string, (typeof FXEmpireEvent.infer)[]][]>([])
+	const [events, setEvents] = useState<[string, FXEmpireEvent[]][]>([])
 	const [eventsAreFetching, setEventsAreFetching] = useState(false)
 	const ref = useRef<HTMLTableRowElement>(null)
 	const isAtBottomOfTable = useIsInViewport(ref)
@@ -50,10 +48,7 @@ export default function Dashboard({ user }: Props) {
 	useEffect(() => {
 		if (eventsQuery?.events) {
 			setEvents(events => {
-				const map = Object.fromEntries(events) as Record<
-					string,
-					(typeof FXEmpireEvent.infer)[]
-				>
+				const map = Object.fromEntries(events) as Record<string, FXEmpireEvent[]>
 				for (const [date, events] of eventsQuery.events) {
 					map[date] = [...(map[date] ?? []), ...events]
 				}
@@ -175,9 +170,9 @@ export default function Dashboard({ user }: Props) {
 								</Text>
 							</tr>
 							{events.map(e => {
-								const country = Object.keys(FXEMPIRE_COUNTRIES).find(
-									c => e.country === (FXEMPIRE_COUNTRIES as any)[c]
-								) as keyof typeof COUNTRY_FLAGS
+								const currency = CURRENCIES.find(
+									c => e.country === FXEMPIRE_COUNTRIES[c]
+								)!
 								return (
 									<tr key={e.id}>
 										<td>
@@ -187,8 +182,8 @@ export default function Dashboard({ user }: Props) {
 											})}
 										</td>
 										<td>
-											{COUNTRY_FLAGS[country]}
-											{" " + country}
+											{CURRENCY_FLAGS[currency]}
+											{" " + currency}
 										</td>
 										<td>{e.name}</td>
 										<td>

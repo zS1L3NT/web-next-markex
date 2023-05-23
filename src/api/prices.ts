@@ -2,10 +2,11 @@ import { arrayOf } from "arktype"
 
 import { OandaCandle, OandaPrice } from "@/@types/oanda"
 import api, { ensureResponseType } from "@/api/api"
+import { CURRENCY_PAIR } from "@/constants"
 
 const prices = api.injectEndpoints({
 	endpoints: builder => ({
-		getOandaPrice: builder.query<typeof OandaPrice.infer, { currencyPair: string }>({
+		getOandaPrice: builder.query<OandaPrice, { currencyPair: CURRENCY_PAIR }>({
 			query: ({ currencyPair }) => ({
 				url:
 					"https://dashboard.acuitytrading.com/OandaPriceApi/GetPrice?apikey=" +
@@ -22,8 +23,8 @@ const prices = api.injectEndpoints({
 			transformResponse: ensureResponseType(OandaPrice)
 		}),
 		getOandaCandles: builder.query<
-			(typeof OandaCandle.infer)[],
-			{ currencyPair: string; period: "H1" | "D" | "W" | "M" }
+			OandaCandle[],
+			{ currencyPair: CURRENCY_PAIR; period: "H1" | "D" | "W" | "M" }
 		>({
 			query: ({ currencyPair, period }) => ({
 				url:

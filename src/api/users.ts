@@ -6,7 +6,7 @@ import api, { ensureResponseType } from "@/api/api"
 
 const users = api.injectEndpoints({
 	endpoints: builder => ({
-		getFidorAccounts: builder.query<FidorCollection<typeof FidorAccount.infer>, void>({
+		getFidorAccounts: builder.query<FidorCollection<FidorAccount>, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
 				method: "GET",

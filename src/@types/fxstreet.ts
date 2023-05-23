@@ -1,5 +1,6 @@
 import { arrayOf, type } from "arktype"
 
+export type FXStreetNews = typeof FXStreetNews.infer
 export const FXStreetNews = type({
 	AuthorImageUrl: "string",
 	AuthorName: "string",

@@ -3,6 +3,7 @@ import Highcharts from "highcharts/highstock"
 import { useEffect, useRef, useState } from "react"
 
 import { useGetOandaCandlesQuery } from "@/api/prices"
+import { CURRENCY_PAIR } from "@/constants"
 import { Flex, Loader, useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 
@@ -13,7 +14,7 @@ export default function CandlestickChart({
 	period
 }: {
 	type: "candlestick" | "ohlc"
-	currencyPair: string | null
+	currencyPair: CURRENCY_PAIR | null
 	period: "H1" | "D" | "W" | "M"
 }) {
 	const theme = useMantineTheme()

@@ -1,5 +1,6 @@
 import { type } from "arktype"
 
+export type OandaPrice = typeof OandaPrice.infer
 export const OandaPrice = type({
 	s: "number",
 	b: "number",
@@ -9,6 +10,7 @@ export const OandaPrice = type({
 	sp: "number"
 })
 
+export type OandaCandle = typeof OandaCandle.infer
 export const OandaCandle = type({
 	time: "string",
 	mid: {

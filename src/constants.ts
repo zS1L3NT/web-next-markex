@@ -1,3 +1,5 @@
+export type CURRENCY_PAIR = CURRENCY_PAIRS[number]
+export type CURRENCY_PAIRS = typeof CURRENCY_PAIRS
 export const CURRENCY_PAIRS = [
 	"EUR_USD",
 	"GBP_USD",
@@ -59,8 +61,33 @@ export const CURRENCY_PAIRS = [
 	"TRY_JPY"
 ] as const
 
-export type CURRENCY_PAIR = typeof CURRENCY_PAIRS[number]
+export type CURRENCY = CURRENCIES[number]
+export type CURRENCIES = typeof CURRENCIES
+export const CURRENCIES = [
+	"EUR",
+	"USD",
+	"GBP",
+	"CAD",
+	"CHF",
+	"JPY",
+	"AUD",
+	"CZK",
+	"HUF",
+	"NZD",
+	"SEK",
+	"SGD",
+	"DKK",
+	"NOK",
+	"PLN",
+	"TRY",
+	"ZAR",
+	"CNH",
+	"HKD",
+	"THB",
+	"MXN"
+] as const
 
+export type FXEMPIRE_COUNTRIES = typeof FXEMPIRE_COUNTRIES
 export const FXEMPIRE_COUNTRIES = {
 	EUR: "euro-area",
 	USD: "united-states",
@@ -85,7 +112,8 @@ export const FXEMPIRE_COUNTRIES = {
 	MXN: "mexico"
 } as const
 
-export const COUNTRY_FLAGS = {
+export type CURRENCY_FLAGS = typeof CURRENCY_FLAGS
+export const CURRENCY_FLAGS = {
 	EUR: "🇪🇺",
 	USD: "🇺🇸",
 	GBP: "🇬🇧",

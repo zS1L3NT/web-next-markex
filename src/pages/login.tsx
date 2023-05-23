@@ -4,7 +4,7 @@ import { GetServerSideProps } from "next"
 
 import { FidorUser } from "@/@types/fidor"
 import { SessionUser } from "@/@types/iron-session"
-import { COUNTRY_FLAGS, CURRENCY_PAIR } from "@/constants"
+import { CURRENCY_PAIR } from "@/constants"
 import prisma from "@/prisma"
 
 type Props = {
@@ -43,7 +43,7 @@ const getTokens = async (
 
 const getSessionUser = async (accessToken: string): Promise<SessionUser | undefined> => {
 	try {
-		const { data: fidorUser } = await axios.get<typeof FidorUser.infer>(
+		const { data: fidorUser } = await axios.get<FidorUser>(
 			"https://api.tp.sandbox.fidorfzco.com/users/current",
 			{
 				headers: {
@@ -65,10 +65,9 @@ const getSessionUser = async (accessToken: string): Promise<SessionUser | undefi
 					.findMany({ where: { user_id: id } })
 					.then(
 						bs =>
-							Object.fromEntries(bs.map(b => [b.currency, b.amount])) as Record<
-								keyof typeof COUNTRY_FLAGS,
-								number | undefined
-							>
+							Object.fromEntries(
+								bs.map(b => [b.currency, b.amount])
+							) as SessionUser["app"]["balances"]
 					),
 				transactions: await prisma.transaction.findMany({
 					where: { user_id: id },

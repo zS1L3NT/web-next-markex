@@ -1,5 +1,6 @@
 import { type } from "arktype"
 
+export type FXEmpireEvent = typeof FXEmpireEvent.infer
 export const FXEmpireEvent = type({
 	actual: "string|null",
 	allDay: "boolean",

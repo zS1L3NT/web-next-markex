@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { useContext } from "react"
 
-import { COUNTRY_FLAGS, CURRENCY_PAIRS } from "@/constants"
+import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import UserContext from "@/contexts/UserContext"
 import {
 	Button, Center, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack, Text,
@@ -20,11 +20,8 @@ const useStyles = createStyles(() => ({
 	}
 }))
 
-function CurrencyPair({ currencyPair }: { currencyPair: string }) {
-	const [countryA, countryB] = currencyPair.split("_") as [
-		keyof typeof COUNTRY_FLAGS,
-		keyof typeof COUNTRY_FLAGS
-	]
+function CurrencyPair({ currencyPair }: { currencyPair: CURRENCY_PAIR }) {
+	const [currencyA, currencyB] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
 	return (
 		<Button
@@ -44,15 +41,15 @@ function CurrencyPair({ currencyPair }: { currencyPair: string }) {
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">
-				<Text fz="1.5rem">{COUNTRY_FLAGS[countryA]}</Text>
-				{countryA}
+				<Text fz="1.5rem">{CURRENCY_FLAGS[currencyA]}</Text>
+				{currencyA}
 			</Stack>
 			<IconArrowsHorizontal />
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">
-				{countryB}
-				<Text fz="1.5rem">{COUNTRY_FLAGS[countryB]}</Text>
+				{currencyB}
+				<Text fz="1.5rem">{CURRENCY_FLAGS[currencyB]}</Text>
 			</Stack>
 		</Button>
 	)

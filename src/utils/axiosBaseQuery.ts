@@ -3,6 +3,7 @@ import axios, { AxiosError, AxiosRequestConfig } from "axios"
 
 import { BaseQueryFn } from "@reduxjs/toolkit/dist/query"
 
+export type ApiError = typeof ApiError.infer
 export const ApiError = type({
 	type: "string",
 	message: "string",
@@ -48,5 +49,5 @@ export default (async config => {
 		auth?: boolean
 	},
 	unknown,
-	typeof ApiError.infer
+	ApiError
 >
