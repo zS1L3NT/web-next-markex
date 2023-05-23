@@ -15,6 +15,7 @@ const transfers = api.injectEndpoints({
 				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers",
 				method: "POST",
 				body: transfer,
+				proxy: true,
 				auth: true
 			}),
 			transformResponse: ensureResponseType(FidorInternalTransfer)
@@ -26,6 +27,7 @@ const transfers = api.injectEndpoints({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers",
 				method: "GET",
+				proxy: true,
 				auth: true
 			}),
 			transformResponse: ensureResponseType(
@@ -40,6 +42,7 @@ const transfers = api.injectEndpoints({
 				query: ({ id }) => ({
 					url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers/" + id,
 					method: "GET",
+					proxy: true,
 					auth: true
 				}),
 				transformResponse: ensureResponseType(FidorInternalTransfer)
@@ -49,6 +52,7 @@ const transfers = api.injectEndpoints({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/transactions",
 				method: "GET",
+				proxy: true,
 				auth: true
 			}),
 			transformResponse: ensureResponseType(
@@ -62,6 +66,7 @@ const transfers = api.injectEndpoints({
 			query: ({ id }) => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/transactions/" + id,
 				method: "GET",
+				proxy: true,
 				auth: true
 			}),
 			transformResponse: ensureResponseType(FidorTransaction)

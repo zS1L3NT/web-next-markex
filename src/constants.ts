@@ -61,6 +61,30 @@ export const CURRENCY_PAIRS = [
 
 export type CURRENCY_PAIR = typeof CURRENCY_PAIRS[number]
 
+export const FXEMPIRE_COUNTRIES = {
+	EUR: "euro-area",
+	USD: "united-states",
+	GBP: "united-kingdom",
+	CAD: "canada",
+	CHF: "switzerland",
+	JPY: "japan",
+	AUD: "australia",
+	CZK: "czech-republic",
+	HUF: "hungary",
+	NZD: "new-zealand",
+	SEK: "sweden",
+	SGD: "singapore",
+	DKK: "denmark",
+	NOK: "norway",
+	PLN: "poland",
+	TRY: "turkey",
+	ZAR: "south-africa",
+	CNH: "china",
+	HKD: "hong-kong",
+	THB: "thailand",
+	MXN: "mexico"
+} as const
+
 export const COUNTRY_FLAGS = {
 	EUR: "🇪🇺",
 	USD: "🇺🇸",

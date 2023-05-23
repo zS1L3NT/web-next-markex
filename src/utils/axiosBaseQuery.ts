@@ -12,11 +12,11 @@ export const ApiError = type({
 export default (async config => {
 	try {
 		let result: any
-		if ("url" in config) {
+		if (config.proxy) {
 			result = await axios.post("/api/proxy", config)
 		} else {
 			result = await axios({
-				url: config.path,
+				url: config.url,
 				method: config.method,
 				data: config.body,
 				params: config.params,
@@ -38,11 +38,13 @@ export default (async config => {
 		}
 	}
 }) satisfies BaseQueryFn<
-	({ url: string } | { path: string }) & {
+	{
+		url: string
 		method: AxiosRequestConfig["method"]
 		body?: AxiosRequestConfig["data"]
 		params?: AxiosRequestConfig["params"]
 		headers?: AxiosRequestConfig["headers"]
+		proxy?: boolean
 		auth?: boolean
 	},
 	unknown,

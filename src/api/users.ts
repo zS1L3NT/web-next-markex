@@ -10,6 +10,7 @@ const users = api.injectEndpoints({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
 				method: "GET",
+				proxy: true,
 				auth: true
 			}),
 			transformResponse: ensureResponseType(
@@ -24,7 +25,7 @@ const users = api.injectEndpoints({
 			Partial<Exclude<SessionUser["app"], "transactions">>
 		>({
 			query: user => ({
-				path: "/api/user",
+				url: "/api/user",
 				method: "PUT",
 				body: user,
 				auth: true
