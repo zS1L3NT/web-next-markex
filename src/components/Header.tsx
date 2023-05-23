@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { useRouter } from "next/router"
 import { useContext } from "react"
 
 import { CURRENCY_PAIRS } from "@/constants"
@@ -8,6 +9,7 @@ import { IconLogout, IconSearch, IconUser } from "@tabler/icons-react"
 
 export default function Header() {
 	const { user } = useContext(UserContext)
+	const router = useRouter()
 
 	return (
 		<MantineHeader
@@ -17,14 +19,18 @@ export default function Header() {
 				<Box sx={{ flex: 1 }}>
 					<Select
 						sx={{ width: "60%", margin: "auto" }}
-						placeholder="Search for a currency"
+						placeholder="Search for a currency pair"
 						size="md"
-						icon={<IconSearch />}
+						icon={<IconSearch size={20} />}
 						searchable
-						nothingFound="No currencies found"
-						data={[...new Set(CURRENCY_PAIRS.map(c => c.split("_")).flat())]}
+						nothingFound="No currency pairs found"
+						data={CURRENCY_PAIRS.map(cp => cp.replace("_", "/"))}
 						variant="filled"
-						onChange={console.log}
+						onChange={e => {
+							if (e !== null) {
+								router.push("/currency-pairs/" + e.replace("/", "_"))
+							}
+						}}
 					/>
 				</Box>
 
