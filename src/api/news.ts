@@ -48,18 +48,16 @@ const news = api.injectEndpoints({
 						country: countries.join(","),
 						page: page + "",
 						timezone: "Asia/Singapore",
-						impact: [
-							...Array(impact)
-								.fill(0)
-								.map((_, i) => 3 - i)
-								.reverse()
-						].join(","),
+						impact: Array(4 - impact)
+							.fill(0)
+							.map((_, i) => 3 - i)
+							.join(","),
 						categoryGroup:
 							"gdp,markets,business,government,climate,money,housing,calendar,taxes,prices,consumer,labour,trade,health"
 					}).toString(),
 				method: "GET"
 			}),
-			transformResponse: res =>
+			transformResponse: (res, _, { page }) =>
 				ensureResponseType(
 					type({
 						events: arrayOf(["string", arrayOf(FXEmpireEvent)]),

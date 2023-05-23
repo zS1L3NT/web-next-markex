@@ -1,17 +1,20 @@
+import { AnimatePresence, motion } from "framer-motion"
 import Head from "next/head"
 import Link from "next/link"
-import { Fragment, useEffect, useRef, useState } from "react"
+import { Fragment, useEffect, useState } from "react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
 import { SessionUser } from "@/@types/iron-session"
 import { useGetFXStreetEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
-import useIsInViewport from "@/hooks/useIsInViewport"
+import useIsInViewportState from "@/hooks/useIsInViewportState"
 import withSession from "@/utils/withSession"
 import {
-	Badge, Card, Grid, Image, Loader, Stack, Table, Text, useMantineTheme
+	ActionIcon, Badge, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
+	useMantineTheme
 } from "@mantine/core"
+import { IconCalendar, IconFilter } from "@tabler/icons-react"
 
 type Props = {
 	user: SessionUser | null
@@ -23,10 +26,10 @@ export default function Dashboard({ user }: Props) {
 	const [page, setPage] = useState(1)
 	const [startDate, setStartDate] = useState(new Date())
 	const [endDate, setEndDate] = useState(new Date(Date.now() + 1000 * 60 * 60 * 24))
-	const [impact, setImpact] = useState<number>(2)
+	const [impact, setImpact] = useState<number>(1)
 	const [countries, setCountries] = useState(CURRENCIES)
 	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery()
-	const { data: eventsQuery } = useGetFXStreetEventsQuery({
+	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXStreetEventsQuery({
 		page,
 		from: startDate,
 		to: endDate,
@@ -34,39 +37,53 @@ export default function Dashboard({ user }: Props) {
 		countries: countries.map(c => FXEMPIRE_COUNTRIES[c])
 	})
 
+	// Allows the UI to have time to update before re-rendering the loader
+	const [isFetchingLock, setIsFetchingLock] = useState(false)
 	const [events, setEvents] = useState<[string, FXEmpireEvent[]][]>([])
-	const [eventsAreFetching, setEventsAreFetching] = useState(false)
-	const ref = useRef<HTMLTableRowElement>(null)
-	const isAtBottomOfTable = useIsInViewport(ref)
+	const [isAtBottom, setIsAtBottom, ref] = useIsInViewportState()
 
 	useEffect(() => {
-		if (!newsAreLoading && !eventsAreFetching && isAtBottomOfTable && eventsQuery?.next) {
+		if (!newsAreLoading && !isFetchingLock && isAtBottom && eventsQuery?.next) {
 			setPage(page => page + 1)
 		}
-	}, [newsAreLoading, eventsAreFetching, isAtBottomOfTable, eventsQuery?.next])
+	}, [newsAreLoading, isFetchingLock, isAtBottom, eventsQuery?.next])
 
 	useEffect(() => {
 		if (eventsQuery?.events) {
 			setEvents(events => {
-				const map = Object.fromEntries(events) as Record<string, FXEmpireEvent[]>
+				const map = Object.fromEntries(page === 1 ? [] : events) as Record<
+					string,
+					FXEmpireEvent[]
+				>
 				for (const [date, events] of eventsQuery.events) {
-					map[date] = [...(map[date] ?? []), ...events]
+					map[date] = [
+						...(map[date] ?? []),
+						...events.filter(e => !map[date]?.find(e_ => e_ === e))
+					].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
 				}
 				return Object.entries(map)
 			})
-			setEventsAreFetching(false)
+			setIsAtBottom(false)
+			setIsFetchingLock(false)
+			debugger
 		}
-	}, [eventsQuery])
+	}, [eventsQuery, page])
 
 	useEffect(() => {
 		setPage(1)
-		setEvents([])
-		setEventsAreFetching(true)
 	}, [startDate, endDate, impact, countries])
 
 	useEffect(() => {
-		console.log(page)
-	}, [page])
+		if (eventsAreFetching) {
+			setIsFetchingLock(true)
+		}
+	}, [eventsAreFetching])
+
+	useEffect(() => {
+		if (globalThis.window) {
+			window.scrollTo(0, 0)
+		}
+	}, [])
 
 	return (
 		<Shell user={user}>
@@ -127,106 +144,147 @@ export default function Dashboard({ user }: Props) {
 				weight={700}
 				size={36}
 				mt="xl"
-				mb="md">
+				mb="xs">
 				Economic Calendar
 			</Text>
 
-			<Table
-				bg={theme.colors.dark[6]}
-				highlightOnHover
-				withBorder
-				withColumnBorders
-				sx={{
-					"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
-						textAlign: "center !important" as "center"
-					}
-				}}>
-				<thead>
-					<tr>
-						<th>Time</th>
-						<th>Currency</th>
-						<th style={{ width: "40%" }}>Event</th>
-						<th>Impact</th>
-						<th>Actual</th>
-						<th>Consensus</th>
-						<th>Previous</th>
-					</tr>
-				</thead>
-				<tbody>
-					{events.map(([day, events]) => (
-						<Fragment key={day}>
-							<tr>
-								<Text
-									bg={theme.colors.dark[5]}
-									weight={700}
-									component="td"
-									colSpan={7}>
-									{new Date(day).toLocaleDateString("en-SG", {
-										weekday: "long",
-										day: "2-digit",
-										month: "long",
-										year: "numeric"
-									})}
-								</Text>
-							</tr>
-							{events.map(e => {
-								const currency = CURRENCIES.find(
-									c => e.country === FXEMPIRE_COUNTRIES[c]
-								)!
-								return (
-									<tr key={e.id}>
-										<td>
-											{new Date(e.date).toLocaleTimeString("en-SG", {
-												hour: "2-digit",
-												minute: "2-digit"
-											})}
-										</td>
-										<td>
-											{CURRENCY_FLAGS[currency]}
-											{" " + currency}
-										</td>
-										<td>{e.name}</td>
-										<td>
-											<Badge
-												color={
-													([, "yellow", "orange", "red"] as const)[
-														e.impact
-													]!
-												}>
-												{[, "Low", "Medium", "High"][e.impact]}
-											</Badge>
-										</td>
-										<td
-											style={{
-												color: {
-													above: theme.colors.green[5],
-													below: theme.colors.red[5],
-													none: theme.colors.dark[0]
-												}[e.color]
-											}}>
-											{e.actual}
-										</td>
-										<td>{e.forecast}</td>
-										<td>{e.previous}</td>
-									</tr>
-								)
-							})}
-						</Fragment>
-					))}
-					{!eventsQuery || eventsQuery.next ? (
-						<tr ref={ref}>
-							<td colSpan={7}>
-								<Loader
-									size={20}
-									color="gray"
-									display="block"
-									m="auto"
-								/>
-							</td>
+			<Flex
+				mb="md"
+				gap="sm">
+				<ActionIcon
+					variant="filled"
+					color="blue"
+					size="lg"
+					disabled={eventsAreFetching}>
+					<IconFilter size="1.5rem" />
+				</ActionIcon>
+
+				<ActionIcon
+					variant="filled"
+					color="blue"
+					size="lg"
+					disabled={eventsAreFetching}>
+					<IconCalendar size="1.5rem" />
+				</ActionIcon>
+
+				<SegmentedControl
+					color={theme.colors.blue[5]}
+					data={[
+						{ value: "1", label: "Low" },
+						{ value: "2", label: "Medium" },
+						{ value: "3", label: "High" }
+					]}
+					value={impact + ""}
+					onChange={e => setImpact(+e)}
+					disabled={eventsAreFetching}
+				/>
+			</Flex>
+
+			<AnimatePresence>
+				<Table
+					bg={theme.colors.dark[6]}
+					highlightOnHover
+					withBorder
+					withColumnBorders
+					sx={{
+						"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
+							textAlign: "center !important" as "center"
+						}
+					}}>
+					<thead>
+						<tr>
+							<th>Time</th>
+							<th>Currency</th>
+							<th style={{ width: "40%" }}>Event</th>
+							<th>Impact</th>
+							<th>Actual</th>
+							<th>Consensus</th>
+							<th>Previous</th>
 						</tr>
-					) : null}
-				</tbody>
-			</Table>
+					</thead>
+					<tbody>
+						{events.map(([day, events]) => (
+							<Fragment key={day}>
+								<motion.tr
+									layoutId={day}
+									transition={{ duration: 0.5 }}>
+									<Text
+										bg={theme.colors.dark[5]}
+										weight={700}
+										component="td"
+										colSpan={7}>
+										{new Date(day).toLocaleDateString("en-SG", {
+											weekday: "long",
+											day: "2-digit",
+											month: "long",
+											year: "numeric"
+										})}
+									</Text>
+								</motion.tr>
+								{events.map(e => {
+									const currency = CURRENCIES.find(
+										c => e.country === FXEMPIRE_COUNTRIES[c]
+									)!
+									return (
+										<motion.tr
+											key={e.id}
+											layoutId={e.id + ""}
+											transition={{ duration: 0.5 }}>
+											<td>
+												{new Date(e.date).toLocaleTimeString("en-SG", {
+													hour: "2-digit",
+													minute: "2-digit"
+												})}
+											</td>
+											<td>
+												{CURRENCY_FLAGS[currency]}
+												{" " + currency}
+											</td>
+											<td>{e.name}</td>
+											<td>
+												<Badge
+													color={
+														([, "yellow", "orange", "red"] as const)[
+															e.impact
+														]!
+													}>
+													{[, "Low", "Medium", "High"][e.impact]}
+												</Badge>
+											</td>
+											<td
+												style={{
+													color: {
+														above: theme.colors.green[5],
+														below: theme.colors.red[5],
+														none: theme.colors.dark[0]
+													}[e.color]
+												}}>
+												{e.actual}
+											</td>
+											<td>{e.forecast}</td>
+											<td>{e.previous}</td>
+										</motion.tr>
+									)
+								})}
+							</Fragment>
+						))}
+						{eventsQuery?.next && (
+							<motion.tr
+								ref={ref}
+								layoutId="loader">
+								<td colSpan={7}>
+									<Loader
+										size={20}
+										color="gray"
+										display="block"
+										m="auto"
+									/>
+								</td>
+							</motion.tr>
+						)}
+					</tbody>
+				</Table>
+			</AnimatePresence>
 		</Shell>
 	)
 }
