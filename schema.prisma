@@ -8,13 +8,13 @@ generator client {
 }
 
 model Transaction {
-    id            String   @id @default(uuid())
+    id            String          @id @default(uuid())
     user_id       String
-    from_currency String
-    to_currency   String
+    currency_pair String
+    type          TransactionType
     amount        Float
     price         Float
-    created_at     DateTime @default(now())
+    created_at    DateTime        @default(now())
 }
 
 model Balance {
@@ -30,4 +30,9 @@ model Bookmark {
     currency_pair String
 
     @@unique([user_id, currency_pair])
+}
+
+enum TransactionType {
+    buy
+    sell
 }
