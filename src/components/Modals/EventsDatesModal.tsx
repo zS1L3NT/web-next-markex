@@ -4,12 +4,12 @@ import { Button, Flex, Indicator, Modal } from "@mantine/core"
 import { DatePicker } from "@mantine/dates"
 import { useDisclosure } from "@mantine/hooks"
 
-export type EventDatesModalRef = {
+export type EventsDatesModalRef = {
 	open: () => void
 	close: () => void
 }
 
-export default forwardRef(function EventDatesModal(
+export default forwardRef(function EventsDatesModal(
 	{
 		startDate,
 		endDate,
@@ -21,7 +21,7 @@ export default forwardRef(function EventDatesModal(
 		setStartDate: (date: Date) => void
 		setEndDate: (date: Date) => void
 	},
-	ref: ForwardedRef<EventDatesModalRef>
+	ref: ForwardedRef<EventsDatesModalRef>
 ) {
 	const [opened, { open, close }] = useDisclosure(false)
 	const [dates, setDates] = useState<[Date | null, Date | null]>([null, null])

@@ -1,6 +1,6 @@
 import { arrayOf, type } from "arktype"
 
-import { FXEmpireEvent } from "@/@types/fxempire"
+import { FXEmpireEvent, FXEmpireHistory } from "@/@types/fxempire"
 import { FXStreetNews } from "@/@types/fxstreet"
 import api, { ensureResponseType } from "@/api/api"
 import { CURRENCY, FXEMPIRE_COUNTRIES } from "@/constants"
@@ -26,7 +26,7 @@ const news = api.injectEndpoints({
 			}),
 			transformResponse: res => ensureResponseType(arrayOf(FXStreetNews))(res.results[0].hits)
 		}),
-		getFXStreetEvents: builder.query<
+		getFXEmpireEvents: builder.query<
 			{
 				events: [string, FXEmpireEvent[]][]
 				next: boolean
@@ -67,13 +67,22 @@ const news = api.injectEndpoints({
 					events: res.calendar.map((c: any) => [c.day, c.events]),
 					next: !res.last
 				})
+		}),
+		getFXEmpireHistory: builder.query<FXEmpireHistory, { country: string; category: string }>({
+			query: ({ country, category }) => ({
+				url: `https://www.fxempire.com/api/v1/en/macro-indicators/${country}/${category}/summary-history?latest=12`,
+				method: "GET"
+			}),
+			transformResponse: ensureResponseType(FXEmpireHistory)
 		})
 	})
 })
 
 export const {
-	useGetFXStreetEventsQuery,
+	useGetFXEmpireEventsQuery,
+	useGetFXEmpireHistoryQuery,
 	useGetFXStreetNewsQuery,
-	useLazyGetFXStreetEventsQuery,
+	useLazyGetFXEmpireEventsQuery,
+	useLazyGetFXEmpireHistoryQuery,
 	useLazyGetFXStreetNewsQuery
 } = news

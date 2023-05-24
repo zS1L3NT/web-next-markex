@@ -4,12 +4,12 @@ import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
 import { Button, Checkbox, Flex, Grid, Modal } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 
-export type EventFiltersModalRef = {
+export type EventsFiltersModalRef = {
 	open: () => void
 	close: () => void
 }
 
-export default forwardRef(function EventFiltersModal(
+export default forwardRef(function EventsFiltersModal(
 	{
 		countries,
 		setCountries
@@ -17,7 +17,7 @@ export default forwardRef(function EventFiltersModal(
 		countries: CURRENCY[]
 		setCountries: (countries: CURRENCY[]) => void
 	},
-	ref: ForwardedRef<EventFiltersModalRef>
+	ref: ForwardedRef<EventsFiltersModalRef>
 ) {
 	const [opened, { open, close }] = useDisclosure(false)
 	const [currencies, setCurrencies] = useState([...CURRENCIES])

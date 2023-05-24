@@ -1,4 +1,4 @@
-import { type } from "arktype"
+import { arrayOf, type } from "arktype"
 
 export type FXEmpireEvent = typeof FXEmpireEvent.infer
 export const FXEmpireEvent = type({
@@ -19,4 +19,48 @@ export const FXEmpireEvent = type({
 	revised: "string",
 	symbol: "string",
 	time: "string"
+})
+
+export type FXEmpireHistory = typeof FXEmpireHistory.infer
+export const FXEmpireHistory = type({
+	summary: {
+		category: {
+			slug: "string",
+			name: "string"
+		},
+		highest: {
+			value: "string",
+			time: "string"
+		},
+		lowest: {
+			value: "string",
+			time: "string"
+		},
+		last: {
+			value: "string",
+			time: "string"
+		},
+		previous: {
+			value: "string",
+			time: "string"
+		},
+		next: {
+			time: "string|null"
+		},
+		change: {
+			value: "string",
+			time: "string"
+		},
+		range: "string",
+		frequency: "string",
+		unit: "string"
+	},
+	history: arrayOf(
+		type({
+			formattedDate: "string",
+			close: "number",
+			formattedClose: "string",
+			timestamp: "number"
+		})
+	)
 })

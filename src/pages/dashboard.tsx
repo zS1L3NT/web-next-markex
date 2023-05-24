@@ -5,9 +5,10 @@ import { useEffect, useMemo, useRef, useState } from "react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
 import { SessionUser } from "@/@types/iron-session"
-import { useGetFXStreetEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
-import EventDatesModal, { EventDatesModalRef } from "@/components/Modals/EventDatesModal"
-import EventFiltersModal, { EventFiltersModalRef } from "@/components/Modals/EventFiltersModal"
+import { useGetFXEmpireEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
+import EventHistoryModal, { EventHistoryModalRef } from "@/components/Modals/EventHistoryModal"
+import EventsDatesModal, { EventsDatesModalRef } from "@/components/Modals/EventsDatesModal"
+import EventsFiltersModal, { EventsFiltersModalRef } from "@/components/Modals/EventsFiltersModal"
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewportState from "@/hooks/useIsInViewportState"
@@ -16,7 +17,7 @@ import {
 	ActionIcon, Badge, Box, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
 	useMantineTheme
 } from "@mantine/core"
-import { IconCalendar, IconFilter } from "@tabler/icons-react"
+import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
 type Props = {
 	user: SessionUser | null
@@ -31,7 +32,7 @@ export default function Dashboard({ user }: Props) {
 	const [impact, setImpact] = useState<number>(1)
 	const [countries, setCountries] = useState([...CURRENCIES])
 	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery()
-	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXStreetEventsQuery({
+	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXEmpireEventsQuery({
 		page,
 		from: startDate,
 		to: endDate,
@@ -50,8 +51,9 @@ export default function Dashboard({ user }: Props) {
 			.map(d => [new Date(d), ...map[d]!])
 			.flat()
 	}, [events])
-	const eventFiltersModalRef = useRef<EventFiltersModalRef>(null)
-	const eventDatesModalRef = useRef<EventDatesModalRef>(null)
+	const eventHistoryModalRef = useRef<EventHistoryModalRef>(null)
+	const eventsFiltersModalRef = useRef<EventsFiltersModalRef>(null)
+	const eventsDatesModalRef = useRef<EventsDatesModalRef>(null)
 
 	useEffect(() => {
 		if (!newsAreLoading && !isFetchingLock && isAtBottom && eventsQuery?.next) {
@@ -166,7 +168,7 @@ export default function Dashboard({ user }: Props) {
 					variant="filled"
 					color="blue"
 					size="lg"
-					onClick={eventFiltersModalRef.current?.open}
+					onClick={eventsFiltersModalRef.current?.open}
 					disabled={eventsAreFetching}>
 					<IconFilter size="1.5rem" />
 				</ActionIcon>
@@ -175,7 +177,7 @@ export default function Dashboard({ user }: Props) {
 					variant="filled"
 					color="blue"
 					size="lg"
-					onClick={eventDatesModalRef.current?.open}
+					onClick={eventsDatesModalRef.current?.open}
 					disabled={eventsAreFetching}>
 					<IconCalendar size="1.5rem" />
 				</ActionIcon>
@@ -183,7 +185,8 @@ export default function Dashboard({ user }: Props) {
 				<SegmentedControl
 					sx={{
 						height: "100%",
-						transform: "scale(1.07)"
+						transform: "scale(1.07)",
+						marginLeft: 3
 					}}
 					color={theme.colors.blue[5]}
 					data={[
@@ -269,7 +272,32 @@ export default function Dashboard({ user }: Props) {
 											{CURRENCY_FLAGS[currency]}
 											{" " + currency}
 										</td>
-										<td>{event.name}</td>
+										<Box
+											sx={{
+												display: "flex",
+												flexDirection: "row",
+												alignItems: "center",
+												gap: "0.5rem"
+											}}
+											component="td">
+											{event.hasHistory && (
+												<ActionIcon
+													variant="light"
+													color="blue"
+													size="md"
+													mx={-4}
+													my={-2}
+													onClick={() => {
+														eventHistoryModalRef.current?.open({
+															country: event.country,
+															category: event.category
+														})
+													}}>
+													<IconHistory size={14} />
+												</ActionIcon>
+											)}
+											{event.name}
+										</Box>
 										<td>
 											<Badge
 												color={
@@ -323,16 +351,17 @@ export default function Dashboard({ user }: Props) {
 				</Table>
 			</AnimatePresence>
 
-			<EventFiltersModal
+			<EventHistoryModal {...{ ref: eventHistoryModalRef }} />
+			<EventsFiltersModal
 				{...{
-					ref: eventFiltersModalRef,
+					ref: eventsFiltersModalRef,
 					countries,
 					setCountries
 				}}
 			/>
-			<EventDatesModal
+			<EventsDatesModal
 				{...{
-					ref: eventDatesModalRef,
+					ref: eventsDatesModalRef,
 					startDate,
 					endDate,
 					setStartDate,
