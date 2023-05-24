@@ -212,9 +212,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									display: "flex",
 									alignItems: "center",
 									color: price.c
-										? price.c > 0
-											? theme.colors.green[5]
-											: theme.colors.red[5]
+										? theme.colors[price.c > 0 ? "green" : "red"][5]
 										: "white"
 								}}>
 								{price.c > 0 ? (
@@ -377,7 +375,6 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 						<DetailItem
 							label={sellBuyValue("Deducted", "Added") + " Amount"}
 							value={[base, sellBuyValue("-", "+") + amount.toFixed(5)].join(" ")}
-							// color={theme.colors[sellBuyValue("red", "green")][5]}
 						/>
 
 						<DetailItem
@@ -385,7 +382,6 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							value={[quote, sellBuyValue("+", "-") + tradeValue.toFixed(5)].join(
 								" "
 							)}
-							// color={theme.colors[sellBuyValue("green", "red")][5]}
 						/>
 
 						<DetailItem

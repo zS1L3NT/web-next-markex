@@ -300,11 +300,7 @@ export default function Dashboard({ user }: Props) {
 										</Box>
 										<td>
 											<Badge
-												color={
-													([, "yellow", "orange", "red"] as const)[
-														event.impact
-													]!
-												}>
+												color={[, "green", "yellow", "red"][event.impact]!}>
 												{[, "Low", "Medium", "High"][event.impact]}
 											</Badge>
 										</td>

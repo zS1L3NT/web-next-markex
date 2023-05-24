@@ -52,8 +52,7 @@ function CurrencyPair({
 		if (price && previousPrice) {
 			if (price.b !== previousPrice.b) {
 				setAskStyle({
-					backgroundColor:
-						price.b > previousPrice.b ? theme.colors.green[5] : theme.colors.red[5]
+					backgroundColor: theme.colors[price.b > previousPrice.b ? "green" : "red"][5]
 				})
 				setTimeout(() => {
 					setAskStyle({
@@ -65,8 +64,7 @@ function CurrencyPair({
 
 			if (price.s !== previousPrice.s) {
 				setBidStyle({
-					backgroundColor:
-						price.s > previousPrice.s ? theme.colors.green[5] : theme.colors.red[5]
+					backgroundColor: theme.colors[price.s > previousPrice.s ? "green" : "red"][5]
 				})
 				setTimeout(() => {
 					setBidStyle({
@@ -156,11 +154,7 @@ function CurrencyPair({
 			</td>
 			<td
 				style={{
-					color: price?.c
-						? price.c > 0
-							? theme.colors.green[5]
-							: theme.colors.red[5]
-						: "white"
+					color: price?.c ? theme.colors[price.c > 0 ? "green" : "red"][5] : "white"
 				}}>
 				{price ? `${price.c}%` : loader}
 			</td>
