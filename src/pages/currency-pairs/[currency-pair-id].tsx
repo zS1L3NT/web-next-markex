@@ -164,13 +164,6 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	)
 
 	useEffect(() => {
-		document.body.style.overflowY = "hidden"
-		return () => {
-			document.body.style.overflowY = "auto"
-		}
-	}, [])
-
-	useEffect(() => {
 		setCurrencyPairs([currencyPair])
 	}, [currencyPair])
 
@@ -262,7 +255,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							flex: 1,
 							height: "100%",
 							"& div": {
-								height: "100% !important"
+								height: "calc(100% - 3px) !important"
 							}
 						}}>
 						<CandlestickChart
