@@ -20,7 +20,12 @@ export default function Shell(props: PropsWithChildren<{ user: SessionUser | nul
 
 	useEffect(() => {
 		for (const [, data] of Object.entries(queries)) {
-			if (data && data.error && data.requestId && !notified.includes(data.requestId)) {
+			if (
+				data &&
+				typeof data.error === "object" &&
+				data.requestId &&
+				!notified.includes(data.requestId)
+			) {
 				const error = data.error as AxiosError
 
 				setNotified([...notified, data.requestId])

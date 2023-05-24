@@ -19,7 +19,9 @@ export default (async config => {
 		return { data: result.data }
 	} catch (e) {
 		const error = <AxiosError>e
-		console.error(error)
+		if (error.config!.url !== "https://apm.tp.sandbox.fidorfzco.com/oauth/authorize") {
+			console.error(error)
+		}
 
 		return { error }
 	}

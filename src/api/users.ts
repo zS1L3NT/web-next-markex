@@ -6,6 +6,13 @@ import api, { ensureResponseType } from "@/api/api"
 
 const users = api.injectEndpoints({
 	endpoints: builder => ({
+		getFidorAvailable: builder.query<undefined, void>({
+			query: () => ({
+				url: "https://apm.tp.sandbox.fidorfzco.com/oauth/authorize",
+				method: "GET"
+			}),
+			transformErrorResponse: error => error.status === 503
+		}),
 		getFidorAccounts: builder.query<FidorCollection<FidorAccount>, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
@@ -34,5 +41,10 @@ const users = api.injectEndpoints({
 	})
 })
 
-export const { useGetFidorAccountsQuery, useLazyGetFidorAccountsQuery, useUpdateAppUserMutation } =
-	users
+export const {
+	useGetFidorAccountsQuery,
+	useGetFidorAvailableQuery,
+	useLazyGetFidorAccountsQuery,
+	useLazyGetFidorAvailableQuery,
+	useUpdateAppUserMutation
+} = users

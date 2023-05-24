@@ -23,7 +23,10 @@ export default function CandlestickChart({
 		data: candles,
 		isFetching: candlesAreFetching,
 		status: candlesStatus
-	} = useGetOandaCandlesQuery({ currencyPair: currencyPair!, period }, { skip: !currencyPair })
+	} = useGetOandaCandlesQuery(
+		{ currencyPair: currencyPair!, period },
+		{ skip: !currencyPair, pollingInterval: 60_000 }
+	)
 
 	const [opacity, setOpacity] = useState(0)
 	const ref = useRef<HighchartsReact.RefObject>(null)

@@ -31,14 +31,19 @@ export default function Dashboard({ user }: Props) {
 	const [endDate, setEndDate] = useState(new Date())
 	const [impact, setImpact] = useState<number>(1)
 	const [countries, setCountries] = useState([...CURRENCIES])
-	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery()
-	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXEmpireEventsQuery({
-		page,
-		from: startDate,
-		to: endDate,
-		impact,
-		countries: countries.map(c => FXEMPIRE_COUNTRIES[c])
+	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery(undefined, {
+		pollingInterval: 60_000
 	})
+	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXEmpireEventsQuery(
+		{
+			page,
+			from: startDate,
+			to: endDate,
+			impact,
+			countries: countries.map(c => FXEMPIRE_COUNTRIES[c])
+		},
+		{ pollingInterval: 60_000 }
+	)
 
 	// Allows the UI to have time to update before re-rendering the loader
 	const [isAtBottom, setIsAtBottom, loaderRef] = useIsInViewportState()
