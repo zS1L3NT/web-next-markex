@@ -134,7 +134,7 @@ function CurrencyPair({
 						color: "white",
 						textDecoration: "none"
 					}}
-					href={"/currency-pairs/" + currencyPair}>
+					href={"/currency-pairs/" + currencyPair.toLowerCase().replace("_", "-")}>
 					<Flex
 						align="center"
 						gap="sm">

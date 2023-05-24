@@ -421,7 +421,9 @@ export const getServerSideProps = withSession<Props>(async ({ session, params })
 	return {
 		props: {
 			user: session.user ?? null,
-			currencyPair: params!["currency-pair"] as CURRENCY_PAIR
+			currencyPair: params!["currency-pair-id"]
+				.toUpperCase()
+				.replace("-", "_") as CURRENCY_PAIR
 		}
 	}
 })
