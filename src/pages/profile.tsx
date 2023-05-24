@@ -3,7 +3,7 @@ import { SessionUser } from "@/@types/iron-session"
 import { useGetFidorAccountsQuery } from "@/api/users"
 import Shell from "@/components/Shell"
 import withSession from "@/utils/withSession"
-import { Card, Grid, Skeleton, Stack, Text, useMantineTheme } from "@mantine/core"
+import { Card, Grid, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core"
 import Head from "next/head"
 
 type Props = {
@@ -83,6 +83,8 @@ export default function Profile({ user }: Props) {
 			<Head>
 				<title>Markex | Profile</title>
 			</Head>
+
+			<Title my="md">Profile</Title>
 
 			<Stack>
 				<Card

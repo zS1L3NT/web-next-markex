@@ -11,7 +11,7 @@ import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
 import withSession from "@/utils/withSession"
 import {
-	ActionIcon, Flex, Loader, Skeleton, Stack, Table, Text, useMantineTheme
+	ActionIcon, Flex, Loader, Skeleton, Stack, Table, Text, Title, useMantineTheme
 } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
@@ -186,6 +186,8 @@ export default function CurrencyPairs({ user }: Props) {
 			<Head>
 				<title>Markex | Currency Pairs</title>
 			</Head>
+
+			<Title my="md">Currency Pairs</Title>
 
 			<Table
 				bg={theme.colors.dark[6]}

@@ -15,7 +15,7 @@ import useIsInViewportState from "@/hooks/useIsInViewportState"
 import withSession from "@/utils/withSession"
 import {
 	ActionIcon, Badge, Box, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
-	useMantineTheme
+	Title, useMantineTheme
 } from "@mantine/core"
 import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
@@ -103,12 +103,7 @@ export default function Dashboard({ user }: Props) {
 				<title>Markex | Dashboard</title>
 			</Head>
 
-			<Text
-				weight={700}
-				size={36}
-				my="md">
-				Latest News
-			</Text>
+			<Title my="md">Latest News</Title>
 
 			<Grid gutter={20}>
 				{news?.map(n => (
@@ -152,13 +147,11 @@ export default function Dashboard({ user }: Props) {
 				))}
 			</Grid>
 
-			<Text
-				weight={700}
-				size={36}
+			<Title
 				mt="xl"
 				mb="xs">
 				Economic Calendar
-			</Text>
+			</Title>
 
 			<Flex
 				align="center"

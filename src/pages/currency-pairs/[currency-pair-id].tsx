@@ -8,7 +8,7 @@ import { CURRENCY, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import withSession from "@/utils/withSession"
 import {
-	Box, Button, Center, Divider, Flex, NumberInput, SegmentedControl, Skeleton, Stack, Text,
+	Box, Button, Center, Divider, Flex, NumberInput, SegmentedControl, Skeleton, Stack, Text, Title,
 	useMantineTheme
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
@@ -200,11 +200,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 					direction="column"
 					gap="md">
 					<Stack>
-						<Text
-							fz={40}
-							weight={700}>
-							{currencyPairPretty}
-						</Text>
+						<Title mt="md">{currencyPairPretty}</Title>
 
 						{price ? (
 							<Text
