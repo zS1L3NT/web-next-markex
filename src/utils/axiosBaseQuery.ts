@@ -1,14 +1,6 @@
-import { type } from "arktype"
 import axios, { AxiosError, AxiosRequestConfig } from "axios"
 
 import { BaseQueryFn } from "@reduxjs/toolkit/dist/query"
-
-export type ApiError = typeof ApiError.infer
-export const ApiError = type({
-	type: "string",
-	message: "string",
-	details: "any"
-})
 
 export default (async config => {
 	try {
@@ -29,14 +21,7 @@ export default (async config => {
 		const error = <AxiosError>e
 		console.error(error)
 
-		const result = ApiError(error.response?.data)
-		return {
-			error: {
-				type: result.data?.type ?? "Unknown error",
-				message: result.data?.message ?? error.message,
-				details: result.data?.details ?? undefined
-			}
-		}
+		return { error }
 	}
 }) satisfies BaseQueryFn<
 	{
@@ -49,5 +34,5 @@ export default (async config => {
 		auth?: boolean
 	},
 	unknown,
-	ApiError
+	AxiosError
 >

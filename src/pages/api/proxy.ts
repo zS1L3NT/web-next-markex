@@ -2,7 +2,6 @@ import axios, { AxiosError } from "axios"
 import { IronSession } from "iron-session"
 import { NextApiRequest, NextApiResponse } from "next"
 
-import { ApiError } from "@/utils/axiosBaseQuery"
 import withApiSession from "@/utils/withApiSession"
 
 const getRefreshedAccessToken = async (
@@ -49,17 +48,6 @@ const handleRequest = async (req: NextApiRequest, res: NextApiResponse, session:
 	)
 }
 
-const handleError = (res: NextApiResponse, error: AxiosError) => {
-	console.error(error)
-
-	const result = ApiError(error.response?.data)
-	res.status(400).send({
-		type: result.data?.type ?? "Unknown error",
-		message: result.data?.message ?? error.message,
-		details: result.data?.details ?? undefined
-	})
-}
-
 export default withApiSession(async ({ req, res, session }) => {
 	if (req.method === "POST") {
 		if (
@@ -84,10 +72,10 @@ export default withApiSession(async ({ req, res, session }) => {
 				try {
 					await handleRequest(req, res, session)
 				} catch (e) {
-					handleError(res, e as AxiosError)
+					res.status(400).send(e)
 				}
 			} else {
-				handleError(res, error)
+				res.status(400).send(e)
 			}
 		}
 	}

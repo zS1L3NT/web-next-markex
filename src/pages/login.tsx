@@ -4,15 +4,32 @@ import { GetServerSideProps } from "next"
 
 import { FidorUser } from "@/@types/fidor"
 import { SessionUser } from "@/@types/iron-session"
+import Shell from "@/components/Shell"
 import { CURRENCY_PAIR } from "@/constants"
 import prisma from "@/prisma"
+import { Text } from "@mantine/core"
 
 type Props = {
 	error?: string
 }
 
 export default function Login({ error }: Props) {
-	return <>Error: {error ?? ""}</>
+	return (
+		<Shell user={null}>
+			<Text
+				mt="2.5rem"
+				align="center"
+				fz="2rem"
+				weight={700}>
+				Login Error
+			</Text>
+			<Text
+				mt="sm"
+				align="center">
+				{error}
+			</Text>
+		</Shell>
+	)
 }
 
 const getTokens = async (

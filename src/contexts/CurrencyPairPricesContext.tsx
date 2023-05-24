@@ -4,6 +4,8 @@ import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "
 import { OandaPrice } from "@/@types/oanda"
 import { useLazyGetOandaPriceQuery } from "@/api/prices"
 import { CURRENCY_PAIR } from "@/constants"
+import { notifications } from "@mantine/notifications"
+import { IconExclamationMark, IconX } from "@tabler/icons-react"
 
 const CHAR = ""
 
@@ -47,6 +49,20 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 						}))
 					} else {
 						console.error("Error parsing price from WebSocket:", result)
+						notifications.show({
+							withCloseButton: true,
+							autoClose: 10000,
+							title: "WebSocket Data Error",
+							message: (
+								<>
+									Error parsing price from WebSocket
+									<br />
+									{result.problems.length + " "}problems found
+								</>
+							),
+							color: "red",
+							icon: <IconX />
+						})
 					}
 				}
 
@@ -78,10 +94,26 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 							pendingCurrencyPairs,
 							events
 						})
+						notifications.show({
+							withCloseButton: true,
+							autoClose: 10000,
+							title: "WebSocket Subscription Warning",
+							message: "Uneqal lists of currency pairs",
+							color: "orange",
+							icon: <IconExclamationMark />
+						})
 					}
 				} else {
-					console.error("No pending currency pairs but received subscription events", {
+					console.warn("No pending currency pairs but received subscription events", {
 						events
+					})
+					notifications.show({
+						withCloseButton: true,
+						autoClose: 10000,
+						title: "WebSocket Subscription Warning",
+						message: "No pending currency pairs but received subscription events",
+						color: "orange",
+						icon: <IconExclamationMark />
 					})
 				}
 
@@ -95,14 +127,42 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 
 			// Acknowledgement of disconnection
 			if (events.length === 1 && events[0].type === 7) {
+				notifications.show({
+					withCloseButton: true,
+					autoClose: 10000,
+					title: "WebSocket Closed Warning",
+					message: events[0].error,
+					color: "orange",
+					icon: <IconExclamationMark />
+				})
 				return setConnected(false)
 			}
 
 			console.warn("Unhandled WebSocket event", { events })
+			notifications.show({
+				withCloseButton: true,
+				autoClose: 10000,
+				title: "WebSocket Error",
+				message: "Unhandled WebSocket event",
+				color: "orange",
+				icon: <IconExclamationMark />
+			})
 		}
 
 		socket.onopen = () => {
 			socket.send(`{"protocol":"json","version":1}${CHAR}`)
+		}
+
+		socket.onerror = e => {
+			console.error("WebSocket Error", e)
+			notifications.show({
+				withCloseButton: true,
+				autoClose: 10000,
+				title: "WebSocket Error",
+				message: "The WebSocket sent an error event",
+				color: "red",
+				icon: <IconX />
+			})
 		}
 
 		socket.onclose = () => {

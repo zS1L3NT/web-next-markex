@@ -1,17 +1,56 @@
-import { PropsWithChildren, useState } from "react"
+import { AxiosError } from "axios"
+import { PropsWithChildren, useEffect, useState } from "react"
+import { TypedUseSelectorHook, useSelector } from "react-redux"
 
 import { SessionUser } from "@/@types/iron-session"
 import UserContext from "@/contexts/UserContext"
-import { AppShell } from "@mantine/core"
+import { RootState } from "@/store"
+import { AppShell, Text } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
+import { IconX } from "@tabler/icons-react"
 
 import Header from "./Header"
 import Navbar from "./Navbar"
 
-export default function Shell({
-	user: user_,
-	children
-}: PropsWithChildren<{ user: SessionUser | null }>) {
-	const [user, setUser] = useState(user_)
+export default function Shell(props: PropsWithChildren<{ user: SessionUser | null }>) {
+	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)
+
+	const [user, setUser] = useState(props.user)
+	const [notified, setNotified] = useState<string[]>([])
+
+	useEffect(() => {
+		for (const [, data] of Object.entries(queries)) {
+			if (data && data.error && data.requestId && !notified.includes(data.requestId)) {
+				const error = data.error as AxiosError
+
+				setNotified([...notified, data.requestId])
+				notifications.show({
+					id: data.requestId,
+					withCloseButton: true,
+					autoClose: 10000,
+					title: `${error.name}: ${error.code}`,
+					message: (
+						<>
+							<Text
+								sx={{ wordBreak: "break-all" }}
+								weight={700}
+								lineClamp={3}>
+								{error.config!.url === "/api/proxy"
+									? JSON.parse(error.config!.data).method
+									: error.config!.method!.toUpperCase()}{" "}
+								{error.config!.url === "/api/proxy"
+									? JSON.parse(error.config!.data).url
+									: error.config!.url}
+							</Text>
+							{error.message}
+						</>
+					),
+					color: "red",
+					icon: <IconX />
+				})
+			}
+		}
+	}, [queries, notified])
 
 	return (
 		<UserContext.Provider value={{ user, setUser }}>
@@ -25,7 +64,7 @@ export default function Shell({
 				navbar={<Navbar />}
 				header={<Header />}
 				layout="alt">
-				{children}
+				{props.children}
 			</AppShell>
 		</UserContext.Provider>
 	)
