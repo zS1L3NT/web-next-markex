@@ -3,15 +3,15 @@ import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "
 
 import { OandaPrice } from "@/@types/oanda"
 import { useLazyGetOandaPriceQuery } from "@/api/prices"
-import { CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
+import { CURRENCY_PAIR } from "@/constants"
 
 const CHAR = ""
 
 const CurrencyPairPricesContext = createContext<{
-	prices: Record<CURRENCY_PAIR, OandaPrice | null>
+	prices: Partial<Record<CURRENCY_PAIR, OandaPrice | null>>
 	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => void
 }>({
-	prices: {} as Record<CURRENCY_PAIR, OandaPrice | null>,
+	prices: {} as Partial<Record<CURRENCY_PAIR, OandaPrice | null>>,
 	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => {}
 })
 
@@ -25,12 +25,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 	const [connected, setConnected] = useState(false)
 	const [pendingCurrencyPairs, setPendingCurrencyPairs] = useState<CURRENCY_PAIR[] | null>(null)
 	const [currencyPairs, setCurrencyPairs] = useState<CURRENCY_PAIR[]>([])
-	const [prices, setPrices] = useState(
-		Object.fromEntries(CURRENCY_PAIRS.map(cp => [cp, null])) as Record<
-			CURRENCY_PAIR,
-			OandaPrice | null
-		>
-	)
+	const [prices, setPrices] = useState<Partial<Record<CURRENCY_PAIR, OandaPrice | null>>>({})
 
 	useEffect(() => {
 		socket.onmessage = event => {

@@ -84,7 +84,6 @@ export default function CandlestickChart({
 					},
 					chart: {
 						backgroundColor: theme.colors.dark[8],
-						height: 500,
 						style: {
 							fontFamily: "inherit",
 							// Default all chart opacities to 0, then animate them to 1
@@ -137,9 +136,6 @@ export default function CandlestickChart({
 									textOutline: theme.colors.gray[3]
 								}
 							}
-						},
-						handles: {
-							enabled: false
 						}
 					},
 					scrollbar: {
@@ -176,7 +172,7 @@ export default function CandlestickChart({
 		<Flex
 			sx={{
 				width: "100%",
-				height: 500,
+				height: "100%",
 				justifyContent: "center",
 				alignItems: "center"
 			}}>

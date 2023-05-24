@@ -4,12 +4,14 @@ import { useContext, useEffect, useState } from "react"
 import { SessionUser } from "@/@types/iron-session"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
-import { CURRENCY_PAIR } from "@/constants"
+import { CURRENCY, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import withSession from "@/utils/withSession"
 import {
-	Box, Center, Flex, SegmentedControl, Skeleton, Stack, Text, useMantineTheme
+	Box, Button, Center, Divider, Flex, NumberInput, SegmentedControl, Skeleton, Stack, Text,
+	useMantineTheme
 } from "@mantine/core"
+import { useForm } from "@mantine/form"
 import { usePrevious } from "@mantine/hooks"
 import { IconCaretDown, IconCaretUp } from "@tabler/icons-react"
 
@@ -69,8 +71,9 @@ function BidAskBox({
 			) : (
 				<Skeleton
 					width="60%"
-					height={27.9}
+					height={19.9}
 					ml={type === "Bid" ? 0 : "auto"}
+					my={4}
 				/>
 			)}
 			<Text
@@ -96,15 +99,38 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 			) : (
 				<Skeleton
 					width="60%"
-					height={24.8}
+					height={16.8}
 					ml={type === "Low" ? 0 : "auto"}
+					my={4}
 				/>
 			)}
 		</Box>
 	)
 }
 
+function DetailItem({
+	label,
+	value,
+	color
+}: {
+	label: string
+	value: string | number
+	color?: string
+}) {
+	return (
+		<Flex justify="space-between">
+			<Text w="fit-content">{label}</Text>
+			<Text
+				color={color}
+				weight={700}>
+				{value}
+			</Text>
+		</Flex>
+	)
+}
+
 export default function CurrencyPair({ user, currencyPair }: Props) {
+	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const theme = useMantineTheme()
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
@@ -116,6 +142,33 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const [askColor, setAskColor] = useState<"green" | "red" | "white">("white")
 	const previousCurrencyPair = usePrevious(currencyPair)
 	const previousPrice = usePrevious(prices[currencyPair])
+	const form = useForm({
+		initialValues: {
+			mode: "sell",
+			amount: 0 as number | undefined
+		}
+	})
+
+	const sellBuyValue = <T,>(sell: T, buy: T) => {
+		return form.values.mode === "sell" ? sell : buy
+	}
+
+	const amount = form.values.amount || 0
+	const tradeValue = amount * (price ? sellBuyValue(price.s, price.b) : 0)
+	const initialBaseBalance = user?.app.balances[base] || 0
+	const initialQuoteBalance = user?.app.balances[quote] || 0
+	const finalBaseBalance = sellBuyValue(initialBaseBalance - amount, initialBaseBalance + amount)
+	const finalQuoteBalance = sellBuyValue(
+		initialQuoteBalance + tradeValue,
+		initialQuoteBalance - tradeValue
+	)
+
+	useEffect(() => {
+		document.body.style.overflowY = "hidden"
+		return () => {
+			document.body.style.overflowY = "auto"
+		}
+	}, [])
 
 	useEffect(() => {
 		setCurrencyPairs([currencyPair])
@@ -139,17 +192,21 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 				<title>{"Markex | " + currencyPairPretty}</title>
 			</Head>
 
-			<Stack p="md">
+			<Flex
+				sx={{ overflowY: "hidden" }}
+				h="100%">
 				<Flex
-					justify="space-between"
-					mb="md">
-					<Box>
+					sx={{ flex: 1 }}
+					direction="column"
+					gap="md">
+					<Stack>
 						<Text
 							fz={40}
 							weight={700}>
 							{currencyPairPretty}
 						</Text>
-						{price && price.c !== 0 && (
+
+						{price ? (
 							<Text
 								sx={{
 									display: "flex",
@@ -160,104 +217,202 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 											: theme.colors.red[5]
 										: "white"
 								}}>
-								<IconCaretUp
-									color="transparent"
-									fill={price.c > 0 ? theme.colors.green[5] : theme.colors.red[5]}
-								/>
+								{price.c > 0 ? (
+									<IconCaretUp
+										color="transparent"
+										fill={theme.colors.green[5]}
+									/>
+								) : null}
+								{price.c < 0 ? (
+									<IconCaretDown
+										color="transparent"
+										fill={theme.colors.red[5]}
+									/>
+								) : null}
 								<span>{price.c}%</span>
 							</Text>
+						) : (
+							<Skeleton
+								w={100}
+								h={24.8}
+							/>
 						)}
-					</Box>
 
-					<Flex
-						sx={{ width: 320 }}
-						direction="column"
-						gap="xs">
-						<Flex
-							sx={{ position: "relative" }}
-							gap="xs">
-							<BidAskBox
-								type="Bid"
-								price={price?.s ?? null}
-								color={askColor}
+						<Flex>
+							<SegmentedControl
+								color="blue"
+								data={[
+									{ label: "Candlestick", value: "candlestick" },
+									{ label: "OHLC", value: "ohlc" }
+								]}
+								value={type}
+								onChange={t => setType(t as typeof type)}
 							/>
-							<Box
-								sx={{
-									width: "25%",
-									height: "60%",
-									border: `1px solid ${theme.colors.blue[5]}`,
-									backgroundColor: theme.colors.dark[7],
-									position: "absolute",
-									top: "50%",
-									left: "50%",
-									transform: "translate(-50%, -50%)",
-									zIndex: 2
-								}}>
-								<Center
-									sx={{
-										width: "100%",
-										height: "100%",
-										backgroundColor: theme.colors.blue[5] + "22"
-									}}>
-									{price ? (
-										<Text
-											color={theme.colors.blue[5]}
-											weight={700}>
-											{price.sp}
-										</Text>
-									) : (
-										<Skeleton
-											width="60%"
-											height={24.8}
-										/>
-									)}
-								</Center>
-							</Box>
-							<BidAskBox
-								type="Ask"
-								price={price?.b ?? null}
-								color={bidColor}
+
+							<SegmentedControl
+								color="blue"
+								data={[
+									{ label: "Hourly", value: "H1" },
+									{ label: "Daily", value: "D" },
+									{ label: "Weekly", value: "W" },
+									{ label: "Monthly", value: "M" }
+								]}
+								value={period}
+								onChange={p => setPeriod(p as typeof period)}
 							/>
 						</Flex>
-						<Flex gap="xs">
-							<LowHighBox
-								type="Low"
-								price={price?.l ?? null}
-							/>
-							<LowHighBox
-								type="High"
-								price={price?.h ?? null}
-							/>
-						</Flex>
-					</Flex>
+					</Stack>
+
+					<Box
+						sx={{
+							flex: 1,
+							height: "100%",
+							"& div": {
+								height: "100% !important"
+							}
+						}}>
+						<CandlestickChart
+							type={type}
+							currencyPair={currencyPair}
+							period={period}
+						/>
+					</Box>
 				</Flex>
 
-				<SegmentedControl
-					data={[
-						{ label: "Candlestick", value: "candlestick" },
-						{ label: "OHLC", value: "ohlc" }
-					]}
-					value={type}
-					onChange={t => setType(t as typeof type)}
+				<Divider
+					orientation="vertical"
+					mx="md"
 				/>
 
-				<SegmentedControl
-					data={[
-						{ label: "Hourly", value: "H1" },
-						{ label: "Daily", value: "D" },
-						{ label: "Weekly", value: "W" },
-						{ label: "Monthly", value: "M" }
-					]}
-					value={period}
-					onChange={p => setPeriod(p as typeof period)}
-				/>
+				<Stack sx={{ width: 360 }}>
+					<Flex
+						sx={{ position: "relative" }}
+						gap="xs">
+						<BidAskBox
+							type="Bid"
+							price={price?.s ?? null}
+							color={askColor}
+						/>
+						<Box
+							sx={{
+								width: "25%",
+								height: "60%",
+								border: `1px solid ${theme.colors.blue[5]}`,
+								backgroundColor: theme.colors.dark[7],
+								position: "absolute",
+								top: "50%",
+								left: "50%",
+								transform: "translate(-50%, -50%)",
+								zIndex: 2
+							}}>
+							<Center
+								sx={{
+									width: "100%",
+									height: "100%",
+									backgroundColor: theme.colors.blue[5] + "22"
+								}}>
+								{price ? (
+									<Text
+										color={theme.colors.blue[5]}
+										weight={700}>
+										{price.sp}
+									</Text>
+								) : (
+									<Skeleton
+										width="60%"
+										height={24.8}
+									/>
+								)}
+							</Center>
+						</Box>
+						<BidAskBox
+							type="Ask"
+							price={price?.b ?? null}
+							color={bidColor}
+						/>
+					</Flex>
+					<Flex gap="xs">
+						<LowHighBox
+							type="Low"
+							price={price?.l ?? null}
+						/>
+						<LowHighBox
+							type="High"
+							price={price?.h ?? null}
+						/>
+					</Flex>
 
-				<CandlestickChart
-					type={type}
-					currencyPair={currencyPair}
-					period={period}
-				/>
-			</Stack>
+					<Divider />
+
+					<SegmentedControl
+						color={sellBuyValue("red", "blue")}
+						data={[
+							{ value: "sell", label: "Sell" },
+							{ value: "buy", label: "Buy" }
+						]}
+						{...form.getInputProps("mode")}
+					/>
+
+					<NumberInput
+						label="Amount"
+						description={`Amount of ${base} to ${form.values.mode}`}
+						hideControls
+						onInput={e =>
+							(e.currentTarget.value = e.currentTarget.value.replace(/[^0-9\.]/g, ""))
+						}
+						{...form.getInputProps("amount")}
+					/>
+
+					<Stack spacing="0.25rem">
+						<DetailItem
+							label={`Initial ${base} Balance`}
+							value={[base, initialBaseBalance.toFixed(5)].join(" ")}
+						/>
+
+						<DetailItem
+							label={`Initial ${quote} Balance`}
+							value={[quote, initialQuoteBalance.toFixed(5)].join(" ")}
+						/>
+
+						<DetailItem
+							label={sellBuyValue("Deducted", "Added") + " Amount"}
+							value={[base, sellBuyValue("-", "+") + amount.toFixed(5)].join(" ")}
+							// color={theme.colors[sellBuyValue("red", "green")][5]}
+						/>
+
+						<DetailItem
+							label={sellBuyValue("Added", "Deducted") + " Amount"}
+							value={[quote, sellBuyValue("+", "-") + tradeValue.toFixed(5)].join(
+								" "
+							)}
+							// color={theme.colors[sellBuyValue("green", "red")][5]}
+						/>
+
+						<DetailItem
+							label={`Final ${base} Balance`}
+							value={[base, finalBaseBalance.toFixed(5)].join(" ")}
+							color={finalBaseBalance < 0 ? theme.colors.red[5] : undefined}
+						/>
+
+						<DetailItem
+							label={`Final ${quote} Balance`}
+							value={[quote, finalQuoteBalance.toFixed(5)].join(" ")}
+							color={finalQuoteBalance < 0 ? theme.colors.red[5] : undefined}
+						/>
+					</Stack>
+
+					<Button
+						color={sellBuyValue("red", "blue")}
+						disabled={
+							!price ||
+							!form.values.amount ||
+							finalBaseBalance < 0 ||
+							finalQuoteBalance < 0
+						}>
+						Make Exchange
+					</Button>
+				</Stack>
+			</Flex>
 		</Shell>
 	)
 }

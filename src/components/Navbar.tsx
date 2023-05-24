@@ -21,7 +21,7 @@ const useStyles = createStyles(() => ({
 }))
 
 function CurrencyPair({ currencyPair }: { currencyPair: CURRENCY_PAIR }) {
-	const [currencyA, currencyB] = currencyPair.split("_") as [CURRENCY, CURRENCY]
+	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
 	return (
 		<Button
@@ -41,15 +41,15 @@ function CurrencyPair({ currencyPair }: { currencyPair: CURRENCY_PAIR }) {
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">
-				<Text fz="1.5rem">{CURRENCY_FLAGS[currencyA]}</Text>
-				{currencyA}
+				<Text fz="1.5rem">{CURRENCY_FLAGS[base]}</Text>
+				{base}
 			</Stack>
 			<IconArrowsHorizontal />
 			<Stack
 				sx={{ flexDirection: "row", alignItems: "center" }}
 				spacing="0.5rem">
-				{currencyB}
-				<Text fz="1.5rem">{CURRENCY_FLAGS[currencyB]}</Text>
+				{quote}
+				<Text fz="1.5rem">{CURRENCY_FLAGS[quote]}</Text>
 			</Stack>
 		</Button>
 	)

@@ -27,7 +27,7 @@ function CurrencyPair({
 	currencyPair: CURRENCY_PAIR
 	price: OandaPrice | null
 }) {
-	const [currencyA, currencyB] = currencyPair.split("_") as [CURRENCY, CURRENCY]
+	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
 	const theme = useMantineTheme()
 	const { user, setUser } = useContext(UserContext)
@@ -53,7 +53,7 @@ function CurrencyPair({
 			if (price.b !== previousPrice.b) {
 				setAskStyle({
 					backgroundColor:
-						price.b > previousPrice.b ? theme.colors.green[5] : theme.colors.green[5]
+						price.b > previousPrice.b ? theme.colors.green[5] : theme.colors.red[5]
 				})
 				setTimeout(() => {
 					setAskStyle({
@@ -141,15 +141,15 @@ function CurrencyPair({
 						<Stack
 							sx={{ flexDirection: "row", alignItems: "center" }}
 							spacing="0.5rem">
-							<Text fz="1.25rem">{CURRENCY_FLAGS[currencyA]}</Text>
-							{currencyA}
+							<Text fz="1.25rem">{CURRENCY_FLAGS[base]}</Text>
+							{base}
 						</Stack>
 						<IconArrowsHorizontal size={16} />
 						<Stack
 							sx={{ flexDirection: "row", alignItems: "center" }}
 							spacing="0.5rem">
-							{currencyB}
-							<Text fz="1.25rem">{CURRENCY_FLAGS[currencyB]}</Text>
+							{quote}
+							<Text fz="1.25rem">{CURRENCY_FLAGS[quote]}</Text>
 						</Stack>
 					</Flex>
 				</Link>
