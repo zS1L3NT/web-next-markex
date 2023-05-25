@@ -119,6 +119,7 @@ export default function Dashboard({ user }: Props) {
 						lg={4}
 						xl={3}>
 						<Card
+							withBorder
 							component={Link}
 							href={n.FullUrl}>
 							<Card.Section withBorder>

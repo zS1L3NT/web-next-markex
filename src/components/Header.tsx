@@ -30,7 +30,6 @@ export default function Header() {
 						searchable
 						nothingFound="No currency pairs found"
 						data={CURRENCY_PAIRS.map(cp => cp.replace("_", "/"))}
-						variant="filled"
 						onChange={e => {
 							if (e !== null) {
 								router.push("/currency-pairs/" + e.replace("/", "_"))

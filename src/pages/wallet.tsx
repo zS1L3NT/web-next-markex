@@ -120,7 +120,9 @@ export default function Wallet({ user }: Props) {
 							<Grid.Col
 								key={c}
 								span={3}>
-								<Card p="xs">
+								<Card
+									withBorder
+									p="xs">
 									<Text align="center">
 										{CURRENCY_FLAGS[c]} {c}{" "}
 									</Text>
@@ -138,7 +140,8 @@ export default function Wallet({ user }: Props) {
 						sx={{
 							"& th:not(:first-of-type), & td:not(:first-of-type)": {
 								textAlign: "center !important" as "center"
-							}
+							},
+							borderRadius: 5
 						}}
 						bg={theme.colors.dark[6]}
 						withBorder
@@ -184,7 +187,10 @@ export default function Wallet({ user }: Props) {
 											{" " + getCurrency(t, "buy")}
 										</td>
 										<td>
-											{((t.app?.amount ?? t.fidor?.amount ?? 0) * (t.app?.price ?? 0)).toFixed(5)}
+											{(
+												(t.app?.amount ?? t.fidor?.amount ?? 0) *
+												(t.app?.price ?? 0)
+											).toFixed(5)}
 											{" " + getCurrency(t, "sell")}
 										</td>
 										<td>{t.app?.currency_pair?.replace("_", " / ") ?? "-"}</td>

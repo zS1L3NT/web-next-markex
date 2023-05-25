@@ -1,10 +1,11 @@
+import Head from "next/head"
+
 import { FidorAccount, FidorCustomer } from "@/@types/fidor"
 import { SessionUser } from "@/@types/iron-session"
 import { useGetFidorAccountsQuery } from "@/api/users"
 import Shell from "@/components/Shell"
 import withSession from "@/utils/withSession"
 import { Card, Grid, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core"
-import Head from "next/head"
 
 type Props = {
 	user: SessionUser
@@ -87,9 +88,7 @@ export default function Profile({ user }: Props) {
 			<Title my="md">Profile</Title>
 
 			<Stack>
-				<Card
-					radius={0}
-					withBorder>
+				<Card withBorder>
 					<Card.Section
 						withBorder
 						inheritPadding
@@ -126,9 +125,7 @@ export default function Profile({ user }: Props) {
 					</Grid>
 				</Card>
 
-				<Card
-					radius={0}
-					withBorder>
+				<Card withBorder>
 					<Card.Section
 						withBorder
 						inheritPadding
