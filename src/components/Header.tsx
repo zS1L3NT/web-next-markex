@@ -32,7 +32,9 @@ export default function Header() {
 						data={CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))}
 						onChange={e => {
 							if (e !== null) {
-								router.push("/currency-pairs/" + e.replace(" / ", "_"))
+								router.push(
+									"/currency-pairs/" + e.toLowerCase().replace(" / ", "-")
+								)
 							}
 						}}
 					/>
