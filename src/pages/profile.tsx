@@ -177,7 +177,7 @@ export default function Profile({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+export const getServerSideProps = withSession<Props>(async ({ session }) => {
 	if (session.user) {
 		return {
 			props: {

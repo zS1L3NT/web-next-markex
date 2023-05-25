@@ -10,7 +10,7 @@ generator client {
 model Transaction {
     id            String          @id @default(uuid())
     user_id       String
-    currency_pair String
+    currency_pair String?
     type          TransactionType
     amount        Float
     price         Float

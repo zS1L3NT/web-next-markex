@@ -198,28 +198,28 @@ export default function Dashboard({ user }: Props) {
 				/>
 			</Flex>
 
-			<AnimatePresence>
-				<Table
-					withBorder
-					withColumnBorders
-					sx={{
-						"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
-							textAlign: "center !important" as "center"
-						}
-					}}
-					mb="xl">
-					<thead>
-						<tr style={{ background: theme.colors.dark[6] }}>
-							<th>Time</th>
-							<th>Currency</th>
-							<th style={{ width: "40%" }}>Event</th>
-							<th>Impact</th>
-							<th>Actual</th>
-							<th>Consensus</th>
-							<th>Previous</th>
-						</tr>
-					</thead>
-					<tbody>
+			<Table
+				withBorder
+				withColumnBorders
+				sx={{
+					"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
+						textAlign: "center !important" as "center"
+					}
+				}}
+				mb="xl">
+				<thead>
+					<tr style={{ background: theme.colors.dark[6] }}>
+						<th>Time</th>
+						<th>Currency</th>
+						<th style={{ width: "40%" }}>Event</th>
+						<th>Impact</th>
+						<th>Actual</th>
+						<th>Consensus</th>
+						<th>Previous</th>
+					</tr>
+				</thead>
+				<tbody>
+					<AnimatePresence>
 						{eventsOrDates.map(eod => {
 							if (eod instanceof Date) {
 								const date = new Date(eod).toLocaleDateString("en-SG", {
@@ -249,16 +249,10 @@ export default function Dashboard({ user }: Props) {
 									c => event.country === FXEMPIRE_COUNTRIES[c]
 								)!
 								return (
-									<Box
+									<motion.tr
 										key={event.id}
-										sx={{
-											background: theme.colors.dark[6],
-											":hover": {
-												background: theme.colors.dark[5]
-											}
-										}}
-										component={motion.tr}
 										layoutId={event.id + ""}
+										style={{ background: theme.colors.dark[6] }}
 										transition={{ duration: 0.5 }}>
 										<td>
 											{new Date(event.date).toLocaleTimeString("en-SG", {
@@ -314,22 +308,17 @@ export default function Dashboard({ user }: Props) {
 										</td>
 										<td>{event.forecast}</td>
 										<td>{event.previous}</td>
-									</Box>
+									</motion.tr>
 								)
 							}
 						})}
 
 						{eventsQuery?.next && (
-							<Box
+							<motion.tr
+								key="loader"
 								ref={loaderRef}
-								sx={{
-									background: theme.colors.dark[6],
-									":hover": {
-										background: theme.colors.dark[5]
-									}
-								}}
-								component={motion.tr}
 								layoutId="loader"
+								style={{ background: theme.colors.dark[6] }}
 								transition={{ duration: 0.5 }}>
 								<td colSpan={7}>
 									<Loader
@@ -339,11 +328,11 @@ export default function Dashboard({ user }: Props) {
 										m="auto"
 									/>
 								</td>
-							</Box>
+							</motion.tr>
 						)}
-					</tbody>
-				</Table>
-			</AnimatePresence>
+					</AnimatePresence>
+				</tbody>
+			</Table>
 
 			<EventHistoryModal {...{ ref: eventHistoryModalRef }} />
 			<EventsFiltersModal
@@ -366,7 +355,7 @@ export default function Dashboard({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+export const getServerSideProps = withSession<Props>(async ({ session }) => {
 	return {
 		props: {
 			user: session.user ?? null

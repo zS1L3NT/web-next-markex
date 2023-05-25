@@ -57,7 +57,7 @@ const news = api.injectEndpoints({
 					}).toString(),
 				method: "GET"
 			}),
-			transformResponse: (res, _, { page }) =>
+			transformResponse: res =>
 				ensureResponseType(
 					type({
 						events: arrayOf(["string", arrayOf(FXEmpireEvent)]),

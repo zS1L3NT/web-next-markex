@@ -64,6 +64,7 @@ export const CURRENCY_PAIRS = [
 export type CURRENCY = CURRENCIES[number]
 export type CURRENCIES = typeof CURRENCIES
 export const CURRENCIES = [
+	"SGD",
 	"EUR",
 	"USD",
 	"GBP",
@@ -75,7 +76,6 @@ export const CURRENCIES = [
 	"HUF",
 	"NZD",
 	"SEK",
-	"SGD",
 	"DKK",
 	"NOK",
 	"PLN",
@@ -89,6 +89,7 @@ export const CURRENCIES = [
 
 export type FXEMPIRE_COUNTRIES = typeof FXEMPIRE_COUNTRIES
 export const FXEMPIRE_COUNTRIES = {
+	SGD: "singapore",
 	EUR: "euro-area",
 	USD: "united-states",
 	GBP: "united-kingdom",
@@ -100,7 +101,6 @@ export const FXEMPIRE_COUNTRIES = {
 	HUF: "hungary",
 	NZD: "new-zealand",
 	SEK: "sweden",
-	SGD: "singapore",
 	DKK: "denmark",
 	NOK: "norway",
 	PLN: "poland",
@@ -114,6 +114,7 @@ export const FXEMPIRE_COUNTRIES = {
 
 export type CURRENCY_FLAGS = typeof CURRENCY_FLAGS
 export const CURRENCY_FLAGS = {
+	SGD: "🇸🇬",
 	EUR: "🇪🇺",
 	USD: "🇺🇸",
 	GBP: "🇬🇧",
@@ -125,7 +126,6 @@ export const CURRENCY_FLAGS = {
 	HUF: "🇭🇺",
 	NZD: "🇳🇿",
 	SEK: "🇸🇪",
-	SGD: "🇸🇬",
 	DKK: "🇩🇰",
 	NOK: "🇳🇴",
 	PLN: "🇵🇱",

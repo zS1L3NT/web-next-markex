@@ -221,7 +221,7 @@ export default function CurrencyPairs({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+export const getServerSideProps = withSession<Props>(async ({ session }) => {
 	return {
 		props: {
 			user: session.user ?? null

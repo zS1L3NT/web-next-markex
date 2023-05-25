@@ -109,35 +109,3 @@ export const FidorInternalTransfer = type({
 	"created_at?": "string|null",
 	"updated_at?": "string|null"
 })
-
-export type FidorTransaction = typeof FidorTransaction.infer
-export const FidorTransaction = type({
-	"id?": "string|null",
-	"account_id?": "string|null",
-	"transaction_type?": "string|null",
-	"transaction_type_details?": union(
-		{
-			"remote_account_id?": "string|null",
-			"internal_transfer_id?": "string|null",
-			"receiver?": "string|null",
-			"remote_bic?": "string|null",
-			"remote_iban?": "string|null",
-			"remote_name?": "string|null",
-			"remote_nick?": "string|null",
-			"remote_subject?": "string|null",
-			"remote_email?": "string|null",
-			"remote_msisdn?": "string|null",
-			"recipient_name?": "string|null"
-		},
-		"null"
-	),
-	"subject?": "string|null",
-	"amount?": "string|null",
-	"currency?": "number|null",
-	"booking_date?": "string|null",
-	"value_date?": "string|null",
-	"booking_code?": "string|null",
-	"return_transaction_id?": "string|null",
-	"created_at?": "string|null",
-	"updated_at?": "string|null"
-})
