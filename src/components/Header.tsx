@@ -29,10 +29,10 @@ export default function Header() {
 						icon={<IconSearch size={20} />}
 						searchable
 						nothingFound="No currency pairs found"
-						data={CURRENCY_PAIRS.map(cp => cp.replace("_", "/"))}
+						data={CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))}
 						onChange={e => {
 							if (e !== null) {
-								router.push("/currency-pairs/" + e.replace("/", "_"))
+								router.push("/currency-pairs/" + e.replace(" / ", "_"))
 							}
 						}}
 					/>
