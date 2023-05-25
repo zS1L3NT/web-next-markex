@@ -5,7 +5,7 @@ import { SessionUser } from "@/@types/iron-session"
 import { useCreateAppTransactionMutation } from "@/api/transactions"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
-import { CURRENCY, CURRENCY_PAIR } from "@/constants"
+import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import withSession from "@/utils/withSession"
 import {
@@ -16,7 +16,7 @@ import { useForm } from "@mantine/form"
 import { usePrevious } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { TransactionType } from "@prisma/client"
-import { IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
+import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
 
 type Props = {
 	user: SessionUser | null
@@ -224,7 +224,25 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 					direction="column"
 					gap="md">
 					<Stack>
-						<Title mt="md">{currencyPairPretty}</Title>
+						<Title mt="md">
+							<Flex
+								align="center"
+								gap="sm">
+								<Stack
+									sx={{ flexDirection: "row", alignItems: "center" }}
+									spacing="0.5rem">
+									<Text lh={1} fz="51px">{CURRENCY_FLAGS[base]}</Text>
+									{base}
+								</Stack>
+								<IconArrowsHorizontal size={34} />
+								<Stack
+									sx={{ flexDirection: "row", alignItems: "center" }}
+									spacing="0.5rem">
+									{quote}
+									<Text lh={1} fz="51px">{CURRENCY_FLAGS[quote]}</Text>
+								</Stack>
+							</Flex>
+						</Title>
 
 						{price ? (
 							<Text
