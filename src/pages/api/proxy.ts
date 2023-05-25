@@ -20,9 +20,7 @@ const getRefreshedAccessToken = async (
 			{
 				headers: {
 					Authorization: `Basic ${Buffer.from(
-						process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
-							":" +
-							process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
+						process.env.FIDOR_CLIENT_ID + ":" + process.env.FIDOR_CLIENT_SECRET,
 						"utf-8"
 					).toString("base64")}`
 				}

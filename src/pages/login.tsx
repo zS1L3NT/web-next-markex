@@ -40,16 +40,14 @@ const getTokens = async (
 			"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
 			{
 				code,
-				client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
-				redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
+				client_id: process.env.FIDOR_CLIENT_ID,
+				redirect_uri: process.env.FIDOR_REDIRECT_URI,
 				grant_type: "authorization_code"
 			},
 			{
 				headers: {
 					Authorization: `Basic ${Buffer.from(
-						process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID +
-							":" +
-							process.env.NEXT_PUBLIC_FIDOR_CLIENT_SECRET,
+						process.env.FIDOR_CLIENT_ID + ":" + process.env.FIDOR_CLIENT_SECRET,
 						"utf-8"
 					).toString("base64")}`
 				}
@@ -144,8 +142,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 	} else {
 		const query = new URLSearchParams({
 			response_type: "code",
-			client_id: process.env.NEXT_PUBLIC_FIDOR_CLIENT_ID,
-			redirect_uri: process.env.NEXT_PUBLIC_FIDOR_REDIRECT_URI,
+			client_id: process.env.FIDOR_CLIENT_ID,
+			redirect_uri: process.env.FIDOR_REDIRECT_URI,
 			state: "123"
 		})
 
