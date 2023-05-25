@@ -217,7 +217,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 			</Head>
 
 			<Flex
-				sx={{ overflowY: "hidden" }}
+				sx={{ overflow: "hidden" }}
 				h="100%">
 				<Flex
 					sx={{ flex: 1 }}
@@ -304,7 +304,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							flex: 1,
 							height: "100%",
 							"& div": {
-								height: "calc(100% - 3px) !important"
+								height: "calc(100% - 8px) !important"
 							}
 						}}>
 						<CandlestickChart

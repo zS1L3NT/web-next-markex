@@ -63,7 +63,8 @@ export default function Shell(props: PropsWithChildren<{ user: SessionUser | nul
 				sx={{
 					background: "rgb(20, 21, 23)",
 					"& .mantine-AppShell-main": {
-						width: "100%"
+						width: "100%",
+						overflow: "hidden"
 					}
 				}}
 				navbar={<Navbar />}
