@@ -17,6 +17,7 @@ import { usePrevious } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { TransactionType } from "@prisma/client"
 import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
+import { useRouter } from "next/router"
 
 type Props = {
 	user: SessionUser | null
@@ -135,9 +136,9 @@ function DetailItem({
 export default function CurrencyPair({ user, currencyPair }: Props) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
-	const theme = useMantineTheme()
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
-	const price = prices[currencyPair]
+	const theme = useMantineTheme()
+	const router = useRouter()
 
 	const [createAppTransaction, { isLoading: createAppTransactionIsLoading }] =
 		useCreateAppTransactionMutation()
@@ -154,6 +155,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 			amount: 0 as number | undefined
 		}
 	})
+
+	const price = prices[currencyPair]
 
 	useEffect(() => {
 		setCurrencyPairs([currencyPair])
@@ -183,6 +186,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 
 			if ("data" in result) {
 				form.setValues({ amount: 0 })
+				router.push(router.asPath)
 				notifications.show({
 					withCloseButton: true,
 					autoClose: 10000,
