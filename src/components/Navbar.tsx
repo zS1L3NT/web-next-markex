@@ -160,7 +160,7 @@ export default function Navbar() {
 							<Text
 								align="center"
 								fz="xs"
-								color={theme.colors.gray[7]}>
+								c="dimmed">
 								Sign in to customise bookmarked
 								<br />
 								currency pairs

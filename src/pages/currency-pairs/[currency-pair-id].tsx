@@ -2,6 +2,7 @@ import Head from "next/head"
 import { useContext, useEffect, useState } from "react"
 
 import { SessionUser } from "@/@types/iron-session"
+import { useCreateAppTransactionMutation } from "@/api/transactions"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_PAIR } from "@/constants"
@@ -13,7 +14,9 @@ import {
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { usePrevious } from "@mantine/hooks"
-import { IconCaretDown, IconCaretUp } from "@tabler/icons-react"
+import { notifications } from "@mantine/notifications"
+import { TransactionType } from "@prisma/client"
+import { IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
 
 type Props = {
 	user: SessionUser | null
@@ -136,6 +139,9 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const price = prices[currencyPair]
 
+	const [createAppTransaction, { isLoading: createAppTransactionIsLoading }] =
+		useCreateAppTransactionMutation()
+
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")
 	const [bidColor, setBidColor] = useState<"green" | "red" | "white">("white")
@@ -148,20 +154,6 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 			amount: 0 as number | undefined
 		}
 	})
-
-	const sellBuyValue = <T,>(sell: T, buy: T) => {
-		return form.values.mode === "sell" ? sell : buy
-	}
-
-	const amount = form.values.amount || 0
-	const tradeValue = amount * (price ? sellBuyValue(price.s, price.b) : 0)
-	const initialBaseBalance = user?.app.balances[base] || 0
-	const initialQuoteBalance = user?.app.balances[quote] || 0
-	const finalBaseBalance = sellBuyValue(initialBaseBalance - amount, initialBaseBalance + amount)
-	const finalQuoteBalance = sellBuyValue(
-		initialQuoteBalance + tradeValue,
-		initialQuoteBalance - tradeValue
-	)
 
 	useEffect(() => {
 		setCurrencyPairs([currencyPair])
@@ -178,6 +170,45 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 			}
 		}
 	}, [previousCurrencyPair, currencyPair, price, previousPrice])
+
+	const onSubmit = form.onSubmit(async values => {
+		if (price && values.amount) {
+			const result = await createAppTransaction({
+				id: URL.createObjectURL(new Blob([])).split("/").at(-1)!,
+				currency_pair: currencyPair,
+				type: values.mode as TransactionType,
+				amount,
+				price: values.mode === "sell" ? price.s : price.b
+			})
+
+			if ("data" in result) {
+				form.setValues({ amount: 0 })
+				notifications.show({
+					withCloseButton: true,
+					autoClose: 10000,
+					message: `${
+						values.mode === "sell" ? "Sold" : "Bought"
+					} ${currencyPairPretty} ${amount}`,
+					color: "green",
+					icon: <IconCheck />
+				})
+			}
+		}
+	})
+
+	const sellBuyValue = <T,>(sell: T, buy: T) => {
+		return form.values.mode === "sell" ? sell : buy
+	}
+
+	const amount = form.values.amount || 0
+	const tradeValue = amount * (price ? sellBuyValue(price.s, price.b) : 0)
+	const initialBaseBalance = user?.app.balances[base] || 0
+	const initialQuoteBalance = user?.app.balances[quote] || 0
+	const finalBaseBalance = sellBuyValue(initialBaseBalance - amount, initialBaseBalance + amount)
+	const finalQuoteBalance = sellBuyValue(
+		initialQuoteBalance + tradeValue,
+		initialQuoteBalance - tradeValue
+	)
 
 	return (
 		<Shell user={user}>
@@ -271,7 +302,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 					mx="md"
 				/>
 
-				<Stack sx={{ width: 360 }}>
+				<Stack sx={{ width: 320 }}>
 					<Flex
 						sx={{ position: "relative" }}
 						gap="xs">
@@ -282,7 +313,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 						/>
 						<Box
 							sx={{
-								width: "25%",
+								width: "20%",
 								height: "60%",
 								border: `1px solid ${theme.colors.blue[5]}`,
 								backgroundColor: theme.colors.dark[7],
@@ -331,71 +362,90 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 
 					<Divider />
 
-					<SegmentedControl
-						color={sellBuyValue("red", "blue")}
-						data={[
-							{ value: "sell", label: "Sell" },
-							{ value: "buy", label: "Buy" }
-						]}
-						{...form.getInputProps("mode")}
-					/>
+					{user ? (
+						<>
+							<SegmentedControl
+								color={sellBuyValue("red", "blue")}
+								data={[
+									{ value: "sell", label: "Sell" },
+									{ value: "buy", label: "Buy" }
+								]}
+								{...form.getInputProps("mode")}
+							/>
 
-					<NumberInput
-						label="Amount"
-						description={`Amount of ${base} to ${form.values.mode}`}
-						hideControls
-						onInput={e =>
-							(e.currentTarget.value = e.currentTarget.value.replace(/[^0-9\.]/g, ""))
-						}
-						{...form.getInputProps("amount")}
-					/>
+							<NumberInput
+								label="Amount"
+								description={`Amount of ${base} to ${form.values.mode}`}
+								hideControls
+								onInput={e =>
+									(e.currentTarget.value = e.currentTarget.value.replace(
+										/[^0-9\.]/g,
+										""
+									))
+								}
+								{...form.getInputProps("amount")}
+							/>
 
-					<Stack spacing="0.25rem">
-						<DetailItem
-							label={`Initial ${base} Balance`}
-							value={[base, initialBaseBalance.toFixed(5)].join(" ")}
-						/>
+							<Stack spacing="0.25rem">
+								<DetailItem
+									label={`Initial ${base} Balance`}
+									value={[base, initialBaseBalance.toFixed(5)].join(" ")}
+								/>
 
-						<DetailItem
-							label={`Initial ${quote} Balance`}
-							value={[quote, initialQuoteBalance.toFixed(5)].join(" ")}
-						/>
+								<DetailItem
+									label={`Initial ${quote} Balance`}
+									value={[quote, initialQuoteBalance.toFixed(5)].join(" ")}
+								/>
 
-						<DetailItem
-							label={sellBuyValue("Deducted", "Added") + " Amount"}
-							value={[base, sellBuyValue("-", "+") + amount.toFixed(5)].join(" ")}
-						/>
+								<DetailItem
+									label={sellBuyValue("Deducted", "Added") + " Amount"}
+									value={[base, sellBuyValue("-", "+") + amount.toFixed(5)].join(
+										" "
+									)}
+								/>
 
-						<DetailItem
-							label={sellBuyValue("Added", "Deducted") + " Amount"}
-							value={[quote, sellBuyValue("+", "-") + tradeValue.toFixed(5)].join(
-								" "
-							)}
-						/>
+								<DetailItem
+									label={sellBuyValue("Added", "Deducted") + " Amount"}
+									value={[
+										quote,
+										sellBuyValue("+", "-") + tradeValue.toFixed(5)
+									].join(" ")}
+								/>
 
-						<DetailItem
-							label={`Final ${base} Balance`}
-							value={[base, finalBaseBalance.toFixed(5)].join(" ")}
-							color={finalBaseBalance < 0 ? theme.colors.red[5] : undefined}
-						/>
+								<DetailItem
+									label={`Final ${base} Balance`}
+									value={[base, finalBaseBalance.toFixed(5)].join(" ")}
+									color={finalBaseBalance < 0 ? theme.colors.red[5] : undefined}
+								/>
 
-						<DetailItem
-							label={`Final ${quote} Balance`}
-							value={[quote, finalQuoteBalance.toFixed(5)].join(" ")}
-							color={finalQuoteBalance < 0 ? theme.colors.red[5] : undefined}
-						/>
-					</Stack>
+								<DetailItem
+									label={`Final ${quote} Balance`}
+									value={[quote, finalQuoteBalance.toFixed(5)].join(" ")}
+									color={finalQuoteBalance < 0 ? theme.colors.red[5] : undefined}
+								/>
+							</Stack>
 
-					<Button
-						color={sellBuyValue("red", "blue")}
-						disabled={
-							!price ||
-							!form.values.amount ||
-							finalBaseBalance < 0 ||
-							finalQuoteBalance < 0
-						}>
-						Make Exchange
-					</Button>
+							<Button
+								color={sellBuyValue("red", "blue")}
+								onClick={() => onSubmit()}
+								loading={createAppTransactionIsLoading}
+								disabled={
+									!price ||
+									!amount ||
+									finalBaseBalance < 0 ||
+									finalQuoteBalance < 0
+								}>
+								Make Exchange
+							</Button>
+						</>
+					) : (
+						<Text
+							align="center"
+							c="dimmed"
+							fz="xs">
+							Sign in to Buy and Sell {currencyPairPretty}
+						</Text>
+					)}
 				</Stack>
 			</Flex>
 		</Shell>

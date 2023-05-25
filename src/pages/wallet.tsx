@@ -16,7 +16,9 @@ import {
 	Badge, Button, Card, Divider, Flex, Grid, NumberInput, Stack, Table, Text, Title,
 	useMantineTheme
 } from "@mantine/core"
+import { notifications } from "@mantine/notifications"
 import { Transaction, TransactionType } from "@prisma/client"
+import { IconCheck } from "@tabler/icons-react"
 
 type Props = {
 	user: SessionUser
@@ -58,8 +60,6 @@ export default function Wallet({ user }: Props) {
 		[user, transfers]
 	)
 
-	console.log({ transactions: transactions.map(t => t.id) })
-
 	const handleTransaction = async () => {
 		if (amount) {
 			setIsLoading(true)
@@ -83,6 +83,13 @@ export default function Wallet({ user }: Props) {
 				if ("data" in appResult) {
 					setAmount(0)
 					router.push(router.asPath)
+					notifications.show({
+						withCloseButton: true,
+						autoClose: 10000,
+						message: `Deposited SGD ${amount}`,
+						color: "green",
+						icon: <IconCheck />
+					})
 				}
 			}
 
@@ -120,7 +127,7 @@ export default function Wallet({ user }: Props) {
 									<Text
 										align="center"
 										weight={700}>
-										{user.app.balances[c] ?? 0}
+										{(user.app.balances[c] ?? 0).toFixed(5)}
 									</Text>
 								</Card>
 							</Grid.Col>
@@ -140,7 +147,6 @@ export default function Wallet({ user }: Props) {
 							<tr>
 								<th>Transaction Date</th>
 								<th>Type</th>
-								<th>Amount</th>
 								<th>Paid</th>
 								<th>Received</th>
 								<th>Currency Pair</th>
@@ -156,7 +162,6 @@ export default function Wallet({ user }: Props) {
 										style={{ background: theme.colors.dark[6] }}>
 										<td>
 											{t.date.toLocaleString("en-SG", {
-												weekday: "long",
 												year: "numeric",
 												month: "long",
 												day: "numeric",
@@ -174,16 +179,15 @@ export default function Wallet({ user }: Props) {
 												<Badge color="blue">Fidor</Badge>
 											)}
 										</td>
-										<td>{t.fidor?.amount || t.app?.amount}</td>
 										<td>
-											{CURRENCY_FLAGS[getCurrency(t, "buy")]}
+											{(t.app?.amount ?? t.fidor?.amount)?.toFixed(5)}
 											{" " + getCurrency(t, "buy")}
 										</td>
 										<td>
-											{CURRENCY_FLAGS[getCurrency(t, "sell")]}
+											{((t.app?.amount ?? t.fidor?.amount ?? 0) * (t.app?.price ?? 0)).toFixed(5)}
 											{" " + getCurrency(t, "sell")}
 										</td>
-										<td>{t.app?.currency_pair ?? "-"}</td>
+										<td>{t.app?.currency_pair?.replace("_", " / ") ?? "-"}</td>
 										<td>{t.app?.price.toFixed(5) ?? "-"}</td>
 									</motion.tr>
 								))}
