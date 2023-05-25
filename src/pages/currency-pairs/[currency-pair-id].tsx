@@ -1,4 +1,5 @@
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 
 import { SessionUser } from "@/@types/iron-session"
@@ -17,7 +18,6 @@ import { usePrevious } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { TransactionType } from "@prisma/client"
 import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
-import { useRouter } from "next/router"
 
 type Props = {
 	user: SessionUser | null
@@ -190,9 +190,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 				notifications.show({
 					withCloseButton: true,
 					autoClose: 10000,
-					message: `${
-						values.mode === "sell" ? "Sold" : "Bought"
-					} ${currencyPairPretty} ${amount}`,
+					message: `${values.mode === "sell" ? "Sold" : "Bought"} ${base} ${amount}`,
 					color: "green",
 					icon: <IconCheck />
 				})
@@ -235,7 +233,11 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								<Stack
 									sx={{ flexDirection: "row", alignItems: "center" }}
 									spacing="0.5rem">
-									<Text lh={1} fz="51px">{CURRENCY_FLAGS[base]}</Text>
+									<Text
+										lh={1}
+										fz="51px">
+										{CURRENCY_FLAGS[base]}
+									</Text>
 									{base}
 								</Stack>
 								<IconArrowsHorizontal size={34} />
@@ -243,7 +245,11 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									sx={{ flexDirection: "row", alignItems: "center" }}
 									spacing="0.5rem">
 									{quote}
-									<Text lh={1} fz="51px">{CURRENCY_FLAGS[quote]}</Text>
+									<Text
+										lh={1}
+										fz="51px">
+										{CURRENCY_FLAGS[quote]}
+									</Text>
 								</Stack>
 							</Flex>
 						</Title>
