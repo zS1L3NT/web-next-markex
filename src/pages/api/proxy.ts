@@ -63,7 +63,7 @@ export default withApiSession(async ({ req, res, session }) => {
 			await handleRequest(req, res, session)
 		} catch (e) {
 			const error = <AxiosError>e
-			if (req.body.auth && error.status === 401) {
+			if (req.body.auth && error.response?.status === 401) {
 				const { access_token, refresh_token } = await getRefreshedAccessToken(session)
 				session.fidor_access_token = access_token
 				session.fidor_refresh_token = refresh_token
