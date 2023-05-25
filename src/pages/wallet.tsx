@@ -69,7 +69,7 @@ export default function Wallet({ user }: Props) {
 				external_uid: uuid,
 				account_id: user.fidor.id!,
 				amount,
-				receiver: "83272201", // I am the team leader LMAO
+				receiver: "11874237",
 				currency: "SGD"
 			})
 			if ("data" in fidorResult) {
