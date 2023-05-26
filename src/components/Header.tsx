@@ -19,14 +19,14 @@ export default function Header() {
 	return (
 		<MantineHeader
 			sx={{ transition: "left 0.5s ease" }}
-			height={70}
-			p="md">
-			<Flex align="center">
+			height={57}>
+			<Flex
+				h="100%"
+				align="center">
 				<Box sx={{ flex: 1 }}>
 					<Select
 						sx={{ width: "60%", margin: "auto" }}
 						placeholder="Search for a currency pair"
-						size="md"
 						icon={<IconSearch size={20} />}
 						searchable
 						nothingFound="No currency pairs found"
@@ -47,6 +47,7 @@ export default function Header() {
 							<Avatar
 								sx={{ cursor: "pointer" }}
 								size="md"
+								m="md"
 								src={null}
 							/>
 						</Menu.Target>
@@ -70,6 +71,8 @@ export default function Header() {
 					<Button
 						variant="light"
 						color="gray"
+						size="sm"
+						m="md"
 						component={Link}
 						href="/login"
 						loading={downIsLoading}
