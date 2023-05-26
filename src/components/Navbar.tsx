@@ -11,7 +11,7 @@ import {
 } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 import {
-	IconArrowLeft, IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet, IconX
+	IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet, IconX
 } from "@tabler/icons-react"
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
@@ -112,18 +112,29 @@ export default function Navbar({
 	const { opened: opened_, setOpened } = useContext(NavigatorContext)
 	const opened = opened_ || opened_ === undefined
 
-	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
+	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
 	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
 	const { classes } = useStyles({ opened })
 
 	useEffect(() => {
-		setOpened(isDrawer || isAboveLg)
-	}, [isDrawer, isAboveLg])
+		if (!isAboveLg) {
+			setOpened(false)
+		}
+	}, [isAboveLg])
+
+	useEffect(() => {
+		if (isBelowXs) {
+			setOpened(true)
+		}
+	}, [isBelowXs])
 
 	return (
 		<MantineNavbar
-			width={{ base: opened ? (isDrawer ? 0 : 280) : 64 }}
-			sx={{ transition: isBelowSm ? undefined : "width 0.5s ease" }}>
+			width={{ base: opened || isDrawer ? (isDrawer ? 0 : 280) : 64 }}
+			onMouseEnter={() => isAboveLg && setOpened(true)}
+			onMouseOver={() => isAboveLg && setOpened(true)}
+			onMouseLeave={() => isAboveLg && setOpened(false)}
+			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
 					display: "flex",
@@ -286,25 +297,6 @@ export default function Navbar({
 					)}
 				</Stack>
 			</MantineNavbar.Section>
-
-			{isAboveLg && (
-				<MantineNavbar.Section
-					px="md"
-					py="sm">
-					<ActionIcon
-						ml="auto"
-						mr={opened ? 0 : 2}
-						onClick={() => setOpened(!opened)}>
-						<IconArrowLeft
-							size={20}
-							style={{
-								transform: `rotate(${Number(!opened) * 180}deg)`,
-								transition: "transform 0.5s ease"
-							}}
-						/>
-					</ActionIcon>
-				</MantineNavbar.Section>
-			)}
 		</MantineNavbar>
 	)
 }
