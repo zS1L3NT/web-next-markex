@@ -11,7 +11,7 @@ import {
 } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 import {
-	IconArrowLeft, IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet
+	IconArrowLeft, IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet, IconX
 } from "@tabler/icons-react"
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
@@ -100,7 +100,13 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 	)
 }
 
-export default function Navbar() {
+export default function Navbar({
+	isDrawer = false,
+	closeDrawer
+}: {
+	isDrawer?: boolean
+	closeDrawer?: () => void
+}) {
 	const theme = useMantineTheme()
 	const { user } = useContext(UserContext)
 	const { opened: opened_, setOpened } = useContext(NavigatorContext)
@@ -110,12 +116,12 @@ export default function Navbar() {
 	const { classes } = useStyles({ opened })
 
 	useEffect(() => {
-		setOpened(isAboveLg)
-	}, [isAboveLg])
+		setOpened(isDrawer || isAboveLg)
+	}, [isDrawer, isAboveLg])
 
 	return (
 		<MantineNavbar
-			width={{ base: opened ? 280 : 64 }}
+			width={{ base: opened ? (isDrawer ? 0 : 280) : 64 }}
 			sx={{ transition: "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
@@ -143,6 +149,14 @@ export default function Navbar() {
 						</motion.div>
 					)}
 				</AnimatePresence>
+				{isDrawer && (
+					<ActionIcon
+						size={16}
+						ml="auto"
+						onClick={closeDrawer}>
+						<IconX />
+					</ActionIcon>
+				)}
 			</MantineNavbar.Section>
 
 			<MantineNavbar.Section

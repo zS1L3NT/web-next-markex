@@ -5,15 +5,20 @@ import { TypedUseSelectorHook, useSelector } from "react-redux"
 import { SessionUser } from "@/@types/iron-session"
 import UserContext from "@/contexts/UserContext"
 import { RootState } from "@/store"
-import { AppShell, Text } from "@mantine/core"
+import { AppShell, Text, useMantineTheme } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react"
 
 import Header from "./Header"
 import Navbar from "./Navbar"
+import { useMediaQuery } from "@mantine/hooks"
 
 export default function Shell(props: PropsWithChildren<{ user: SessionUser | null }>) {
+	const theme = useMantineTheme()
+
 	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)
+
+	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
 
 	const [user, setUser] = useState(props.user)
 	const [notified, setNotified] = useState<string[]>([])
@@ -68,7 +73,7 @@ export default function Shell(props: PropsWithChildren<{ user: SessionUser | nul
 						overflow: "hidden"
 					}
 				}}
-				navbar={<Navbar />}
+				navbar={isBelowXs ? undefined : <Navbar />}
 				header={<Header />}
 				layout="alt">
 				{props.children}
