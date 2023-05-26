@@ -222,7 +222,10 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 				sx={{ overflow: "hidden" }}
 				h="100%">
 				<Flex
-					sx={{ flex: 1 }}
+					sx={{
+						flex: 1,
+						overflow: "hidden"
+					}}
 					direction="column"
 					gap="md">
 					<Stack>
