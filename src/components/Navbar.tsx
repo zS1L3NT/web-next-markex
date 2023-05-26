@@ -1,56 +1,100 @@
+import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
 import { useContext } from "react"
 
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
+import NavigatorContext from "@/contexts/NavigatorContext"
 import UserContext from "@/contexts/UserContext"
 import {
-	Button, Center, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack, Text,
-	useMantineTheme
+	ActionIcon, Box, Button, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack,
+	Text, Title, useMantineTheme
 } from "@mantine/core"
 import {
-	IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet
+	IconArrowLeft, IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet
 } from "@tabler/icons-react"
 
-const useStyles = createStyles(() => ({
+const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
 	button: {
-		width: "100%",
-		"& > .mantine-Button-inner": {
+		width: opened ? "100%" : "fit-content",
+		paddingLeft: 12,
+		paddingRight: 12,
+		"& .mantine-Button-inner": {
 			justifyContent: "start"
+		},
+		"& .mantine-Button-leftIcon": {
+			marginRight: 0
 		}
 	}
 }))
 
-function CurrencyPair({ currencyPair }: { currencyPair: CURRENCY_PAIR }) {
+function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; opened: boolean }) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
 	return (
 		<Button
 			sx={{
-				width: "100%",
+				width: opened ? "100%" : 46,
+				paddingLeft: opened ? 12 : 6,
+				paddingRight: opened ? 12 : 6,
 				"& .mantine-Button-label": {
 					width: "100%",
-					justifyContent: "space-between"
-				}
+					position: "relative",
+					"& *": {
+						position: "absolute",
+						transition: "all 0.5s ease"
+					},
+					"& > .mantine-Text-root": {
+						lineHeight: 1
+					}
+				},
+				transition: "width 0.5s ease"
 			}}
 			variant="subtle"
 			color="gray"
 			size="md"
-			px="md"
 			component={Link}
 			href={"/currency-pairs/" + currencyPair.toLowerCase().replace("_", "-")}>
-			<Stack
-				sx={{ flexDirection: "row", alignItems: "center" }}
-				spacing="0.5rem">
-				<Text fz="1.5rem">{CURRENCY_FLAGS[base]}</Text>
-				{base}
-			</Stack>
-			<IconArrowsHorizontal />
-			<Stack
-				sx={{ flexDirection: "row", alignItems: "center" }}
-				spacing="0.5rem">
-				{quote}
-				<Text fz="1.5rem">{CURRENCY_FLAGS[quote]}</Text>
-			</Stack>
+			<Text
+				left={opened ? 12 : -4}
+				top={opened ? "initial" : 0}
+				fz="1.5rem">
+				{CURRENCY_FLAGS[base]}
+			</Text>
+			<AnimatePresence>
+				{opened && (
+					<motion.div
+						style={{ width: "100%" }}
+						initial={{ opacity: 0 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}>
+						<Text
+							sx={{ transform: "translateY(-50%)" }}
+							left={opened ? 44 : 0}
+							top="50%">
+							{base}
+						</Text>
+						<IconArrowsHorizontal
+							style={{
+								top: "50%",
+								left: "50%",
+								transform: "translate(-50%, -50%)"
+							}}
+						/>
+						<Text
+							sx={{ transform: "translateY(-50%)" }}
+							right={opened ? 44 : 0}
+							top="50%">
+							{quote}
+						</Text>
+					</motion.div>
+				)}
+			</AnimatePresence>
+			<Text
+				right={opened ? 12 : -4}
+				bottom={opened ? "initial" : 0}
+				fz="1.5rem">
+				{CURRENCY_FLAGS[quote]}
+			</Text>
 		</Button>
 	)
 }
@@ -58,30 +102,40 @@ function CurrencyPair({ currencyPair }: { currencyPair: CURRENCY_PAIR }) {
 export default function Navbar() {
 	const theme = useMantineTheme()
 	const { user } = useContext(UserContext)
+	const { opened, toggle } = useContext(NavigatorContext)
 
-	const { classes } = useStyles()
+	const { classes } = useStyles({ opened })
 
 	return (
-		<MantineNavbar width={{ base: 280 }}>
-			<MantineNavbar.Section p="md">
-				<Center
-					sx={{
-						width: "fit-content",
-						margin: "auto",
-						alignItems: "center",
-						color: "white",
-						textDecoration: "none"
-					}}
-					component={Link}
-					href="/">
-					<IconCurrency size="1.5rem" />
-					<Text
-						ml="sm"
-						fz="1.5rem"
-						weight={600}>
-						MARKEX
-					</Text>
-				</Center>
+		<MantineNavbar
+			width={{ base: opened ? 280 : 64 }}
+			sx={{ transition: "width 0.5s ease" }}>
+			<MantineNavbar.Section
+				sx={{
+					display: "flex",
+					alignItems: "center",
+					gap: "0.5rem",
+					transition: "padding 0.5s ease"
+				}}
+				px={16}
+				py={8}>
+				<Box
+					w={20}
+					h={20}
+					my={10}
+					mx={6}>
+					<IconCurrency size={20} />
+				</Box>
+				<AnimatePresence>
+					{opened && (
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							exit={{ opacity: 0 }}>
+							<Title order={4}>Markex</Title>
+						</motion.div>
+					)}
+				</AnimatePresence>
 			</MantineNavbar.Section>
 
 			<MantineNavbar.Section
@@ -90,7 +144,7 @@ export default function Navbar() {
 					borderBottom: `1px solid ${theme.colors.dark[5]}`
 				}}
 				component={ScrollArea}
-				p="md"
+				p="0.5rem"
 				grow>
 				<Stack spacing="0.5rem">
 					<Button
@@ -101,7 +155,17 @@ export default function Navbar() {
 						leftIcon={<IconDashboard size={20} />}
 						component={Link}
 						href="/dashboard">
-						Dashboard
+						<AnimatePresence>
+							{opened && (
+								<motion.div
+									style={{ marginLeft: 10 }}
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}>
+									Dashboard
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</Button>
 
 					<Button
@@ -112,7 +176,17 @@ export default function Navbar() {
 						leftIcon={<IconList size={20} />}
 						component={Link}
 						href="/currency-pairs">
-						Currency Pairs
+						<AnimatePresence>
+							{opened && (
+								<motion.div
+									style={{ marginLeft: 10 }}
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}>
+									Currency Pairs
+								</motion.div>
+							)}
+						</AnimatePresence>
 					</Button>
 
 					{user && (
@@ -124,12 +198,22 @@ export default function Navbar() {
 							leftIcon={<IconWallet size={20} />}
 							component={Link}
 							href="/wallet">
-							My Wallet
+							<AnimatePresence>
+								{opened && (
+									<motion.div
+										style={{ marginLeft: 10 }}
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}>
+										My Wallet
+									</motion.div>
+								)}
+							</AnimatePresence>
 						</Button>
 					)}
 
 					<Divider
-						my="0.5rem"
+						my="0.25rem"
 						color={theme.colors.dark[5]}
 					/>
 
@@ -139,6 +223,7 @@ export default function Navbar() {
 								<CurrencyPair
 									key={c}
 									currencyPair={c}
+									opened={opened}
 								/>
 							))
 						) : (
@@ -155,19 +240,46 @@ export default function Navbar() {
 								<CurrencyPair
 									key={c}
 									currencyPair={c}
+									opened={opened}
 								/>
 							))}
-							<Text
-								align="center"
-								fz="xs"
-								c="dimmed">
-								Sign in to customise bookmarked
-								<br />
-								currency pairs
-							</Text>
+							<AnimatePresence>
+								{opened && (
+									<motion.div
+										initial={{ opacity: 0 }}
+										animate={{ opacity: 1 }}
+										exit={{ opacity: 0 }}>
+										<Text
+											align="center"
+											fz="xs"
+											c="dimmed">
+											Sign in to customise bookmarked
+											<br />
+											currency pairs
+										</Text>
+									</motion.div>
+								)}
+							</AnimatePresence>
 						</>
 					)}
 				</Stack>
+			</MantineNavbar.Section>
+
+			<MantineNavbar.Section
+				px="md"
+				py="sm">
+				<ActionIcon
+					ml="auto"
+					mr={opened ? 0 : 2}
+					onClick={toggle}>
+					<IconArrowLeft
+						size={20}
+						style={{
+							transform: `rotate(${Number(!opened) * 180}deg)`,
+							transition: "transform 0.5s ease"
+						}}
+					/>
+				</ActionIcon>
 			</MantineNavbar.Section>
 		</MantineNavbar>
 	)

@@ -18,6 +18,7 @@ export default function Header() {
 
 	return (
 		<MantineHeader
+			sx={{ transition: "left 0.5s ease" }}
 			height={70}
 			p="md">
 			<Flex align="center">
