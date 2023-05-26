@@ -106,12 +106,12 @@ export default function Navbar() {
 	const { opened: opened_, setOpened } = useContext(NavigatorContext)
 	const opened = opened_ || opened_ === undefined
 
-	const isAboveMd = useMediaQuery(`(min-width: ${theme.breakpoints.md})`)
+	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
 	const { classes } = useStyles({ opened })
 
 	useEffect(() => {
-		setOpened(isAboveMd)
-	}, [isAboveMd])
+		setOpened(isAboveLg)
+	}, [isAboveLg])
 
 	return (
 		<MantineNavbar
@@ -272,7 +272,7 @@ export default function Navbar() {
 				</Stack>
 			</MantineNavbar.Section>
 
-			{isAboveMd && (
+			{isAboveLg && (
 				<MantineNavbar.Section
 					px="md"
 					py="sm">

@@ -115,8 +115,8 @@ export default function Dashboard({ user }: Props) {
 					<Grid.Col
 						key={n.objectID}
 						xs={12}
-						md={6}
-						lg={4}
+						sm={6}
+						md={4}
 						xl={3}>
 						<Card
 							withBorder
