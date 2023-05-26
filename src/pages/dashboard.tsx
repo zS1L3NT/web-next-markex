@@ -115,8 +115,8 @@ export default function Dashboard({ user }: Props) {
 					<Grid.Col
 						key={n.objectID}
 						xs={12}
-						md={6}
-						lg={4}
+						sm={6}
+						md={4}
 						xl={3}>
 						<Card
 							withBorder
@@ -199,141 +199,145 @@ export default function Dashboard({ user }: Props) {
 				/>
 			</Flex>
 
-			<Table
-				withBorder
-				withColumnBorders
-				sx={{
-					"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
-						textAlign: "center !important" as "center"
-					}
-				}}
-				mb="xl">
-				<thead>
-					<tr style={{ background: theme.colors.dark[6] }}>
-						<th>Time</th>
-						<th>Currency</th>
-						<th style={{ width: "40%" }}>Event</th>
-						<th>Impact</th>
-						<th>Actual</th>
-						<th>Consensus</th>
-						<th>Previous</th>
-					</tr>
-				</thead>
-				<tbody>
-					<AnimatePresence>
-						{eventsOrDates.map(eod => {
-							if (eod instanceof Date) {
-								const date = new Date(eod).toLocaleDateString("en-SG", {
-									weekday: "long",
-									day: "2-digit",
-									month: "long",
-									year: "numeric"
-								})
-								return (
-									<motion.tr
-										key={date}
-										layoutId={date}
-										transition={{ duration: 0.5 }}
-										style={{ background: theme.colors.dark[6] }}>
-										<Text
-											bg={theme.colors.dark[5]}
-											weight={700}
-											component="td"
-											colSpan={7}>
-											{date}
-										</Text>
-									</motion.tr>
-								)
-							} else {
-								const event = eod
-								const currency = CURRENCIES.find(
-									c => event.country === FXEMPIRE_COUNTRIES[c]
-								)!
-								return (
-									<motion.tr
-										key={event.id}
-										layoutId={event.id + ""}
-										style={{ background: theme.colors.dark[6] }}
-										transition={{ duration: 0.5 }}>
-										<td>
-											{new Date(event.date).toLocaleTimeString("en-SG", {
-												hour: "2-digit",
-												minute: "2-digit"
-											})}
-										</td>
-										<td>
-											{CURRENCY_FLAGS[currency]}
-											{" " + currency}
-										</td>
-										<Box
-											sx={{
-												display: "flex",
-												flexDirection: "row",
-												alignItems: "center",
-												gap: "0.5rem"
-											}}
-											component="td">
-											{event.hasHistory && (
-												<ActionIcon
-													variant="light"
-													color="blue"
-													size="md"
-													mx={-4}
-													my={-2}
-													onClick={() => {
-														eventHistoryModalRef.current?.open({
-															country: event.country,
-															category: event.category
-														})
-													}}>
-													<IconHistory size={14} />
-												</ActionIcon>
-											)}
-											{event.name}
-										</Box>
-										<td>
-											<Badge
-												color={[, "green", "yellow", "red"][event.impact]!}>
-												{[, "Low", "Medium", "High"][event.impact]}
-											</Badge>
-										</td>
-										<td
-											style={{
-												color: {
-													above: theme.colors.green[5],
-													below: theme.colors.red[5],
-													none: theme.colors.dark[0]
-												}[event.color]
-											}}>
-											{event.actual}
-										</td>
-										<td>{event.forecast}</td>
-										<td>{event.previous}</td>
-									</motion.tr>
-								)
-							}
-						})}
+			<Box sx={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
+				<Table
+					withBorder
+					withColumnBorders
+					sx={{
+						"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
+							textAlign: "center !important" as "center"
+						}
+					}}
+					mb="xl">
+					<thead>
+						<tr style={{ background: theme.colors.dark[6] }}>
+							<th>Time</th>
+							<th>Currency</th>
+							<th style={{ width: "40%" }}>Event</th>
+							<th>Impact</th>
+							<th>Actual</th>
+							<th>Consensus</th>
+							<th>Previous</th>
+						</tr>
+					</thead>
+					<tbody>
+						<AnimatePresence>
+							{eventsOrDates.map(eod => {
+								if (eod instanceof Date) {
+									const date = new Date(eod).toLocaleDateString("en-SG", {
+										weekday: "long",
+										day: "2-digit",
+										month: "long",
+										year: "numeric"
+									})
+									return (
+										<motion.tr
+											key={date}
+											layoutId={date}
+											transition={{ duration: 0.5 }}
+											style={{ background: theme.colors.dark[6] }}>
+											<Text
+												bg={theme.colors.dark[5]}
+												weight={700}
+												component="td"
+												colSpan={7}>
+												{date}
+											</Text>
+										</motion.tr>
+									)
+								} else {
+									const event = eod
+									const currency = CURRENCIES.find(
+										c => event.country === FXEMPIRE_COUNTRIES[c]
+									)!
+									return (
+										<motion.tr
+											key={event.id}
+											layoutId={event.id + ""}
+											style={{ background: theme.colors.dark[6] }}
+											transition={{ duration: 0.5 }}>
+											<td>
+												{new Date(event.date).toLocaleTimeString("en-SG", {
+													hour: "2-digit",
+													minute: "2-digit"
+												})}
+											</td>
+											<td>
+												{CURRENCY_FLAGS[currency]}
+												{" " + currency}
+											</td>
+											<Box
+												sx={{
+													display: "flex",
+													flexDirection: "row",
+													alignItems: "center",
+													gap: "0.5rem"
+												}}
+												component="td">
+												{event.hasHistory && (
+													<ActionIcon
+														variant="light"
+														color="blue"
+														size="md"
+														mx={-4}
+														my={-2}
+														onClick={() => {
+															eventHistoryModalRef.current?.open({
+																country: event.country,
+																category: event.category
+															})
+														}}>
+														<IconHistory size={14} />
+													</ActionIcon>
+												)}
+												{event.name}
+											</Box>
+											<td>
+												<Badge
+													color={
+														[, "green", "yellow", "red"][event.impact]!
+													}>
+													{[, "Low", "Medium", "High"][event.impact]}
+												</Badge>
+											</td>
+											<td
+												style={{
+													color: {
+														above: theme.colors.green[5],
+														below: theme.colors.red[5],
+														none: theme.colors.dark[0]
+													}[event.color]
+												}}>
+												{event.actual}
+											</td>
+											<td>{event.forecast}</td>
+											<td>{event.previous}</td>
+										</motion.tr>
+									)
+								}
+							})}
 
-						{eventsQuery?.next && (
-							<motion.tr
-								key="loader"
-								ref={loaderRef}
-								layoutId="loader"
-								style={{ background: theme.colors.dark[6] }}
-								transition={{ duration: 0.5 }}>
-								<td colSpan={7}>
-									<Loader
-										size={20}
-										color="gray"
-										display="block"
-										m="auto"
-									/>
-								</td>
-							</motion.tr>
-						)}
-					</AnimatePresence>
-				</tbody>
-			</Table>
+							{eventsQuery?.next && (
+								<motion.tr
+									key="loader"
+									ref={loaderRef}
+									layoutId="loader"
+									style={{ background: theme.colors.dark[6] }}
+									transition={{ duration: 0.5 }}>
+									<td colSpan={7}>
+										<Loader
+											size={20}
+											color="gray"
+											display="block"
+											m="auto"
+										/>
+									</td>
+								</motion.tr>
+							)}
+						</AnimatePresence>
+					</tbody>
+				</Table>
+			</Box>
 
 			<EventHistoryModal {...{ ref: eventHistoryModalRef }} />
 			<EventsFiltersModal

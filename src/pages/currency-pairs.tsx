@@ -11,7 +11,7 @@ import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
 import withSession from "@/utils/withSession"
 import {
-	ActionIcon, Flex, Loader, Skeleton, Stack, Table, Text, Title, useMantineTheme
+	ActionIcon, Box, Flex, Loader, Skeleton, Stack, Table, Text, Title, useMantineTheme
 } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
@@ -189,34 +189,36 @@ export default function CurrencyPairs({ user }: Props) {
 
 			<Title my="md">Currency Pairs</Title>
 
-			<Table
-				bg={theme.colors.dark[6]}
-				highlightOnHover
-				withBorder
-				withColumnBorders>
-				<thead>
-					<tr>
-						{user ? <th style={{ width: 20 }}></th> : null}
-						<th>Currency Pair</th>
-						<th style={numericHeaderStyle}>Change</th>
-						<th style={numericHeaderStyle}>Bid</th>
-						<th style={numericHeaderStyle}>Ask</th>
-						<th style={numericHeaderStyle}>Low</th>
-						<th style={numericHeaderStyle}>High</th>
-						<th style={numericHeaderStyle}>Spread</th>
-						<th style={numericHeaderStyle}>Updated</th>
-					</tr>
-				</thead>
-				<tbody>
-					{CURRENCY_PAIRS.map(cp => (
-						<CurrencyPair
-							key={cp}
-							currencyPair={cp}
-							price={prices?.[cp] ?? null}
-						/>
-					))}
-				</tbody>
-			</Table>
+			<Box sx={{ overflowX: "scroll", whiteSpace: "nowrap" }}>
+				<Table
+					bg={theme.colors.dark[6]}
+					highlightOnHover
+					withBorder
+					withColumnBorders>
+					<thead>
+						<tr>
+							{user ? <th style={{ width: 20 }}></th> : null}
+							<th>Currency Pair</th>
+							<th style={numericHeaderStyle}>Change</th>
+							<th style={numericHeaderStyle}>Bid</th>
+							<th style={numericHeaderStyle}>Ask</th>
+							<th style={numericHeaderStyle}>Low</th>
+							<th style={numericHeaderStyle}>High</th>
+							<th style={numericHeaderStyle}>Spread</th>
+							<th style={numericHeaderStyle}>Updated</th>
+						</tr>
+					</thead>
+					<tbody>
+						{CURRENCY_PAIRS.map(cp => (
+							<CurrencyPair
+								key={cp}
+								currencyPair={cp}
+								price={prices?.[cp] ?? null}
+							/>
+						))}
+					</tbody>
+				</Table>
+			</Box>
 		</Shell>
 	)
 }

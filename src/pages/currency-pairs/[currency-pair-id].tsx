@@ -14,7 +14,7 @@ import {
 	useMantineTheme
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
-import { usePrevious } from "@mantine/hooks"
+import { useMediaQuery, usePrevious } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { TransactionType } from "@prisma/client"
 import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
@@ -140,6 +140,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const theme = useMantineTheme()
 	const router = useRouter()
 
+	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
+
 	const [createAppTransaction, { isLoading: createAppTransactionIsLoading }] =
 		useCreateAppTransactionMutation()
 
@@ -220,9 +222,13 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 
 			<Flex
 				sx={{ overflow: "hidden" }}
-				h="100%">
+				h="100%"
+				direction={isBelowSm ? "column" : "row"}>
 				<Flex
-					sx={{ flex: 1 }}
+					sx={{
+						flex: 1,
+						overflow: "hidden"
+					}}
 					direction="column"
 					gap="md">
 					<Stack>
@@ -284,7 +290,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							/>
 						)}
 
-						<Flex>
+						<Flex direction={isBelowSm ? "column" : "row"}>
 							<SegmentedControl
 								color="blue"
 								data={[
@@ -326,11 +332,12 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 				</Flex>
 
 				<Divider
-					orientation="vertical"
-					mx="md"
+					orientation={isBelowSm ? "horizontal" : "vertical"}
+					mb={isBelowSm ? "md" : 0}
+					mx={isBelowSm ? 0 : "md"}
 				/>
 
-				<Stack sx={{ width: 320 }}>
+				<Stack w={isBelowSm ? "100%" : 320}>
 					<Flex
 						sx={{ position: "relative" }}
 						gap="xs">

@@ -5,7 +5,7 @@ import { useEffect, useRef, useState } from "react"
 import { useGetOandaCandlesQuery } from "@/api/prices"
 import { CURRENCY_PAIR } from "@/constants"
 import { Flex, Loader, useMantineTheme } from "@mantine/core"
-import { usePrevious } from "@mantine/hooks"
+import { useMediaQuery, usePrevious } from "@mantine/hooks"
 
 // There is some bug where charts show the full extremes for a split second before setting the extremes
 export default function CandlestickChart({
@@ -18,6 +18,8 @@ export default function CandlestickChart({
 	period: "H1" | "D" | "W" | "M"
 }) {
 	const theme = useMantineTheme()
+
+	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const {
 		data: candles,
@@ -87,6 +89,7 @@ export default function CandlestickChart({
 					},
 					chart: {
 						backgroundColor: theme.colors.dark[8],
+						height: isBelowSm ? 300 : null,
 						style: {
 							fontFamily: "inherit",
 							// Default all chart opacities to 0, then animate them to 1

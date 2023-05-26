@@ -122,7 +122,8 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 					{(["highest", "lowest", "last", "previous"] as const).map(k => (
 						<Grid.Col
 							key={k}
-							span={3}>
+							xs={3}
+							span={6}>
 							<Box
 								w="fit-content"
 								m="auto">
@@ -155,7 +156,8 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 					{(["next", "range", "frequency", "unit"] as const).map(k => (
 						<Grid.Col
 							key={k}
-							span={3}>
+							xs={3}
+							span={6}>
 							<Box
 								w="fit-content"
 								m="auto">

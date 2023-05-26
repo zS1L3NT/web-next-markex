@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Link from "next/link"
-import { useContext } from "react"
+import { useContext, useEffect } from "react"
 
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import NavigatorContext from "@/contexts/NavigatorContext"
@@ -9,8 +9,9 @@ import {
 	ActionIcon, Box, Button, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack,
 	Text, Title, useMantineTheme
 } from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
 import {
-	IconArrowLeft, IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet
+	IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet, IconX
 } from "@tabler/icons-react"
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
@@ -64,7 +65,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 				{opened && (
 					<motion.div
 						style={{ width: "100%" }}
-						initial={{ opacity: 0 }}
+						initial={{ opacity: 1 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}>
 						<Text
@@ -99,17 +100,41 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 	)
 }
 
-export default function Navbar() {
+export default function Navbar({
+	isDrawer = false,
+	closeDrawer
+}: {
+	isDrawer?: boolean
+	closeDrawer?: () => void
+}) {
 	const theme = useMantineTheme()
 	const { user } = useContext(UserContext)
-	const { opened, toggle } = useContext(NavigatorContext)
+	const { opened: opened_, setOpened } = useContext(NavigatorContext)
+	const opened = opened_ || opened_ === undefined
 
+	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
+	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
 	const { classes } = useStyles({ opened })
+
+	useEffect(() => {
+		if (!isAboveLg) {
+			setOpened(false)
+		}
+	}, [isAboveLg])
+
+	useEffect(() => {
+		if (isBelowXs) {
+			setOpened(true)
+		}
+	}, [isBelowXs])
 
 	return (
 		<MantineNavbar
-			width={{ base: opened ? 280 : 64 }}
-			sx={{ transition: "width 0.5s ease" }}>
+			width={{ base: opened || isDrawer ? (isDrawer ? 0 : 280) : 64 }}
+			onMouseEnter={() => isAboveLg && setOpened(true)}
+			onMouseOver={() => isAboveLg && setOpened(true)}
+			onMouseLeave={() => isAboveLg && setOpened(false)}
+			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
 					display: "flex",
@@ -129,13 +154,21 @@ export default function Navbar() {
 				<AnimatePresence>
 					{opened && (
 						<motion.div
-							initial={{ opacity: 0 }}
+							initial={{ opacity: 1 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}>
 							<Title order={4}>Markex</Title>
 						</motion.div>
 					)}
 				</AnimatePresence>
+				{isDrawer && (
+					<ActionIcon
+						size={16}
+						ml="auto"
+						onClick={closeDrawer}>
+						<IconX />
+					</ActionIcon>
+				)}
 			</MantineNavbar.Section>
 
 			<MantineNavbar.Section
@@ -159,7 +192,7 @@ export default function Navbar() {
 							{opened && (
 								<motion.div
 									style={{ marginLeft: 10 }}
-									initial={{ opacity: 0 }}
+									initial={{ opacity: 1 }}
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}>
 									Dashboard
@@ -180,7 +213,7 @@ export default function Navbar() {
 							{opened && (
 								<motion.div
 									style={{ marginLeft: 10 }}
-									initial={{ opacity: 0 }}
+									initial={{ opacity: 1 }}
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}>
 									Currency Pairs
@@ -202,7 +235,7 @@ export default function Navbar() {
 								{opened && (
 									<motion.div
 										style={{ marginLeft: 10 }}
-										initial={{ opacity: 0 }}
+										initial={{ opacity: 1 }}
 										animate={{ opacity: 1 }}
 										exit={{ opacity: 0 }}>
 										My Wallet
@@ -246,7 +279,7 @@ export default function Navbar() {
 							<AnimatePresence>
 								{opened && (
 									<motion.div
-										initial={{ opacity: 0 }}
+										initial={{ opacity: 1 }}
 										animate={{ opacity: 1 }}
 										exit={{ opacity: 0 }}>
 										<Text
@@ -263,23 +296,6 @@ export default function Navbar() {
 						</>
 					)}
 				</Stack>
-			</MantineNavbar.Section>
-
-			<MantineNavbar.Section
-				px="md"
-				py="sm">
-				<ActionIcon
-					ml="auto"
-					mr={opened ? 0 : 2}
-					onClick={toggle}>
-					<IconArrowLeft
-						size={20}
-						style={{
-							transform: `rotate(${Number(!opened) * 180}deg)`,
-							transition: "transform 0.5s ease"
-						}}
-					/>
-				</ActionIcon>
 			</MantineNavbar.Section>
 		</MantineNavbar>
 	)
