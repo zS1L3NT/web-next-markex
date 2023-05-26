@@ -65,7 +65,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 				{opened && (
 					<motion.div
 						style={{ width: "100%" }}
-						initial={{ opacity: 0 }}
+						initial={{ opacity: 1 }}
 						animate={{ opacity: 1 }}
 						exit={{ opacity: 0 }}>
 						<Text
@@ -103,7 +103,8 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 export default function Navbar() {
 	const theme = useMantineTheme()
 	const { user } = useContext(UserContext)
-	const { opened, setOpened } = useContext(NavigatorContext)
+	const { opened: opened_, setOpened } = useContext(NavigatorContext)
+	const opened = opened_ || opened_ === undefined
 
 	const isAboveMd = useMediaQuery(`(min-width: ${theme.breakpoints.md})`)
 	const { classes } = useStyles({ opened })
@@ -135,7 +136,7 @@ export default function Navbar() {
 				<AnimatePresence>
 					{opened && (
 						<motion.div
-							initial={{ opacity: 0 }}
+							initial={{ opacity: 1 }}
 							animate={{ opacity: 1 }}
 							exit={{ opacity: 0 }}>
 							<Title order={4}>Markex</Title>
@@ -165,7 +166,7 @@ export default function Navbar() {
 							{opened && (
 								<motion.div
 									style={{ marginLeft: 10 }}
-									initial={{ opacity: 0 }}
+									initial={{ opacity: 1 }}
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}>
 									Dashboard
@@ -186,7 +187,7 @@ export default function Navbar() {
 							{opened && (
 								<motion.div
 									style={{ marginLeft: 10 }}
-									initial={{ opacity: 0 }}
+									initial={{ opacity: 1 }}
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}>
 									Currency Pairs
@@ -208,7 +209,7 @@ export default function Navbar() {
 								{opened && (
 									<motion.div
 										style={{ marginLeft: 10 }}
-										initial={{ opacity: 0 }}
+										initial={{ opacity: 1 }}
 										animate={{ opacity: 1 }}
 										exit={{ opacity: 0 }}>
 										My Wallet
@@ -252,7 +253,7 @@ export default function Navbar() {
 							<AnimatePresence>
 								{opened && (
 									<motion.div
-										initial={{ opacity: 0 }}
+										initial={{ opacity: 1 }}
 										animate={{ opacity: 1 }}
 										exit={{ opacity: 0 }}>
 										<Text
