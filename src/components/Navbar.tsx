@@ -112,6 +112,7 @@ export default function Navbar({
 	const { opened: opened_, setOpened } = useContext(NavigatorContext)
 	const opened = opened_ || opened_ === undefined
 
+	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
 	const { classes } = useStyles({ opened })
 
@@ -122,7 +123,7 @@ export default function Navbar({
 	return (
 		<MantineNavbar
 			width={{ base: opened ? (isDrawer ? 0 : 280) : 64 }}
-			sx={{ transition: "width 0.5s ease" }}>
+			sx={{ transition: isBelowSm ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
 					display: "flex",

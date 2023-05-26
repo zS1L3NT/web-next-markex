@@ -20,6 +20,7 @@ export default function Header() {
 	const router = useRouter()
 
 	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
+	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const { error: down, isLoading: downIsLoading } = useGetFidorAvailableQuery(undefined, {
 		pollingInterval: 60_000
@@ -29,7 +30,7 @@ export default function Header() {
 
 	return (
 		<MantineHeader
-			sx={{ transition: "left 0.5s ease" }}
+			sx={{ transition: isBelowSm ? undefined : "left 0.5s ease" }}
 			height={57}>
 			<Flex
 				h="100%"
