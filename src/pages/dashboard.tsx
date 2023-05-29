@@ -77,7 +77,7 @@ export default function Dashboard({ user }: Props) {
 					map[date] = [
 						...(map[date] ?? []),
 						...events.filter(e => !map[date]?.find(e_ => e_ === e))
-					].sort((a, b) => new Date(a.time).getTime() - new Date(b.time).getTime())
+					].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 				}
 				return Object.entries(map)
 			})
@@ -274,7 +274,7 @@ export default function Dashboard({ user }: Props) {
 													gap: "0.5rem"
 												}}
 												component="td">
-												{event.hasHistory && (
+												{event.hasHistory && event.category && (
 													<ActionIcon
 														variant="light"
 														color="blue"
@@ -284,7 +284,7 @@ export default function Dashboard({ user }: Props) {
 														onClick={() => {
 															eventHistoryModalRef.current?.open({
 																country: event.country,
-																category: event.category
+																category: event.category!
 															})
 														}}>
 														<IconHistory size={14} />
@@ -306,7 +306,7 @@ export default function Dashboard({ user }: Props) {
 														above: theme.colors.green[5],
 														below: theme.colors.red[5],
 														none: theme.colors.dark[0]
-													}[event.color]
+													}[event.color ?? "none"]
 												}}>
 												{event.actual}
 											</td>

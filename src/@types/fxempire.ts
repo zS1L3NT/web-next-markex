@@ -2,23 +2,23 @@ import { arrayOf, type } from "arktype"
 
 export type FXEmpireEvent = typeof FXEmpireEvent.infer
 export const FXEmpireEvent = type({
-	actual: "string|null",
+	"actual?": "string|null",
 	allDay: "boolean",
-	category: "string",
-	color: "string",
+	"category?": "string",
+	"color?": "string",
 	country: "string",
 	date: "string",
-	forecast: "string",
+	"forecast?": "string",
 	hasHistory: "boolean",
 	id: "number",
 	impact: "number",
 	isUpcoming: "boolean",
 	name: "string",
-	previous: "string",
-	reference: "string",
-	revised: "string",
-	symbol: "string",
-	time: "string"
+	"previous?": "string",
+	"reference?": "string",
+	"revised?": "string",
+	"symbol?": "string",
+	"time?": "string"
 })
 
 export type FXEmpireHistory = typeof FXEmpireHistory.infer
