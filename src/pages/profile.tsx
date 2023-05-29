@@ -104,7 +104,9 @@ export default function Profile({ user }: Props) {
 							.map(key => (
 								<Grid.Col
 									key={key}
-									span={4}>
+									xs={6}
+									md={4}
+									span={12}>
 									<Text weight={700}>
 										{key
 											.split("_")
@@ -142,7 +144,9 @@ export default function Profile({ user }: Props) {
 							.map(key => (
 								<Grid.Col
 									key={key}
-									span={4}>
+									xs={6}
+									md={4}
+									span={12}>
 									<Text weight={700}>
 										{key
 											.replace("adr", "address")
