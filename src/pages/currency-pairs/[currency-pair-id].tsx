@@ -320,7 +320,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							flex: 1,
 							height: "100%",
 							"& div": {
-								height: "calc(100% - 8px) !important"
+								height: isBelowSm ? 300 : "calc(100% - 8px) !important"
 							}
 						}}>
 						<CandlestickChart
