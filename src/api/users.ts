@@ -1,7 +1,7 @@
 import { arrayOf, type } from "arktype"
 
 import { FidorAccount, FidorCollection, FidorPageableCollection } from "@/@types/fidor"
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 import api, { ensureResponseType } from "@/api/api"
 
 const users = api.injectEndpoints({
@@ -27,17 +27,16 @@ const users = api.injectEndpoints({
 				})
 			)
 		}),
-		updateAppUser: builder.mutation<
-			SessionUser["app"],
-			Partial<Exclude<SessionUser["app"], "transactions">>
-		>({
-			query: user => ({
-				url: "/api/user",
-				method: "PUT",
-				body: user,
-				auth: true
-			})
-		})
+		updateAppUser: builder.mutation<User["app"], Partial<Exclude<User["app"], "transactions">>>(
+			{
+				query: user => ({
+					url: "/api/user",
+					method: "PUT",
+					body: user,
+					auth: true
+				})
+			}
+		)
 	})
 })
 

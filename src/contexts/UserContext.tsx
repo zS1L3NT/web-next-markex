@@ -1,10 +1,10 @@
 import { createContext } from "react"
 
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 
 const UserContext = createContext({
-	user: null as SessionUser | null,
-	setUser: ((user: SessionUser) => {}) as (user: SessionUser) => void
+	user: null as User | null,
+	setUser: ((user: User) => {}) as (user: User) => void
 })
 
 export default UserContext

@@ -2,14 +2,14 @@ import Head from "next/head"
 import Link from "next/link"
 import { CSSProperties, useContext, useEffect, useState } from "react"
 
-import { SessionUser } from "@/@types/iron-session"
 import { OandaPrice } from "@/@types/oanda"
+import { User } from "@/@types/types"
 import { useUpdateAppUserMutation } from "@/api/users"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
-import withSession from "@/utils/withSession"
+import { withSession } from "@/utils/middlewares"
 import {
 	ActionIcon, Box, Flex, Loader, Skeleton, Stack, Table, Text, Title, useMantineTheme
 } from "@mantine/core"
@@ -17,7 +17,7 @@ import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
 
 type Props = {
-	user: SessionUser | null
+	user: User | null
 }
 
 function CurrencyPair({
@@ -223,10 +223,10 @@ export default function CurrencyPairs({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session }) => {
+export const getServerSideProps = withSession<Props>(async ({ user }) => {
 	return {
 		props: {
-			user: session.user ?? null
+			user
 		}
 	}
 })

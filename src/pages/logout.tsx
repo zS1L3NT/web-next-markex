@@ -1,4 +1,4 @@
-import withSession from "@/utils/withSession"
+import { withSession } from "@/utils/middlewares"
 
 export default function Logout() {
 	return <></>

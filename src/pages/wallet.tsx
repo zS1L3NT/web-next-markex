@@ -4,7 +4,7 @@ import { useRouter } from "next/router"
 import { useContext, useMemo, useState } from "react"
 
 import { FidorInternalTransfer } from "@/@types/fidor"
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 import {
 	useCreateAppTransactionMutation, useCreateFidorInternalTransferMutation,
 	useGetFidorInternalTransfersQuery
@@ -12,7 +12,7 @@ import {
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
 import UserContext from "@/contexts/UserContext"
-import withSession from "@/utils/withSession"
+import { withSession } from "@/utils/middlewares"
 import {
 	ActionIcon, Badge, Box, Button, Card, Divider, Drawer, Flex, Grid, NumberInput, Stack, Table,
 	Text, Title, useMantineTheme
@@ -23,7 +23,7 @@ import { Transaction, TransactionType } from "@prisma/client"
 import { IconCheck, IconShoppingCart } from "@tabler/icons-react"
 
 type Props = {
-	user: SessionUser
+	user: User
 }
 
 function FidorToMarkex({ isDrawer = false }: { isDrawer?: boolean }) {
@@ -291,11 +291,11 @@ export default function Wallet({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session }) => {
-	if (session.user) {
+export const getServerSideProps = withSession<Props>(async ({ user }) => {
+	if (user) {
 		return {
 			props: {
-				user: session.user
+				user
 			}
 		}
 	} else {

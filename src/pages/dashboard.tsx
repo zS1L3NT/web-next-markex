@@ -4,7 +4,7 @@ import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 import { useGetFXEmpireEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
 import EventHistoryModal, { EventHistoryModalRef } from "@/components/Modals/EventHistoryModal"
 import EventsDatesModal, { EventsDatesModalRef } from "@/components/Modals/EventsDatesModal"
@@ -12,7 +12,7 @@ import EventsFiltersModal, { EventsFiltersModalRef } from "@/components/Modals/E
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewportState from "@/hooks/useIsInViewportState"
-import withSession from "@/utils/withSession"
+import { withSession } from "@/utils/middlewares"
 import {
 	ActionIcon, Badge, Box, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
 	Title, useMantineTheme
@@ -20,7 +20,7 @@ import {
 import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
 type Props = {
-	user: SessionUser | null
+	user: User | null
 }
 
 export default function Dashboard({ user }: Props) {
@@ -360,10 +360,10 @@ export default function Dashboard({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session }) => {
+export const getServerSideProps = withSession<Props>(async ({ user }) => {
 	return {
 		props: {
-			user: session.user ?? null
+			user
 		}
 	}
 })

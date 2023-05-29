@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios"
 import { IronSession } from "iron-session"
 import { NextApiRequest, NextApiResponse } from "next"
 
-import withApiSession from "@/utils/withApiSession"
+import { withApiSession } from "@/utils/middlewares"
 
 const getRefreshedAccessToken = async (
 	session: IronSession
@@ -15,7 +15,7 @@ const getRefreshedAccessToken = async (
 			"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
 			{
 				grant_type: "refresh_token",
-				refresh_token: session.fidor_refresh_token
+				refresh_token: session.fidor?.refresh_token
 			},
 			{
 				headers: {
@@ -36,7 +36,7 @@ const handleRequest = async (req: NextApiRequest, res: NextApiResponse, session:
 			url,
 			headers: {
 				Accept: "application/vnd.fidor.de; version=1,text/json",
-				...(auth ? { Authorization: "Bearer " + session.fidor_access_token } : {}),
+				...(auth ? { Authorization: "Bearer " + session.fidor?.access_token } : {}),
 				...headers
 			},
 			method,
@@ -46,12 +46,9 @@ const handleRequest = async (req: NextApiRequest, res: NextApiResponse, session:
 	)
 }
 
-export default withApiSession(async ({ req, res, session }) => {
+export default withApiSession(async ({ req, res, session, user }) => {
 	if (req.method === "POST") {
-		if (
-			req.body.auth &&
-			(!session.fidor_access_token || !session.fidor_refresh_token || !session.user)
-		) {
+		if (req.body.auth && !user) {
 			return res.status(401).send({
 				message: "Cannot access authorized route without an existing session"
 			})
@@ -63,8 +60,8 @@ export default withApiSession(async ({ req, res, session }) => {
 			const error = <AxiosError>e
 			if (req.body.auth && error.response?.status === 401) {
 				const { access_token, refresh_token } = await getRefreshedAccessToken(session)
-				session.fidor_access_token = access_token
-				session.fidor_refresh_token = refresh_token
+				session.fidor!.access_token = access_token
+				session.fidor!.refresh_token = refresh_token
 				await session.save()
 
 				try {

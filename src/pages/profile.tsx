@@ -1,14 +1,14 @@
 import Head from "next/head"
 
 import { FidorAccount, FidorCustomer } from "@/@types/fidor"
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 import { useGetFidorAccountsQuery } from "@/api/users"
 import Shell from "@/components/Shell"
-import withSession from "@/utils/withSession"
+import { withSession } from "@/utils/middlewares"
 import { Card, Grid, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core"
 
 type Props = {
-	user: SessionUser
+	user: User
 }
 
 export default function Profile({ user }: Props) {
@@ -178,11 +178,11 @@ export default function Profile({ user }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session }) => {
-	if (session.user) {
+export const getServerSideProps = withSession<Props>(async ({ user }) => {
+	if (user) {
 		return {
 			props: {
-				user: session.user
+				user
 			}
 		}
 	} else {

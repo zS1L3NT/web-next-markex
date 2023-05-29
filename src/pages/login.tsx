@@ -3,10 +3,7 @@ import { getIronSession } from "iron-session/edge"
 import { GetServerSideProps } from "next"
 
 import { FidorUser } from "@/@types/fidor"
-import { SessionUser } from "@/@types/iron-session"
 import Shell from "@/components/Shell"
-import { CURRENCY_PAIR } from "@/constants"
-import prisma from "@/prisma"
 import { Text } from "@mantine/core"
 
 type Props = {
@@ -56,45 +53,15 @@ const getTokens = async (
 		.then(res => res.data)
 }
 
-const getSessionUser = async (accessToken: string): Promise<SessionUser | undefined> => {
-	try {
-		const { data: fidorUser } = await axios.get<FidorUser>(
-			"https://api.tp.sandbox.fidorfzco.com/users/current",
-			{
-				headers: {
-					Accept: "application/vnd.fidor.de; version=1,text/json",
-					Authorization: `Bearer ${accessToken}`
-				}
+const getFidorUser = async (accessToken: string): Promise<FidorUser> => {
+	return await axios
+		.get<FidorUser>("https://api.tp.sandbox.fidorfzco.com/users/current", {
+			headers: {
+				Accept: "application/vnd.fidor.de; version=1,text/json",
+				Authorization: `Bearer ${accessToken}`
 			}
-		)
-
-		const id = fidorUser.id!
-
-		return {
-			id,
-			app: {
-				bookmarks: await prisma.bookmark
-					.findMany({ select: { currency_pair: true }, where: { user_id: id } })
-					.then(bs => bs.map(b => b.currency_pair as CURRENCY_PAIR)),
-				balances: await prisma.balance
-					.findMany({ where: { user_id: id } })
-					.then(
-						bs =>
-							Object.fromEntries(
-								bs.map(b => [b.currency, b.amount])
-							) as SessionUser["app"]["balances"]
-					),
-				transactions: await prisma.transaction.findMany({
-					where: { user_id: id },
-					orderBy: { created_at: "asc" }
-				})
-			},
-			fidor: fidorUser
-		}
-	} catch (error) {
-		console.log("Error fetching session user:", error)
-		return undefined
-	}
+		})
+		.then(res => res.data)
 }
 
 export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }) => {
@@ -103,7 +70,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 	if (code) {
 		try {
 			const { access_token, refresh_token } = await getTokens(code)
-			const user = await getSessionUser(access_token)
+			const user = await getFidorUser(access_token)
 			const session = await getIronSession(req, res, {
 				cookieName: process.env.COOKIE_NAME,
 				password: process.env.COOKIE_PASSWORD,
@@ -112,9 +79,7 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 				}
 			})
 
-			session.fidor_access_token = access_token
-			session.fidor_refresh_token = refresh_token
-			session.user = user
+			session.fidor = { access_token, refresh_token, user }
 			await session.save()
 
 			return {

@@ -2,18 +2,18 @@ import { AxiosError } from "axios"
 import { PropsWithChildren, useEffect, useState } from "react"
 import { TypedUseSelectorHook, useSelector } from "react-redux"
 
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 import UserContext from "@/contexts/UserContext"
 import { RootState } from "@/store"
 import { AppShell, Text, useMantineTheme } from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react"
 
 import Header from "./Header"
 import Navbar from "./Navbar"
-import { useMediaQuery } from "@mantine/hooks"
 
-export default function Shell(props: PropsWithChildren<{ user: SessionUser | null }>) {
+export default function Shell(props: PropsWithChildren<{ user: User | null }>) {
 	const theme = useMantineTheme()
 
 	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)

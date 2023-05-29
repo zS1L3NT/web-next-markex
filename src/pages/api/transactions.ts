@@ -1,25 +1,18 @@
-import { SessionUser } from "@/@types/iron-session"
 import { CURRENCY } from "@/constants"
 import prisma from "@/prisma"
-import withApiSession from "@/utils/withApiSession"
+import { withApiSession } from "@/utils/middlewares"
 
-export default withApiSession(async ({ req, res, session }) => {
+export default withApiSession(async ({ req, res, user }) => {
 	if (req.method === "POST") {
-		if (!session.fidor_access_token || !session.fidor_refresh_token || !session.user) {
+		if (!user) {
 			return res.status(401).send({
 				message: "Cannot create transaction without an existing session"
 			})
 		}
 
 		const transaction = await prisma.transaction.create({
-			data: {
-				...req.body,
-				user_id: session.user.id
-			}
+			data: { ...req.body, user_id: user.id }
 		})
-
-		session.user.app.transactions.push(transaction)
-		await session.save()
 
 		if (transaction.currency_pair) {
 			const [base, quote] = transaction.currency_pair.split("_") as [CURRENCY, CURRENCY]
@@ -28,12 +21,12 @@ export default withApiSession(async ({ req, res, session }) => {
 				prisma.balance.upsert({
 					where: {
 						user_id_currency: {
-							user_id: session.user.id,
+							user_id: user.id,
 							currency: transaction.type === "sell" ? quote : base
 						}
 					},
 					create: {
-						user_id: session.user.id,
+						user_id: user.id,
 						currency: transaction.type === "sell" ? quote : base,
 						amount:
 							transaction.type === "sell"
@@ -52,12 +45,12 @@ export default withApiSession(async ({ req, res, session }) => {
 				prisma.balance.upsert({
 					where: {
 						user_id_currency: {
-							user_id: session.user.id,
+							user_id: user.id,
 							currency: transaction.type === "sell" ? base : quote
 						}
 					},
 					create: {
-						user_id: session.user.id,
+						user_id: user.id,
 						currency: transaction.type === "sell" ? base : quote,
 						amount:
 							transaction.type === "sell"
@@ -78,12 +71,12 @@ export default withApiSession(async ({ req, res, session }) => {
 			await prisma.balance.upsert({
 				where: {
 					user_id_currency: {
-						user_id: session.user.id,
+						user_id: user.id,
 						currency: "SGD"
 					}
 				},
 				create: {
-					user_id: session.user.id,
+					user_id: user.id,
 					currency: "SGD",
 					amount: req.body.amount
 				},
@@ -95,16 +88,6 @@ export default withApiSession(async ({ req, res, session }) => {
 			})
 		}
 
-		session.user.app.balances = await prisma.balance
-			.findMany({ where: { user_id: session.user.id } })
-			.then(
-				bs =>
-					Object.fromEntries(
-						bs.map(b => [b.currency, b.amount])
-					) as SessionUser["app"]["balances"]
-			)
-		await session.save()
-
-		res.status(200).send(transaction)
+		res.status(200).end()
 	}
 })

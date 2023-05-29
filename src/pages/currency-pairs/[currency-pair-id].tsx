@@ -2,13 +2,13 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 
-import { SessionUser } from "@/@types/iron-session"
+import { User } from "@/@types/types"
 import { useCreateAppTransactionMutation } from "@/api/transactions"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
-import withSession from "@/utils/withSession"
+import { withSession } from "@/utils/middlewares"
 import {
 	Box, Button, Center, Divider, Flex, NumberInput, SegmentedControl, Skeleton, Stack, Text, Title,
 	useMantineTheme
@@ -20,7 +20,7 @@ import { TransactionType } from "@prisma/client"
 import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
 
 type Props = {
-	user: SessionUser | null
+	user: User | null
 	currencyPair: CURRENCY_PAIR
 }
 
@@ -487,10 +487,10 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ session, params }) => {
+export const getServerSideProps = withSession<Props>(async ({ user, params }) => {
 	return {
 		props: {
-			user: session.user ?? null,
+			user,
 			currencyPair: params!["currency-pair-id"]
 				.toUpperCase()
 				.replace("-", "_") as CURRENCY_PAIR
