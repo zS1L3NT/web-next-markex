@@ -10,7 +10,7 @@ export const getServerSideProps = withSession(async ({ session }) => {
 	return {
 		redirect: {
 			destination: "/",
-			permanent: false
-		}
+			permanent: false,
+		},
 	}
 })

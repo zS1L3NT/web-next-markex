@@ -1,11 +1,12 @@
 import { diff } from "fast-array-diff"
 import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react"
 
+import { notifications } from "@mantine/notifications"
+import { IconExclamationMark, IconX } from "@tabler/icons-react"
+
 import { OandaPrice } from "@/@types/oanda"
 import { useLazyGetOandaPriceQuery } from "@/api/prices"
 import { CURRENCY_PAIR } from "@/constants"
-import { notifications } from "@mantine/notifications"
-import { IconExclamationMark, IconX } from "@tabler/icons-react"
 
 const CHAR = ""
 
@@ -14,15 +15,15 @@ const CurrencyPairPricesContext = createContext<{
 	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => void
 }>({
 	prices: {} as Partial<Record<CURRENCY_PAIR, OandaPrice | null>>,
-	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => {}
+	setCurrencyPairs: () => {},
 })
 
-export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) => {
+export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 	const [getOandaPrice] = useLazyGetOandaPriceQuery()
 
 	const socket = useMemo(
 		() => new WebSocket("wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets"),
-		[]
+		[],
 	)
 	const [connected, setConnected] = useState(false)
 	const [pendingCurrencyPairs, setPendingCurrencyPairs] = useState<CURRENCY_PAIR[] | null>(null)
@@ -45,7 +46,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 					if (result.data) {
 						setPrices(prices => ({
 							...prices,
-							[(result.data as any).Instrument as CURRENCY_PAIR]: result.data
+							[(result.data as any).Instrument as CURRENCY_PAIR]: result.data,
 						}))
 					} else {
 						console.error("Error parsing price from WebSocket:", result)
@@ -61,7 +62,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 								</>
 							),
 							color: "red",
-							icon: <IconX />
+							icon: <IconX />,
 						})
 					}
 				}
@@ -81,7 +82,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 					.sort()
 
 				if (pendingCurrencyPairs) {
-					const difference = diff(currencyPairs, pendingCurrencyPairs!)
+					const difference = diff(currencyPairs, pendingCurrencyPairs)
 					if (
 						JSON.stringify(added) === JSON.stringify(difference.added.sort()) &&
 						JSON.stringify(removed) === JSON.stringify(difference.removed.sort())
@@ -92,7 +93,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 						console.warn("Uneqal lists of currency pairs", {
 							currencyPairs,
 							pendingCurrencyPairs,
-							events
+							events,
 						})
 						notifications.show({
 							withCloseButton: true,
@@ -100,12 +101,12 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 							title: "WebSocket Subscription Warning",
 							message: "Uneqal lists of currency pairs",
 							color: "orange",
-							icon: <IconExclamationMark />
+							icon: <IconExclamationMark />,
 						})
 					}
 				} else {
 					console.warn("No pending currency pairs but received subscription events", {
-						events
+						events,
 					})
 					notifications.show({
 						withCloseButton: true,
@@ -113,7 +114,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 						title: "WebSocket Subscription Warning",
 						message: "No pending currency pairs but received subscription events",
 						color: "orange",
-						icon: <IconExclamationMark />
+						icon: <IconExclamationMark />,
 					})
 				}
 
@@ -133,7 +134,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 					title: "WebSocket Closed Warning",
 					message: events[0].error,
 					color: "orange",
-					icon: <IconExclamationMark />
+					icon: <IconExclamationMark />,
 				})
 				return setConnected(false)
 			}
@@ -145,7 +146,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 				title: "WebSocket Error",
 				message: "Unhandled WebSocket event",
 				color: "orange",
-				icon: <IconExclamationMark />
+				icon: <IconExclamationMark />,
 			})
 		}
 
@@ -161,14 +162,14 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 				title: "WebSocket Error",
 				message: "The WebSocket sent an error event",
 				color: "red",
-				icon: <IconX />
+				icon: <IconX />,
 			})
 		}
 
 		socket.onclose = () => {
 			setConnected(false)
 		}
-	}, [currencyPairs, pendingCurrencyPairs])
+	}, [socket, currencyPairs, pendingCurrencyPairs])
 
 	useEffect(() => {
 		if (connected) {
@@ -176,12 +177,12 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 				getOandaPrice({ currencyPair }).then(price => {
 					setPrices(prices => ({
 						...prices,
-						[currencyPair]: price.data ?? null
+						[currencyPair]: price.data ?? null,
 					}))
 				})
 			}
 		}
-	}, [connected, currencyPairs])
+	}, [getOandaPrice, socket, connected, currencyPairs])
 
 	useEffect(() => {
 		if (connected) {
@@ -193,7 +194,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 		}
 
 		return
-	}, [connected])
+	}, [socket, connected])
 
 	useEffect(() => {
 		if (connected && pendingCurrencyPairs) {
@@ -212,13 +213,13 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren<{}>) 
 				socket.send(events)
 			}
 		}
-	}, [connected, currencyPairs, pendingCurrencyPairs])
+	}, [socket, connected, currencyPairs, pendingCurrencyPairs])
 
 	return (
 		<CurrencyPairPricesContext.Provider
 			value={{
 				prices,
-				setCurrencyPairs: setPendingCurrencyPairs
+				setCurrencyPairs: setPendingCurrencyPairs,
 			}}>
 			{children}
 		</CurrencyPairPricesContext.Provider>

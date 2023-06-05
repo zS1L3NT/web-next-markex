@@ -2,16 +2,17 @@ import Highcharts from "highcharts"
 import HighchartsReact from "highcharts-react-official"
 import { ForwardedRef, forwardRef, useImperativeHandle, useState } from "react"
 
-import { useGetFXEmpireHistoryQuery } from "@/api/news"
 import { Box, Flex, Grid, Loader, Modal, Skeleton, Text, useMantineTheme } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 
+import { useGetFXEmpireHistoryQuery } from "@/api/news"
+
 export type EventHistoryModalRef = {
-	open: ({}: { country: string; category: string }) => void
+	open: (_: { country: string; category: string }) => void
 	close: () => void
 }
 
-export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventHistoryModalRef>) {
+export default forwardRef(function EventHistory(_, ref: ForwardedRef<EventHistoryModalRef>) {
 	const theme = useMantineTheme()
 
 	const [opened, { open, close }] = useDisclosure(false)
@@ -19,8 +20,8 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 	const [category, setCategory] = useState<string | null>(null)
 
 	const { data: history, isFetching: historyIsFetching } = useGetFXEmpireHistoryQuery(
-		{ country: country!, category: category! },
-		{ skip: !country || !category }
+		{ country: country ?? "", category: category ?? "" },
+		{ skip: !country || !category },
 	)
 
 	useImperativeHandle(ref, () => ({
@@ -29,7 +30,7 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 			setCountry(country)
 			setCategory(category)
 		},
-		close
+		close,
 	}))
 
 	return (
@@ -50,10 +51,10 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 						options={
 							{
 								accessibility: {
-									enabled: false
+									enabled: false,
 								},
 								chart: {
-									backgroundColor: theme.colors.dark[7]
+									backgroundColor: theme.colors.dark[7],
 								},
 								xAxis: {
 									categories: history.history.map(c => c.formattedDate),
@@ -61,38 +62,38 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 									tickColor: theme.colors.dark[3],
 									labels: {
 										style: {
-											color: theme.colors.dark[3]
-										}
-									}
+											color: theme.colors.dark[3],
+										},
+									},
 								},
 								yAxis: {
 									gridLineColor: theme.colors.dark[3],
 									title: {
-										text: history.summary.unit
+										text: history.summary.unit,
 									},
 									labels: {
 										style: {
-											color: theme.colors.dark[3]
-										}
-									}
+											color: theme.colors.dark[3],
+										},
+									},
 								},
 								scrollbar: {
-									trackBorderColor: theme.colors.dark[3]
+									trackBorderColor: theme.colors.dark[3],
 								},
 								title: {
 									text: history.summary.category.name,
 									style: {
-										color: theme.colors.dark[1]
-									}
+										color: theme.colors.dark[1],
+									},
 								},
 								credits: {
-									enabled: false
+									enabled: false,
 								},
 								legend: {
-									enabled: false
+									enabled: false,
 								},
 								tooltip: {
-									pointFormat: `<b>{point.y}</b> ${history.summary.unit}`
+									pointFormat: `<b>{point.y}</b> ${history.summary.unit}`,
 								},
 								series: [
 									{
@@ -101,10 +102,10 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 										data: history.history.map(c => [c.formattedDate, c.close]),
 										colorByPoint: true,
 										colors: history.history.map(
-											c => theme.colors[c.close > 0 ? "green" : "red"][5]
-										)
-									}
-								]
+											c => theme.colors[c.close > 0 ? "green" : "red"][5],
+										),
+									},
+								],
 							} satisfies Highcharts.Options
 						}
 					/>
@@ -130,7 +131,7 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 								<Text
 									align="center"
 									weight={700}>
-									{k[0]!.toUpperCase() + k.substring(1)}
+									{k[0]?.toUpperCase() + k.substring(1)}
 								</Text>
 								<Text
 									align="center"
@@ -164,7 +165,7 @@ export default forwardRef(function EventHistory({}: {}, ref: ForwardedRef<EventH
 								<Text
 									align="center"
 									weight={700}>
-									{k[0]!.toUpperCase() + k.substring(1)}
+									{k[0]?.toUpperCase() + k.substring(1)}
 								</Text>
 								<Text
 									align="center"

@@ -14,13 +14,13 @@ const prices = api.injectEndpoints({
 				method: "POST",
 				body: new URLSearchParams({
 					region: "OAP",
-					instrumentName: currencyPair
+					instrumentName: currencyPair,
 				}).toString(),
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				}
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
 			}),
-			transformResponse: ensureResponseType(OandaPrice)
+			transformResponse: ensureResponseType(OandaPrice),
 		}),
 		getOandaCandles: builder.query<
 			OandaCandle[],
@@ -34,20 +34,20 @@ const prices = api.injectEndpoints({
 				body: new URLSearchParams({
 					region: "OAP",
 					instrumentName: currencyPair,
-					granularity: period
+					granularity: period,
 				}).toString(),
 				headers: {
-					"Content-Type": "application/x-www-form-urlencoded"
-				}
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
 			}),
-			transformResponse: res => ensureResponseType(arrayOf(OandaCandle))(res.candles)
-		})
-	})
+			transformResponse: res => ensureResponseType(arrayOf(OandaCandle))(res.candles),
+		}),
+	}),
 })
 
 export const {
 	useGetOandaCandlesQuery,
 	useGetOandaPriceQuery,
 	useLazyGetOandaCandlesQuery,
-	useLazyGetOandaPriceQuery
+	useLazyGetOandaPriceQuery,
 } = prices

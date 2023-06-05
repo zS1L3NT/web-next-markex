@@ -14,7 +14,7 @@ import {
 	Stack,
 	Text,
 	Title,
-	useMantineTheme
+	useMantineTheme,
 } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 import {
@@ -23,7 +23,7 @@ import {
 	IconDashboard,
 	IconList,
 	IconWallet,
-	IconX
+	IconX,
 } from "@tabler/icons-react"
 
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
@@ -36,12 +36,12 @@ const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
 		paddingLeft: 12,
 		paddingRight: 12,
 		"& .mantine-Button-inner": {
-			justifyContent: "start"
+			justifyContent: "start",
 		},
 		"& .mantine-Button-leftIcon": {
-			marginRight: 0
-		}
-	}
+			marginRight: 0,
+		},
+	},
 }))
 
 function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; opened: boolean }) {
@@ -58,13 +58,13 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 					position: "relative",
 					"& *": {
 						position: "absolute",
-						transition: "all 0.5s ease"
+						transition: "all 0.5s ease",
 					},
 					"& > .mantine-Text-root": {
-						lineHeight: 1
-					}
+						lineHeight: 1,
+					},
 				},
-				transition: "width 0.5s ease"
+				transition: "width 0.5s ease",
 			}}
 			variant="subtle"
 			color="gray"
@@ -74,7 +74,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 			<Image
 				style={{
 					left: opened ? 12 : 0,
-					top: opened ? "initial" : 2
+					top: opened ? "initial" : 2,
 				}}
 				src={CURRENCY_FLAGS[base]}
 				alt={base}
@@ -98,7 +98,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 							style={{
 								top: "50%",
 								left: "50%",
-								transform: "translate(-50%, -50%)"
+								transform: "translate(-50%, -50%)",
 							}}
 						/>
 						<Text
@@ -113,7 +113,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 			<Image
 				style={{
 					right: opened ? 12 : 0,
-					bottom: opened ? "initial" : 2
+					bottom: opened ? "initial" : 2,
 				}}
 				src={CURRENCY_FLAGS[quote]}
 				alt={quote}
@@ -126,7 +126,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 
 export default function Navbar({
 	isDrawer = false,
-	closeDrawer
+	closeDrawer,
 }: {
 	isDrawer?: boolean
 	closeDrawer?: () => void
@@ -164,7 +164,7 @@ export default function Navbar({
 					display: "flex",
 					alignItems: "center",
 					gap: "0.5rem",
-					transition: "padding 0.5s ease"
+					transition: "padding 0.5s ease",
 				}}
 				px={16}
 				py={8}>
@@ -198,7 +198,7 @@ export default function Navbar({
 			<MantineNavbar.Section
 				sx={{
 					borderTop: `1px solid ${theme.colors.dark[5]}`,
-					borderBottom: `1px solid ${theme.colors.dark[5]}`
+					borderBottom: `1px solid ${theme.colors.dark[5]}`,
 				}}
 				component={ScrollArea}
 				p="0.5rem"

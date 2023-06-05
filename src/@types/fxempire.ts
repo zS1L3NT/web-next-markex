@@ -18,7 +18,7 @@ export const FXEmpireEvent = type({
 	"reference?": "string",
 	"revised?": "string",
 	"symbol?": "string",
-	"time?": "string"
+	"time?": "string",
 })
 
 export type FXEmpireHistory = typeof FXEmpireHistory.infer
@@ -26,41 +26,41 @@ export const FXEmpireHistory = type({
 	summary: {
 		category: {
 			slug: "string",
-			name: "string"
+			name: "string",
 		},
 		highest: {
 			value: "string",
-			time: "string"
+			time: "string",
 		},
 		lowest: {
 			value: "string",
-			time: "string"
+			time: "string",
 		},
 		last: {
 			value: "string",
-			time: "string"
+			time: "string",
 		},
 		previous: {
 			value: "string",
-			time: "string"
+			time: "string",
 		},
 		next: {
-			time: "string|null"
+			time: "string|null",
 		},
 		change: {
 			value: "string",
-			time: "string"
+			time: "string",
 		},
 		range: "string",
 		frequency: "string",
-		unit: "string"
+		unit: "string",
 	},
 	history: arrayOf(
 		type({
 			formattedDate: "string",
 			close: "number",
 			formattedClose: "string",
-			timestamp: "number"
-		})
-	)
+			timestamp: "number",
+		}),
+	),
 })

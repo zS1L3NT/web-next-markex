@@ -1,19 +1,23 @@
 import { IronSession } from "iron-session"
 import { withIronSessionApiRoute, withIronSessionSsr } from "iron-session/next"
 import {
-	GetServerSidePropsContext, GetServerSidePropsResult, NextApiRequest, NextApiResponse
+	GetServerSidePropsContext,
+	GetServerSidePropsResult,
+	NextApiRequest,
+	NextApiResponse,
 } from "next"
+
+import { Transaction } from "@prisma/client"
 
 import { User } from "@/@types/types"
 import { CURRENCY_PAIR } from "@/constants"
 import prisma from "@/prisma"
-import { Transaction } from "@prisma/client"
 
 const getUser = async (session: IronSession): Promise<User | null> => {
 	const { fidor } = session
 	if (!fidor) return null
 
-	const user_id = fidor.user.id!
+	const user_id = fidor.user.id ?? ""
 
 	return {
 		id: user_id,
@@ -27,19 +31,19 @@ const getUser = async (session: IronSession): Promise<User | null> => {
 			transactions: await prisma.transaction
 				.findMany({
 					where: { user_id },
-					orderBy: { created_at: "asc" }
+					orderBy: { created_at: "asc" },
 				})
 				.then(txs =>
 					txs.map(
 						tx =>
 							({
 								...tx,
-								created_at: tx.created_at.getTime()
-							} as Exclude<Transaction, "created_at"> & { created_at: number })
-					)
-				)
+								created_at: tx.created_at.getTime(),
+							} as Exclude<Transaction, "created_at"> & { created_at: number }),
+					),
+				),
 		},
-		fidor: fidor.user
+		fidor: fidor.user,
 	}
 }
 
@@ -49,7 +53,7 @@ export const withApiSession = (
 		res: NextApiResponse
 		session: IronSession
 		user: User | null
-	}) => void
+	}) => void,
 ) =>
 	withIronSessionApiRoute(
 		async (req, res) =>
@@ -57,34 +61,34 @@ export const withApiSession = (
 				req,
 				res,
 				session: req.session,
-				user: await getUser(req.session)
+				user: await getUser(req.session),
 			}),
 		{
 			cookieName: process.env.COOKIE_NAME,
 			password: process.env.COOKIE_PASSWORD,
 			cookieOptions: {
-				secure: process.env.NODE_ENV === "production"
-			}
-		}
+				secure: process.env.NODE_ENV === "production",
+			},
+		},
 	)
 
-export const withSession = <Props extends Record<string, any> = {}>(
+export const withSession = <Props extends Record<string, any>>(
 	handler: (
-		context: GetServerSidePropsContext<any, any> & { session: IronSession; user: User | null }
-	) => Promise<GetServerSidePropsResult<Props>>
+		context: GetServerSidePropsContext<any, any> & { session: IronSession; user: User | null },
+	) => Promise<GetServerSidePropsResult<Props>>,
 ) =>
 	withIronSessionSsr<Props>(
 		async context =>
 			await handler({
 				...context,
 				session: context.req.session,
-				user: await getUser(context.req.session)
+				user: await getUser(context.req.session),
 			}),
 		{
 			cookieName: process.env.COOKIE_NAME,
 			password: process.env.COOKIE_PASSWORD,
 			cookieOptions: {
-				secure: process.env.NODE_ENV === "production"
-			}
-		}
+				secure: process.env.NODE_ENV === "production",
+			},
+		},
 	)

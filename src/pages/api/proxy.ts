@@ -5,7 +5,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { withApiSession } from "@/utils/middlewares"
 
 const getRefreshedAccessToken = async (
-	session: IronSession
+	session: IronSession,
 ): Promise<{
 	access_token: string
 	refresh_token: string
@@ -15,16 +15,16 @@ const getRefreshedAccessToken = async (
 			"https://apm.tp.sandbox.fidorfzco.com/oauth/token",
 			{
 				grant_type: "refresh_token",
-				refresh_token: session.fidor?.refresh_token
+				refresh_token: session.fidor?.refresh_token,
 			},
 			{
 				headers: {
 					Authorization: `Basic ${Buffer.from(
 						process.env.FIDOR_CLIENT_ID + ":" + process.env.FIDOR_CLIENT_SECRET,
-						"utf-8"
-					).toString("base64")}`
-				}
-			}
+						"utf-8",
+					).toString("base64")}`,
+				},
+			},
 		)
 		.then(res => res.data)
 }
@@ -37,12 +37,12 @@ const handleRequest = async (req: NextApiRequest, res: NextApiResponse, session:
 			headers: {
 				Accept: "application/vnd.fidor.de; version=1,text/json",
 				...(auth ? { Authorization: "Bearer " + session.fidor?.access_token } : {}),
-				...headers
+				...headers,
 			},
 			method,
 			params,
-			data: body
-		}).then(res => res.data)
+			data: body,
+		}).then(res => res.data),
 	)
 }
 
@@ -50,7 +50,7 @@ export default withApiSession(async ({ req, res, session, user }) => {
 	if (req.method === "POST") {
 		if (req.body.auth && !user) {
 			return res.status(401).send({
-				message: "Cannot access authorized route without an existing session"
+				message: "Cannot access authorized route without an existing session",
 			})
 		}
 
@@ -60,8 +60,10 @@ export default withApiSession(async ({ req, res, session, user }) => {
 			const error = <AxiosError>e
 			if (req.body.auth && error.response?.status === 401) {
 				const { access_token, refresh_token } = await getRefreshedAccessToken(session)
-				session.fidor!.access_token = access_token
-				session.fidor!.refresh_token = refresh_token
+				if (session.fidor) {
+					session.fidor.access_token = access_token
+					session.fidor.refresh_token = refresh_token
+				}
 				await session.save()
 
 				try {

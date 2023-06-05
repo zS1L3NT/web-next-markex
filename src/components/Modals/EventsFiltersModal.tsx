@@ -14,12 +14,12 @@ export type EventsFiltersModalRef = {
 export default forwardRef(function EventsFiltersModal(
 	{
 		countries,
-		setCountries
+		setCountries,
 	}: {
 		countries: CURRENCY[]
 		setCountries: (countries: CURRENCY[]) => void
 	},
-	ref: ForwardedRef<EventsFiltersModalRef>
+	ref: ForwardedRef<EventsFiltersModalRef>,
 ) {
 	const [opened, { open, close }] = useDisclosure(false)
 	const [currencies, setCurrencies] = useState([...CURRENCIES])

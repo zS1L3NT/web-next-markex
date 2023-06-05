@@ -2,9 +2,10 @@ import axios from "axios"
 import { getIronSession } from "iron-session/edge"
 import { GetServerSideProps } from "next"
 
+import { Text } from "@mantine/core"
+
 import { FidorUser } from "@/@types/fidor"
 import Shell from "@/components/Shell"
-import { Text } from "@mantine/core"
 
 type Props = {
 	error?: string
@@ -30,7 +31,7 @@ export default function Login({ error }: Props) {
 }
 
 const getTokens = async (
-	code: string
+	code: string,
 ): Promise<{ access_token: string; refresh_token: string }> => {
 	return await axios
 		.post(
@@ -39,16 +40,16 @@ const getTokens = async (
 				code,
 				client_id: process.env.FIDOR_CLIENT_ID,
 				redirect_uri: process.env.FIDOR_REDIRECT_URI,
-				grant_type: "authorization_code"
+				grant_type: "authorization_code",
 			},
 			{
 				headers: {
 					Authorization: `Basic ${Buffer.from(
 						process.env.FIDOR_CLIENT_ID + ":" + process.env.FIDOR_CLIENT_SECRET,
-						"utf-8"
-					).toString("base64")}`
-				}
-			}
+						"utf-8",
+					).toString("base64")}`,
+				},
+			},
 		)
 		.then(res => res.data)
 }
@@ -58,8 +59,8 @@ const getFidorUser = async (accessToken: string): Promise<FidorUser> => {
 		.get<FidorUser>("https://api.tp.sandbox.fidorfzco.com/users/current", {
 			headers: {
 				Accept: "application/vnd.fidor.de; version=1,text/json",
-				Authorization: `Bearer ${accessToken}`
-			}
+				Authorization: `Bearer ${accessToken}`,
+			},
 		})
 		.then(res => res.data)
 }
@@ -75,8 +76,8 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 				cookieName: process.env.COOKIE_NAME,
 				password: process.env.COOKIE_PASSWORD,
 				cookieOptions: {
-					secure: process.env.NODE_ENV === "production"
-				}
+					secure: process.env.NODE_ENV === "production",
+				},
 			})
 
 			session.fidor = { access_token, refresh_token, user }
@@ -84,39 +85,39 @@ export const getServerSideProps: GetServerSideProps<Props> = async ({ req, res }
 
 			return {
 				redirect: {
-					destination: "/dashboard"
+					destination: "/dashboard",
 				},
-				props: {}
+				props: {},
 			}
 		} catch (err) {
 			console.error(err)
 
 			return {
 				redirect: {
-					destination: `/login?error=${(err as Error).message}`
+					destination: `/login?error=${(err as Error).message}`,
 				},
-				props: {}
+				props: {},
 			}
 		}
 	} else if (error) {
 		return {
 			props: {
-				error
-			}
+				error,
+			},
 		}
 	} else {
 		const query = new URLSearchParams({
 			response_type: "code",
 			client_id: process.env.FIDOR_CLIENT_ID,
 			redirect_uri: process.env.FIDOR_REDIRECT_URI,
-			state: "123"
+			state: "123",
 		})
 
 		return {
 			redirect: {
-				destination: `https://apm.tp.sandbox.fidorfzco.com/oauth/authorize?${query.toString()}`
+				destination: `https://apm.tp.sandbox.fidorfzco.com/oauth/authorize?${query.toString()}`,
 			},
-			props: {}
+			props: {},
 		}
 	}
 }

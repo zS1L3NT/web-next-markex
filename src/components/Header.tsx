@@ -2,15 +2,24 @@ import Link from "next/link"
 import { useRouter } from "next/router"
 import { useContext } from "react"
 
-import { useGetFidorAvailableQuery } from "@/api/users"
-import { CURRENCY_PAIRS } from "@/constants"
-import UserContext from "@/contexts/UserContext"
 import {
-	ActionIcon, Avatar, Box, Button, Drawer, Flex, Header as MantineHeader, Menu, Select,
-	useMantineTheme
+	ActionIcon,
+	Avatar,
+	Box,
+	Button,
+	Drawer,
+	Flex,
+	Header as MantineHeader,
+	Menu,
+	Select,
+	useMantineTheme,
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
 import { IconLogout, IconMenu2, IconSearch, IconUser } from "@tabler/icons-react"
+
+import { useGetFidorAvailableQuery } from "@/api/users"
+import { CURRENCY_PAIRS } from "@/constants"
+import UserContext from "@/contexts/UserContext"
 
 import Navbar from "./Navbar"
 
@@ -23,7 +32,7 @@ export default function Header() {
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const { error: down, isLoading: downIsLoading } = useGetFidorAvailableQuery(undefined, {
-		pollingInterval: 60_000
+		pollingInterval: 60_000,
 	})
 
 	const [opened, { toggle, close }] = useDisclosure(false)
@@ -54,7 +63,7 @@ export default function Header() {
 							onChange={e => {
 								if (e !== null) {
 									router.push(
-										"/currency-pairs/" + e.toLowerCase().replace(" / ", "-")
+										"/currency-pairs/" + e.toLowerCase().replace(" / ", "-"),
 									)
 								}
 							}}

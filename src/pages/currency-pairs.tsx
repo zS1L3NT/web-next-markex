@@ -12,7 +12,7 @@ import {
 	Stack,
 	Table,
 	Title,
-	useMantineTheme
+	useMantineTheme,
 } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
@@ -32,7 +32,7 @@ type Props = {
 
 function CurrencyPair({
 	currencyPair,
-	price
+	price,
 }: {
 	currencyPair: CURRENCY_PAIR
 	price: OandaPrice | null
@@ -62,24 +62,24 @@ function CurrencyPair({
 		if (price && previousPrice) {
 			if (price.b !== previousPrice.b) {
 				setAskStyle({
-					backgroundColor: theme.colors[price.b > previousPrice.b ? "green" : "red"][5]
+					backgroundColor: theme.colors[price.b > previousPrice.b ? "green" : "red"][5],
 				})
 				setTimeout(() => {
 					setAskStyle({
 						transition: "background-color 1s ease",
-						backgroundColor: "transparent"
+						backgroundColor: "transparent",
 					})
 				}, 10)
 			}
 
 			if (price.s !== previousPrice.s) {
 				setBidStyle({
-					backgroundColor: theme.colors[price.s > previousPrice.s ? "green" : "red"][5]
+					backgroundColor: theme.colors[price.s > previousPrice.s ? "green" : "red"][5],
 				})
 				setTimeout(() => {
 					setBidStyle({
 						transition: "background-color 1s ease",
-						backgroundColor: "transparent"
+						backgroundColor: "transparent",
 					})
 				}, 10)
 			}
@@ -92,13 +92,13 @@ function CurrencyPair({
 		const appUser = await updateAppUser({
 			bookmarks: user.app.bookmarks.includes(currencyPair)
 				? user.app.bookmarks.filter(b => b !== currencyPair)
-				: [...user.app.bookmarks, currencyPair]
+				: [...user.app.bookmarks, currencyPair],
 		})
 
 		if ("data" in appUser) {
 			setUser({
 				...user,
-				app: appUser.data
+				app: appUser.data,
 			})
 		}
 	}
@@ -140,7 +140,7 @@ function CurrencyPair({
 				<Link
 					style={{
 						color: "white",
-						textDecoration: "none"
+						textDecoration: "none",
 					}}
 					href={"/currency-pairs/" + currencyPair.toLowerCase().replace("_", "-")}>
 					<Flex
@@ -174,7 +174,7 @@ function CurrencyPair({
 			</td>
 			<td
 				style={{
-					color: price?.c ? theme.colors[price.c > 0 ? "green" : "red"][5] : "white"
+					color: price?.c ? theme.colors[price.c > 0 ? "green" : "red"][5] : "white",
 				}}>
 				{price ? `${price.c}%` : loader}
 			</td>
@@ -198,7 +198,7 @@ export default function CurrencyPairs({ user }: Props) {
 
 	const numericHeaderStyle: CSSProperties = {
 		width: "10%",
-		textAlign: "center"
+		textAlign: "center",
 	}
 
 	return (
@@ -246,7 +246,7 @@ export default function CurrencyPairs({ user }: Props) {
 export const getServerSideProps = withSession<Props>(async ({ user }) => {
 	return {
 		props: {
-			user
-		}
+			user,
+		},
 	}
 })

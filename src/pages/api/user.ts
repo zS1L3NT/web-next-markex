@@ -8,22 +8,22 @@ export default withApiSession(async ({ req, res, user }) => {
 	if (req.method === "PUT") {
 		if (!user) {
 			return res.status(401).send({
-				message: "Cannot update user without an existing session"
+				message: "Cannot update user without an existing session",
 			})
 		}
 
 		if (req.body.bookmarks) {
 			const difference = diff(
 				user.app.bookmarks,
-				req.body.bookmarks.sort() as CURRENCY_PAIR[]
+				req.body.bookmarks.sort() as CURRENCY_PAIR[],
 			)
 
 			if (difference.added) {
 				await prisma.bookmark.createMany({
 					data: difference.added.map(currency_pair => ({
 						user_id: user.id,
-						currency_pair
-					}))
+						currency_pair,
+					})),
 				})
 			}
 
@@ -32,9 +32,9 @@ export default withApiSession(async ({ req, res, user }) => {
 					where: {
 						user_id: user.id,
 						currency_pair: {
-							in: difference.removed
-						}
-					}
+							in: difference.removed,
+						},
+					},
 				})
 			}
 		}
@@ -46,19 +46,19 @@ export default withApiSession(async ({ req, res, user }) => {
 						where: {
 							user_id_currency: {
 								user_id: user.id,
-								currency: b[0]
-							}
+								currency: b[0],
+							},
 						},
 						create: {
 							user_id: user.id,
 							currency: b[0],
-							amount: b[1]!
+							amount: b[1],
 						},
 						update: {
-							amount: b[1]
-						}
-					})
-				)
+							amount: b[1],
+						},
+					}),
+				),
 			)
 		}
 

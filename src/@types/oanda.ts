@@ -7,7 +7,7 @@ export const OandaPrice = type({
 	l: "number",
 	h: "number",
 	c: "number",
-	sp: "number"
+	sp: "number",
 })
 
 export type OandaCandle = typeof OandaCandle.infer
@@ -17,6 +17,6 @@ export const OandaCandle = type({
 		o: "number",
 		c: "number",
 		h: "number",
-		l: "number"
-	}
+		l: "number",
+	},
 })

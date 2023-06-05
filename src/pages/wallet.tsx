@@ -3,24 +3,39 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import { useContext, useMemo, useState } from "react"
 
-import { FidorInternalTransfer } from "@/@types/fidor"
-import { User } from "@/@types/types"
 import {
-	useCreateAppTransactionMutation, useCreateFidorInternalTransferMutation,
-	useGetFidorInternalTransfersQuery
-} from "@/api/transactions"
-import Shell from "@/components/Shell"
-import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
-import UserContext from "@/contexts/UserContext"
-import { withSession } from "@/utils/middlewares"
-import {
-	ActionIcon, Badge, Box, Button, Card, Divider, Drawer, Flex, Grid, NumberInput, Stack, Table,
-	Text, Title, useMantineTheme
+	ActionIcon,
+	Badge,
+	Box,
+	Button,
+	Card,
+	Divider,
+	Drawer,
+	Flex,
+	Grid,
+	NumberInput,
+	Stack,
+	Table,
+	Text,
+	Title,
+	useMantineTheme,
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { Transaction, TransactionType } from "@prisma/client"
 import { IconCheck, IconShoppingCart } from "@tabler/icons-react"
+
+import { FidorInternalTransfer } from "@/@types/fidor"
+import { User } from "@/@types/types"
+import {
+	useCreateAppTransactionMutation,
+	useCreateFidorInternalTransferMutation,
+	useGetFidorInternalTransfersQuery,
+} from "@/api/transactions"
+import Shell from "@/components/Shell"
+import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
+import UserContext from "@/contexts/UserContext"
+import { withSession } from "@/utils/middlewares"
 
 type Props = {
 	user: User
@@ -40,13 +55,13 @@ function FidorToMarkex({ isDrawer = false }: { isDrawer?: boolean }) {
 		if (amount) {
 			setIsLoading(true)
 
-			const uuid = URL.createObjectURL(new Blob([])).split("/").at(-1)! // UUID hack
+			const uuid = URL.createObjectURL(new Blob([])).split("/").at(-1) ?? "" // UUID hack
 			const fidorResult = await createFidorInternalTransfer({
 				external_uid: uuid,
-				account_id: user!.fidor.id!,
+				account_id: user?.fidor.id ?? "",
 				amount,
 				receiver: "11874237",
-				currency: "SGD"
+				currency: "SGD",
 			})
 			if ("data" in fidorResult) {
 				const appResult = await createAppTransaction({
@@ -54,7 +69,7 @@ function FidorToMarkex({ isDrawer = false }: { isDrawer?: boolean }) {
 					currency_pair: null,
 					type: "buy",
 					amount,
-					price: 1
+					price: 1,
 				})
 				if ("data" in appResult) {
 					setAmount(0)
@@ -64,7 +79,7 @@ function FidorToMarkex({ isDrawer = false }: { isDrawer?: boolean }) {
 						autoClose: 10000,
 						message: `Deposited SGD ${amount}`,
 						color: "green",
-						icon: <IconCheck />
+						icon: <IconCheck />,
 					})
 				}
 			}
@@ -125,25 +140,25 @@ export default function Wallet({ user }: Props) {
 					id: t.id,
 					date: new Date(t.created_at),
 					app: t,
-					fidor: transfers?.data.find(tf => tf.external_uid === t.id) ?? null
+					fidor: transfers?.data.find(tf => tf.external_uid === t.id) ?? null,
 				})),
 				...(transfers?.data ?? [])
 					.filter(t => !user.app.transactions.find(tx => tx.id === t.external_uid))
 					.map(t => ({
-						id: t.id!,
-						date: new Date(t.created_at!),
+						id: t.id ?? "",
+						date: new Date(t.created_at ?? ""),
 						app: null,
-						fidor: t
-					}))
+						fidor: t,
+					})),
 			].sort((a, b) => b.date.getTime() - a.date.getTime()),
-		[user, transfers]
+		[user, transfers],
 	)
 	const [opened, { open, close }] = useDisclosure(false)
 
 	const getCurrency = (t: (typeof transactions)[number], tt: TransactionType): CURRENCY =>
 		(t.fidor?.currency as CURRENCY | undefined) ||
 		(t.app?.currency_pair
-			? (t.app!.currency_pair!.split("_")[Number(t.app!.type === tt)]! as CURRENCY)
+			? (t.app.currency_pair.split("_")[Number(t.app.type === tt)] as CURRENCY)
 			: "SGD")
 
 	return (
@@ -203,9 +218,9 @@ export default function Wallet({ user }: Props) {
 						<Table
 							sx={{
 								"& th:not(:first-of-type), & td:not(:first-of-type)": {
-									textAlign: "center !important" as "center"
+									textAlign: "center !important" as "center",
 								},
-								borderRadius: 5
+								borderRadius: 5,
 							}}
 							bg={theme.colors.dark[6]}
 							withBorder
@@ -234,7 +249,7 @@ export default function Wallet({ user }: Props) {
 													day: "numeric",
 													hour: "numeric",
 													minute: "numeric",
-													second: "numeric"
+													second: "numeric",
 												})}
 											</td>
 											<td>
@@ -295,12 +310,12 @@ export const getServerSideProps = withSession<Props>(async ({ user }) => {
 	if (user) {
 		return {
 			props: {
-				user
-			}
+				user,
+			},
 		}
 	} else {
 		return {
-			notFound: true
+			notFound: true,
 		}
 	}
 })

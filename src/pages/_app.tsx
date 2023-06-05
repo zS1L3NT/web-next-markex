@@ -1,11 +1,12 @@
 import { AppProps } from "next/app"
 import { Provider as ReduxProvider } from "react-redux"
 
+import { MantineProvider } from "@mantine/core"
+import { Notifications } from "@mantine/notifications"
+
 import { CurrencyPairPricesProvider } from "@/contexts/CurrencyPairPricesContext"
 import { NavigatorProvider } from "@/contexts/NavigatorContext"
 import store from "@/store"
-import { MantineProvider } from "@mantine/core"
-import { Notifications } from "@mantine/notifications"
 
 export default function App({ Component, pageProps }: AppProps) {
 	return (

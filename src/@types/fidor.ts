@@ -10,7 +10,7 @@ export const FidorPageableCollection = type({
 	"current_page?": "number|null",
 	"per_page?": "number|null",
 	"total_entries?": "number|null",
-	"total_pages?": "number|null"
+	"total_pages?": "number|null",
 })
 
 export type FidorAccountLegal = typeof FidorAccountLegal.infer
@@ -19,7 +19,7 @@ export const FidorAccountLegal = type({
 	"tos?": "boolean|null",
 	"privacy_policy?": "boolean|null",
 	"us_citizen?": "boolean|null",
-	"us_tax_payer?": "boolean|null"
+	"us_tax_payer?": "boolean|null",
 })
 
 export type FidorCustomer = typeof FidorCustomer.infer
@@ -62,7 +62,7 @@ export const FidorCustomer = type({
 	"company_adr_street_number?": "string|null",
 	"company_adr_post_code?": "string|null",
 	"company_adr_city?": "string|null",
-	"company_register_number?": "string|null"
+	"company_register_number?": "string|null",
 })
 
 export type FidorUser = typeof FidorUser.infer
@@ -70,7 +70,7 @@ export const FidorUser = type({
 	"id?": "string|null",
 	"email?": "string|null",
 	"affiliate_uid?": "string|null",
-	"msisdn?": "string|null"
+	"msisdn?": "string|null",
 })
 
 export type FidorAccount = typeof FidorAccount.infer
@@ -90,7 +90,7 @@ export const FidorAccount = type({
 	"currency?": "string|null",
 	"customers?": union(arrayOf(FidorCustomer), "null"),
 	"created_at?": "string|null",
-	"updated_at?": "string|null"
+	"updated_at?": "string|null",
 })
 
 export type FidorInternalTransfer = typeof FidorInternalTransfer.infer
@@ -107,5 +107,5 @@ export const FidorInternalTransfer = type({
 	"recipient_name?": "string|null",
 	"state?": "string|null",
 	"created_at?": "string|null",
-	"updated_at?": "string|null"
+	"updated_at?": "string|null",
 })

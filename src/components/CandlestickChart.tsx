@@ -1,17 +1,18 @@
-import HighchartsReact from "highcharts-react-official"
 import Highcharts from "highcharts/highstock"
+import HighchartsReact from "highcharts-react-official"
 import { useEffect, useRef, useState } from "react"
+
+import { Flex, Loader, useMantineTheme } from "@mantine/core"
+import { useMediaQuery, usePrevious } from "@mantine/hooks"
 
 import { useGetOandaCandlesQuery } from "@/api/prices"
 import { CURRENCY_PAIR } from "@/constants"
-import { Flex, Loader, useMantineTheme } from "@mantine/core"
-import { useMediaQuery, usePrevious } from "@mantine/hooks"
 
 // There is some bug where charts show the full extremes for a split second before setting the extremes
 export default function CandlestickChart({
 	type,
 	currencyPair,
-	period
+	period,
 }: {
 	type: "candlestick" | "ohlc"
 	currencyPair: CURRENCY_PAIR | null
@@ -24,10 +25,10 @@ export default function CandlestickChart({
 	const {
 		data: candles,
 		isFetching: candlesAreFetching,
-		status: candlesStatus
+		status: candlesStatus,
 	} = useGetOandaCandlesQuery(
-		{ currencyPair: currencyPair!, period },
-		{ skip: !currencyPair, pollingInterval: 60_000 }
+		{ currencyPair: currencyPair as CURRENCY_PAIR, period },
+		{ skip: !currencyPair, pollingInterval: 60_000 },
 	)
 
 	const [opacity, setOpacity] = useState(0)
@@ -49,7 +50,7 @@ export default function CandlestickChart({
 				new Date(start.time).getTime(),
 				new Date(end.time).getTime(),
 				true,
-				!candlesWereFetching
+				!candlesWereFetching,
 			)
 
 			// After 10ms, set the opacity of the chart to 1
@@ -85,7 +86,7 @@ export default function CandlestickChart({
 			options={
 				{
 					accessibility: {
-						enabled: false
+						enabled: false,
 					},
 					chart: {
 						backgroundColor: theme.colors.dark[8],
@@ -94,61 +95,61 @@ export default function CandlestickChart({
 							fontFamily: "inherit",
 							// Default all chart opacities to 0, then animate them to 1
 							opacity: 0,
-							transition: "opacity 0.5s ease"
-						}
+							transition: "opacity 0.5s ease",
+						},
 					},
 					rangeSelector: {
-						enabled: false
+						enabled: false,
 					},
 					plotOptions: {
 						candlestick: {
 							color: theme.colors.red[5],
 							upColor: theme.colors.green[5],
-							lineColor: theme.colors.gray[0]
+							lineColor: theme.colors.gray[0],
 						},
 						ohlc: {
 							color: theme.colors.red[5],
-							upColor: theme.colors.green[5]
-						}
+							upColor: theme.colors.green[5],
+						},
 					},
 					xAxis: {
 						lineColor: theme.colors.dark[3],
 						tickColor: theme.colors.dark[3],
 						labels: {
 							style: {
-								color: theme.colors.dark[3]
-							}
-						}
+								color: theme.colors.dark[3],
+							},
+						},
 					},
 					yAxis: {
 						gridLineColor: theme.colors.dark[3],
 						labels: {
 							style: {
-								color: theme.colors.dark[3]
-							}
-						}
+								color: theme.colors.dark[3],
+							},
+						},
 					},
 					navigator: {
 						maskFill: theme.colors.dark[3] + "88",
 						outlineColor: theme.colors.dark[3],
 						series: {
-							color: theme.colors.blue[5]
+							color: theme.colors.blue[5],
 						},
 						xAxis: {
 							gridLineColor: theme.colors.dark[3],
 							labels: {
 								style: {
 									color: theme.colors.gray[3],
-									textOutline: theme.colors.gray[3]
-								}
-							}
-						}
+									textOutline: theme.colors.gray[3],
+								},
+							},
+						},
 					},
 					scrollbar: {
-						trackBorderColor: theme.colors.dark[3]
+						trackBorderColor: theme.colors.dark[3],
 					},
 					credits: {
-						enabled: false
+						enabled: false,
 					},
 					series: [
 						{
@@ -159,18 +160,18 @@ export default function CandlestickChart({
 								c.mid.o,
 								c.mid.h,
 								c.mid.l,
-								c.mid.c
+								c.mid.c,
 							]),
 							dataGrouping: {
 								units: [
 									period === "H1" ? ["hour", [1]] : null,
 									period === "D" ? ["day", [1]] : null,
 									period === "W" ? ["week", [1]] : null,
-									period === "M" ? ["month", [1]] : null
-								].filter(Boolean) as [[string, [number]]]
-							}
-						}
-					]
+									period === "M" ? ["month", [1]] : null,
+								].filter(Boolean) as [[string, [number]]],
+							},
+						},
+					],
 				} satisfies Highcharts.Options
 			}
 		/>
@@ -180,7 +181,7 @@ export default function CandlestickChart({
 				width: "100%",
 				height: "100%",
 				justifyContent: "center",
-				alignItems: "center"
+				alignItems: "center",
 			}}>
 			<Loader
 				size={24}

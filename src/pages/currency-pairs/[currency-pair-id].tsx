@@ -15,7 +15,7 @@ import {
 	Stack,
 	Text,
 	Title,
-	useMantineTheme
+	useMantineTheme,
 } from "@mantine/core"
 import { useForm } from "@mantine/form"
 import { useMediaQuery, usePrevious } from "@mantine/hooks"
@@ -39,7 +39,7 @@ type Props = {
 function BidAskBox({
 	type,
 	price,
-	color
+	color,
 }: {
 	type: "Bid" | "Ask"
 	price: number | null
@@ -56,7 +56,7 @@ function BidAskBox({
 				padding: "0.25rem 0.5rem",
 				textAlign: type === "Bid" ? "start" : "end",
 				border: `1px solid ${mantineColor}`,
-				backgroundColor: `${mantineColor}22`
+				backgroundColor: `${mantineColor}22`,
 			}}>
 			{price ? (
 				<Flex
@@ -107,7 +107,7 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 			sx={{
 				flex: 1,
 				padding: "0 0.5rem",
-				textAlign: type === "Low" ? "start" : "end"
+				textAlign: type === "Low" ? "start" : "end",
 			}}>
 			<Text fz="sm">{type}</Text>
 			{price ? (
@@ -127,7 +127,7 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 function DetailItem({
 	label,
 	value,
-	color
+	color,
 }: {
 	label: string
 	value: string | number
@@ -166,8 +166,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const form = useForm({
 		initialValues: {
 			mode: "sell",
-			amount: 0 as number | undefined
-		}
+			amount: 0 as number | undefined,
+		},
 	})
 
 	const price = prices[currencyPair]
@@ -195,7 +195,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 				currency_pair: currencyPair,
 				type: values.mode as TransactionType,
 				amount,
-				price: values.mode === "sell" ? price.s : price.b
+				price: values.mode === "sell" ? price.s : price.b,
 			})
 
 			if ("data" in result) {
@@ -206,7 +206,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 					autoClose: 10000,
 					message: `${values.mode === "sell" ? "Sold" : "Bought"} ${base} ${amount}`,
 					color: "green",
-					icon: <IconCheck />
+					icon: <IconCheck />,
 				})
 			}
 		}
@@ -223,7 +223,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const finalBaseBalance = sellBuyValue(initialBaseBalance - amount, initialBaseBalance + amount)
 	const finalQuoteBalance = sellBuyValue(
 		initialQuoteBalance + tradeValue,
-		initialQuoteBalance - tradeValue
+		initialQuoteBalance - tradeValue,
 	)
 
 	return (
@@ -239,7 +239,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 				<Flex
 					sx={{
 						flex: 1,
-						overflow: "hidden"
+						overflow: "hidden",
 					}}
 					direction="column"
 					gap="md">
@@ -281,7 +281,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									alignItems: "center",
 									color: price.c
 										? theme.colors[price.c > 0 ? "green" : "red"][5]
-										: "white"
+										: "white",
 								}}>
 								{price.c > 0 ? (
 									<IconCaretUp
@@ -309,7 +309,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								color="blue"
 								data={[
 									{ label: "Candlestick", value: "candlestick" },
-									{ label: "OHLC", value: "ohlc" }
+									{ label: "OHLC", value: "ohlc" },
 								]}
 								value={type}
 								onChange={t => setType(t as typeof type)}
@@ -321,7 +321,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									{ label: "Hourly", value: "H1" },
 									{ label: "Daily", value: "D" },
 									{ label: "Weekly", value: "W" },
-									{ label: "Monthly", value: "M" }
+									{ label: "Monthly", value: "M" },
 								]}
 								value={period}
 								onChange={p => setPeriod(p as typeof period)}
@@ -334,8 +334,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 							flex: 1,
 							height: "100%",
 							"& div": {
-								height: isBelowSm ? 300 : "calc(100% - 8px) !important"
-							}
+								height: isBelowSm ? 300 : "calc(100% - 8px) !important",
+							},
 						}}>
 						<CandlestickChart
 							type={type}
@@ -370,13 +370,13 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								top: "50%",
 								left: "50%",
 								transform: "translate(-50%, -50%)",
-								zIndex: 2
+								zIndex: 2,
 							}}>
 							<Center
 								sx={{
 									width: "100%",
 									height: "100%",
-									backgroundColor: theme.colors.blue[5] + "22"
+									backgroundColor: theme.colors.blue[5] + "22",
 								}}>
 								{price ? (
 									<Text
@@ -417,7 +417,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								color={sellBuyValue("red", "blue")}
 								data={[
 									{ value: "sell", label: "Sell" },
-									{ value: "buy", label: "Buy" }
+									{ value: "buy", label: "Buy" },
 								]}
 								{...form.getInputProps("mode")}
 							/>
@@ -429,7 +429,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								onInput={e =>
 									(e.currentTarget.value = e.currentTarget.value.replace(
 										/[^0-9\\.]/g,
-										""
+										"",
 									))
 								}
 								{...form.getInputProps("amount")}
@@ -449,7 +449,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								<DetailItem
 									label={sellBuyValue("Deducted", "Added") + " Amount"}
 									value={[base, sellBuyValue("-", "+") + amount.toFixed(5)].join(
-										" "
+										" ",
 									)}
 								/>
 
@@ -457,7 +457,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									label={sellBuyValue("Added", "Deducted") + " Amount"}
 									value={[
 										quote,
-										sellBuyValue("+", "-") + tradeValue.toFixed(5)
+										sellBuyValue("+", "-") + tradeValue.toFixed(5),
 									].join(" ")}
 								/>
 
@@ -507,7 +507,7 @@ export const getServerSideProps = withSession<Props>(async ({ user, params }) =>
 			user,
 			currencyPair: params["currency-pair-id"]
 				.toUpperCase()
-				.replace("-", "_") as CURRENCY_PAIR
-		}
+				.replace("-", "_") as CURRENCY_PAIR,
+		},
 	}
 })

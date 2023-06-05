@@ -14,14 +14,14 @@ export default forwardRef(function EventsDatesModal(
 		startDate,
 		endDate,
 		setStartDate,
-		setEndDate
+		setEndDate,
 	}: {
 		startDate: Date
 		endDate: Date
 		setStartDate: (date: Date) => void
 		setEndDate: (date: Date) => void
 	},
-	ref: ForwardedRef<EventsDatesModalRef>
+	ref: ForwardedRef<EventsDatesModalRef>,
 ) {
 	const [opened, { open, close }] = useDisclosure(false)
 	const [dates, setDates] = useState<[Date | null, Date | null]>([null, null])
@@ -61,8 +61,8 @@ export default forwardRef(function EventsDatesModal(
 
 				<Button
 					onClick={() => {
-						setStartDate(dates[0]!)
-						setEndDate(dates[1] ?? dates[0]!)
+						setStartDate(dates[0] ?? new Date())
+						setEndDate(dates[1] ?? dates[0] ?? new Date())
 						close()
 					}}
 					disabled={!dates[0]}>

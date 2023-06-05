@@ -1,7 +1,8 @@
 import { Type } from "arktype"
 
-import axiosBaseQuery from "@/utils/axiosBaseQuery"
 import { createApi } from "@reduxjs/toolkit/query/react"
+
+import axiosBaseQuery from "@/utils/axiosBaseQuery"
 
 export const ensureResponseType =
 	<T>(type: Type<T>) =>
@@ -17,7 +18,7 @@ export const ensureResponseType =
 const api = createApi({
 	reducerPath: "api",
 	baseQuery: axiosBaseQuery,
-	endpoints: () => ({})
+	endpoints: () => ({}),
 })
 
 export default api

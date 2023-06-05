@@ -19,5 +19,5 @@ export const FXStreetNews = type({
 	Tags: arrayOf("string"),
 	Title: "string",
 	VideoDuration: "number|null",
-	objectID: "string"
+	objectID: "string",
 })

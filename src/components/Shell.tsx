@@ -2,13 +2,14 @@ import { AxiosError } from "axios"
 import { PropsWithChildren, useEffect, useState } from "react"
 import { TypedUseSelectorHook, useSelector } from "react-redux"
 
-import { User } from "@/@types/types"
-import UserContext from "@/contexts/UserContext"
-import { RootState } from "@/store"
 import { AppShell, Text, useMantineTheme } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react"
+
+import { User } from "@/@types/types"
+import UserContext from "@/contexts/UserContext"
+import { RootState } from "@/store"
 
 import Header from "./Header"
 import Navbar from "./Navbar"
@@ -46,18 +47,18 @@ export default function Shell(props: PropsWithChildren<{ user: User | null }>) {
 								sx={{ wordBreak: "break-all" }}
 								weight={700}
 								lineClamp={3}>
-								{error.config!.url === "/api/proxy"
-									? JSON.parse(error.config!.data).method
-									: error.config!.method!.toUpperCase()}{" "}
-								{error.config!.url === "/api/proxy"
-									? JSON.parse(error.config!.data).url
-									: error.config!.url}
+								{error.config?.url === "/api/proxy"
+									? JSON.parse(error.config.data).method
+									: error.config?.method?.toUpperCase()}{" "}
+								{error.config?.url === "/api/proxy"
+									? JSON.parse(error.config.data).url
+									: error.config?.url}
 							</Text>
 							{error.message}
 						</>
 					),
 					color: "red",
-					icon: <IconX />
+					icon: <IconX />,
 				})
 			}
 		}
@@ -71,8 +72,8 @@ export default function Shell(props: PropsWithChildren<{ user: User | null }>) {
 					"& .mantine-AppShell-main": {
 						width: "100%",
 						transition: isBelowSm ? undefined : "padding 0.5s ease",
-						overflow: "hidden"
-					}
+						overflow: "hidden",
+					},
 				}}
 				navbar={isBelowXs ? undefined : <Navbar />}
 				header={<Header />}

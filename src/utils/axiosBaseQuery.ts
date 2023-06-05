@@ -13,13 +13,13 @@ export default (async config => {
 				method: config.method,
 				data: config.body,
 				params: config.params,
-				headers: config.headers
+				headers: config.headers,
 			})
 		}
 		return { data: result.data }
 	} catch (e) {
 		const error = <AxiosError>e
-		if (error.config!.url !== "https://apm.tp.sandbox.fidorfzco.com/oauth/authorize") {
+		if (error.config?.url !== "https://apm.tp.sandbox.fidorfzco.com/oauth/authorize") {
 			console.error(error)
 		}
 

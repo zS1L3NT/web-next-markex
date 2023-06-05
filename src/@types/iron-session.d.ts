@@ -1,6 +1,6 @@
-import "iron-session"
-
 import { FidorUser } from "./fidor"
+
+import "iron-session"
 
 declare module "iron-session" {
 	interface IronSessionData {

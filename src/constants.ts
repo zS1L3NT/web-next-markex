@@ -58,7 +58,7 @@ export const CURRENCY_PAIRS = [
 	"CHF_ZAR",
 	"NZD_JPY",
 	"NZD_SGD",
-	"TRY_JPY"
+	"TRY_JPY",
 ] as const
 
 export type CURRENCY = CURRENCIES[number]
@@ -84,7 +84,7 @@ export const CURRENCIES = [
 	"CNH",
 	"HKD",
 	"THB",
-	"MXN"
+	"MXN",
 ] as const
 
 export type FXEMPIRE_COUNTRIES = typeof FXEMPIRE_COUNTRIES
@@ -109,7 +109,7 @@ export const FXEMPIRE_COUNTRIES = {
 	CNH: "china",
 	HKD: "hong-kong",
 	THB: "thailand",
-	MXN: "mexico"
+	MXN: "mexico",
 } as const
 
 export type CURRENCY_FLAGS = typeof CURRENCY_FLAGS
@@ -134,5 +134,5 @@ export const CURRENCY_FLAGS = {
 	CNH: "https://flagicons.lipis.dev/flags/4x3/cn.svg",
 	HKD: "https://flagicons.lipis.dev/flags/4x3/hk.svg",
 	THB: "https://flagicons.lipis.dev/flags/4x3/th.svg",
-	MXN: "https://flagicons.lipis.dev/flags/4x3/mx.svg"
+	MXN: "https://flagicons.lipis.dev/flags/4x3/mx.svg",
 } as const

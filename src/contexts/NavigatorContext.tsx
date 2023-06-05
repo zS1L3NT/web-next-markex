@@ -2,11 +2,11 @@ import { createContext, PropsWithChildren, useState } from "react"
 
 const NavigatorContext = createContext({
 	opened: false,
-	setOpened: (opened: boolean) => {}
+	setOpened: (() => {}) as (opened: boolean) => void,
 })
 
 export default NavigatorContext
-export const NavigatorProvider = ({ children }: PropsWithChildren<{}>) => {
+export const NavigatorProvider = ({ children }: PropsWithChildren) => {
 	const [opened, setOpened] = useState(false)
 
 	return (

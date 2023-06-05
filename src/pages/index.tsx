@@ -4,11 +4,11 @@ export default function Home() {
 	return <></>
 }
 
-export const getServerSideProps: GetServerSideProps = async context => {
+export const getServerSideProps: GetServerSideProps = async () => {
 	return {
 		redirect: {
-			destination: "/dashboard"
+			destination: "/dashboard",
 		},
-		props: {}
+		props: {},
 	}
 }

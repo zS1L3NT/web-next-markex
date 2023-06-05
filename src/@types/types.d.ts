@@ -1,5 +1,6 @@
-import { CURRENCY, CURRENCY_PAIR } from "@/constants"
 import { Transaction } from "@prisma/client"
+
+import { CURRENCY, CURRENCY_PAIR } from "@/constants"
 
 import { FidorUser } from "./fidor"
 

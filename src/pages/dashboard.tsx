@@ -18,7 +18,7 @@ import {
 	Table,
 	Text,
 	Title,
-	useMantineTheme
+	useMantineTheme,
 } from "@mantine/core"
 import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
@@ -46,7 +46,7 @@ export default function Dashboard({ user }: Props) {
 	const [impact, setImpact] = useState<number>(1)
 	const [countries, setCountries] = useState([...CURRENCIES])
 	const { data: news, isLoading: newsAreLoading } = useGetFXStreetNewsQuery(undefined, {
-		pollingInterval: 60_000
+		pollingInterval: 60_000,
 	})
 	const { data: eventsQuery, isFetching: eventsAreFetching } = useGetFXEmpireEventsQuery(
 		{
@@ -54,9 +54,9 @@ export default function Dashboard({ user }: Props) {
 			from: startDate,
 			to: endDate,
 			impact,
-			countries: countries.map(c => FXEMPIRE_COUNTRIES[c])
+			countries: countries.map(c => FXEMPIRE_COUNTRIES[c]),
 		},
-		{ pollingInterval: 60_000 }
+		{ pollingInterval: 60_000 },
 	)
 
 	// Allows the UI to have time to update before re-rendering the loader
@@ -90,7 +90,7 @@ export default function Dashboard({ user }: Props) {
 				for (const [date, events] of eventsQuery.events) {
 					map[date] = [
 						...(map[date] ?? []),
-						...events.filter(e => !map[date]?.find(e_ => e_ === e))
+						...events.filter(e => !map[date]?.find(e_ => e_ === e)),
 					].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
 				}
 				return Object.entries(map)
@@ -199,13 +199,13 @@ export default function Dashboard({ user }: Props) {
 					sx={{
 						height: "100%",
 						transform: "scale(1.07)",
-						marginLeft: 3
+						marginLeft: 3,
 					}}
 					color={theme.colors.blue[5]}
 					data={[
 						{ value: "1", label: "Low" },
 						{ value: "2", label: "Medium" },
-						{ value: "3", label: "High" }
+						{ value: "3", label: "High" },
 					]}
 					value={impact + ""}
 					onChange={e => setImpact(+e)}
@@ -219,8 +219,8 @@ export default function Dashboard({ user }: Props) {
 					withColumnBorders
 					sx={{
 						"& th:not(:nth-of-type(3)), & td:not(:nth-of-type(3))": {
-							textAlign: "center !important" as "center"
-						}
+							textAlign: "center !important" as "center",
+						},
 					}}
 					mb="xl">
 					<thead>
@@ -242,7 +242,7 @@ export default function Dashboard({ user }: Props) {
 										weekday: "long",
 										day: "2-digit",
 										month: "long",
-										year: "numeric"
+										year: "numeric",
 									})
 									return (
 										<motion.tr
@@ -262,7 +262,7 @@ export default function Dashboard({ user }: Props) {
 								} else {
 									const event = eod
 									const currency = CURRENCIES.find(
-										c => event.country === FXEMPIRE_COUNTRIES[c]
+										c => event.country === FXEMPIRE_COUNTRIES[c],
 									) as CURRENCY
 									return (
 										<motion.tr
@@ -273,7 +273,7 @@ export default function Dashboard({ user }: Props) {
 											<td>
 												{new Date(event.date).toLocaleTimeString("en-SG", {
 													hour: "2-digit",
-													minute: "2-digit"
+													minute: "2-digit",
 												})}
 											</td>
 											<td>
@@ -290,7 +290,7 @@ export default function Dashboard({ user }: Props) {
 													display: "flex",
 													flexDirection: "row",
 													alignItems: "center",
-													gap: "0.5rem"
+													gap: "0.5rem",
 												}}
 												component="td">
 												{event.hasHistory && event.category && (
@@ -303,7 +303,7 @@ export default function Dashboard({ user }: Props) {
 														onClick={() => {
 															eventHistoryModalRef.current?.open({
 																country: event.country,
-																category: event.category ?? ""
+																category: event.category ?? "",
 															})
 														}}>
 														<IconHistory size={14} />
@@ -324,8 +324,8 @@ export default function Dashboard({ user }: Props) {
 													color: {
 														above: theme.colors.green[5],
 														below: theme.colors.red[5],
-														none: theme.colors.dark[0]
-													}[event.color ?? "none"]
+														none: theme.colors.dark[0],
+													}[event.color ?? "none"],
 												}}>
 												{event.actual}
 											</td>
@@ -363,7 +363,7 @@ export default function Dashboard({ user }: Props) {
 				{...{
 					ref: eventsFiltersModalRef,
 					countries,
-					setCountries
+					setCountries,
 				}}
 			/>
 			<EventsDatesModal
@@ -372,7 +372,7 @@ export default function Dashboard({ user }: Props) {
 					startDate,
 					endDate,
 					setStartDate,
-					setEndDate
+					setEndDate,
 				}}
 			/>
 		</Shell>
@@ -382,7 +382,7 @@ export default function Dashboard({ user }: Props) {
 export const getServerSideProps = withSession<Props>(async ({ user }) => {
 	return {
 		props: {
-			user
-		}
+			user,
+		},
 	}
 })

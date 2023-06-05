@@ -18,13 +18,14 @@ const news = api.injectEndpoints({
 							params: new URLSearchParams({
 								hitsPerPage: "8",
 								filters:
-									"CultureName:en AND (Category:'News' OR Category:'Breaking News' OR Category:'Premium News')"
-							}).toString()
-						}
-					]
-				}
+									"CultureName:en AND (Category:'News' OR Category:'Breaking News' OR Category:'Premium News')",
+							}).toString(),
+						},
+					],
+				},
 			}),
-			transformResponse: res => ensureResponseType(arrayOf(FXStreetNews))(res.results[0].hits)
+			transformResponse: res =>
+				ensureResponseType(arrayOf(FXStreetNews))(res.results[0].hits),
 		}),
 		getFXEmpireEvents: builder.query<
 			{
@@ -53,29 +54,29 @@ const news = api.injectEndpoints({
 							.map((_, i) => 3 - i)
 							.join(","),
 						categoryGroup:
-							"gdp,markets,business,government,climate,money,housing,calendar,taxes,prices,consumer,labour,trade,health"
+							"gdp,markets,business,government,climate,money,housing,calendar,taxes,prices,consumer,labour,trade,health",
 					}).toString(),
-				method: "GET"
+				method: "GET",
 			}),
 			transformResponse: res =>
 				ensureResponseType(
 					type({
 						events: arrayOf(["string", arrayOf(FXEmpireEvent)]),
-						next: "boolean"
-					})
+						next: "boolean",
+					}),
 				)({
 					events: res.calendar.map((c: any) => [c.day, c.events]),
-					next: !res.last
-				})
+					next: !res.last,
+				}),
 		}),
 		getFXEmpireHistory: builder.query<FXEmpireHistory, { country: string; category: string }>({
 			query: ({ country, category }) => ({
 				url: `https://www.fxempire.com/api/v1/en/macro-indicators/${country}/${category}/summary-history?latest=12`,
-				method: "GET"
+				method: "GET",
 			}),
-			transformResponse: ensureResponseType(FXEmpireHistory)
-		})
-	})
+			transformResponse: ensureResponseType(FXEmpireHistory),
+		}),
+	}),
 })
 
 export const {
@@ -84,5 +85,5 @@ export const {
 	useGetFXStreetNewsQuery,
 	useLazyGetFXEmpireEventsQuery,
 	useLazyGetFXEmpireHistoryQuery,
-	useLazyGetFXStreetNewsQuery
+	useLazyGetFXStreetNewsQuery,
 } = news

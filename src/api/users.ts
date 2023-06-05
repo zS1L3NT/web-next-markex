@@ -9,23 +9,23 @@ const users = api.injectEndpoints({
 		getFidorAvailable: builder.query<undefined, void>({
 			query: () => ({
 				url: "https://apm.tp.sandbox.fidorfzco.com/oauth/authorize",
-				method: "GET"
+				method: "GET",
 			}),
-			transformErrorResponse: error => error.status === 503
+			transformErrorResponse: error => error.status === 503,
 		}),
 		getFidorAccounts: builder.query<FidorCollection<FidorAccount>, void>({
 			query: () => ({
 				url: "https://api.tp.sandbox.fidorfzco.com/accounts",
 				method: "GET",
 				proxy: true,
-				auth: true
+				auth: true,
 			}),
 			transformResponse: ensureResponseType(
 				type({
 					data: arrayOf(FidorAccount),
-					collection: FidorPageableCollection
-				})
-			)
+					collection: FidorPageableCollection,
+				}),
+			),
 		}),
 		updateAppUser: builder.mutation<User["app"], Partial<Exclude<User["app"], "transactions">>>(
 			{
@@ -33,11 +33,11 @@ const users = api.injectEndpoints({
 					url: "/api/user",
 					method: "PUT",
 					body: user,
-					auth: true
-				})
-			}
-		)
-	})
+					auth: true,
+				}),
+			},
+		),
+	}),
 })
 
 export const {
@@ -45,5 +45,5 @@ export const {
 	useGetFidorAvailableQuery,
 	useLazyGetFidorAccountsQuery,
 	useLazyGetFidorAvailableQuery,
-	useUpdateAppUserMutation
+	useUpdateAppUserMutation,
 } = users

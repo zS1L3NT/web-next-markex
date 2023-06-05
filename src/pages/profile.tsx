@@ -1,11 +1,12 @@
 import Head from "next/head"
 
+import { Card, Grid, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core"
+
 import { FidorAccount, FidorCustomer } from "@/@types/fidor"
 import { User } from "@/@types/types"
 import { useGetFidorAccountsQuery } from "@/api/users"
 import Shell from "@/components/Shell"
 import { withSession } from "@/utils/middlewares"
-import { Card, Grid, Skeleton, Stack, Text, Title, useMantineTheme } from "@mantine/core"
 
 type Props = {
 	user: User
@@ -67,11 +68,11 @@ export default function Profile({ user }: Props) {
 					year: "numeric",
 					hour: "2-digit",
 					minute: "2-digit",
-					second: "2-digit"
+					second: "2-digit",
 				})
 				.replace(" at ", ", ")
 		} else if ([true, false, null, undefined].includes(value)) {
-			return (value + "")[0]!.toUpperCase() + (value + "").substring(1)
+			return (value + "")[0]?.toUpperCase() + (value + "").substring(1)
 		} else if (typeof value === "object") {
 			return JSON.stringify(value)
 		} else {
@@ -110,7 +111,7 @@ export default function Profile({ user }: Props) {
 									<Text weight={700}>
 										{key
 											.split("_")
-											.map(w => w[0]!.toUpperCase() + w.substring(1))
+											.map(w => w[0]?.toUpperCase() + w.substring(1))
 											.join(" ")}
 									</Text>
 									{account ? (
@@ -151,7 +152,7 @@ export default function Profile({ user }: Props) {
 										{key
 											.replace("adr", "address")
 											.split("_")
-											.map(w => w[0]!.toUpperCase() + w.substring(1))
+											.map(w => w[0]?.toUpperCase() + w.substring(1))
 											.join(" ")}
 									</Text>
 									{customer ? (
@@ -182,12 +183,12 @@ export const getServerSideProps = withSession<Props>(async ({ user }) => {
 	if (user) {
 		return {
 			props: {
-				user
-			}
+				user,
+			},
 		}
 	} else {
 		return {
-			notFound: true
+			notFound: true,
 		}
 	}
 })
