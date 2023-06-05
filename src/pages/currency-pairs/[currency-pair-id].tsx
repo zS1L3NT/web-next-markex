@@ -1,6 +1,27 @@
 import Head from "next/head"
+import Image from "next/image"
 import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
+
+import {
+	Box,
+	Button,
+	Center,
+	Divider,
+	Flex,
+	NumberInput,
+	SegmentedControl,
+	Skeleton,
+	Stack,
+	Text,
+	Title,
+	useMantineTheme
+} from "@mantine/core"
+import { useForm } from "@mantine/form"
+import { useMediaQuery, usePrevious } from "@mantine/hooks"
+import { notifications } from "@mantine/notifications"
+import { TransactionType } from "@prisma/client"
+import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
 
 import { User } from "@/@types/types"
 import { useCreateAppTransactionMutation } from "@/api/transactions"
@@ -9,15 +30,6 @@ import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import { withSession } from "@/utils/middlewares"
-import {
-	Box, Button, Center, Divider, Flex, NumberInput, SegmentedControl, Skeleton, Stack, Text, Title,
-	useMantineTheme
-} from "@mantine/core"
-import { useForm } from "@mantine/form"
-import { useMediaQuery, usePrevious } from "@mantine/hooks"
-import { notifications } from "@mantine/notifications"
-import { TransactionType } from "@prisma/client"
-import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
 
 type Props = {
 	user: User | null
@@ -162,7 +174,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 
 	useEffect(() => {
 		setCurrencyPairs([currencyPair])
-	}, [currencyPair])
+	}, [currencyPair, setCurrencyPairs])
 
 	useEffect(() => {
 		if (price && previousPrice && currencyPair === previousCurrencyPair) {
@@ -179,7 +191,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const onSubmit = form.onSubmit(async values => {
 		if (price && values.amount) {
 			const result = await createAppTransaction({
-				id: URL.createObjectURL(new Blob([])).split("/").at(-1)!,
+				id: URL.createObjectURL(new Blob([])).split("/").at(-1) ?? "",
 				currency_pair: currencyPair,
 				type: values.mode as TransactionType,
 				amount,
@@ -239,11 +251,12 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								<Stack
 									sx={{ flexDirection: "row", alignItems: "center" }}
 									spacing="0.5rem">
-									<Text
-										lh={1}
-										fz="51px">
-										{CURRENCY_FLAGS[base]}
-									</Text>
+									<Image
+										src={CURRENCY_FLAGS[base]}
+										alt={base}
+										width={48}
+										height={36}
+									/>
 									{base}
 								</Stack>
 								<IconArrowsHorizontal size={34} />
@@ -251,11 +264,12 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 									sx={{ flexDirection: "row", alignItems: "center" }}
 									spacing="0.5rem">
 									{quote}
-									<Text
-										lh={1}
-										fz="51px">
-										{CURRENCY_FLAGS[quote]}
-									</Text>
+									<Image
+										src={CURRENCY_FLAGS[quote]}
+										alt={quote}
+										width={48}
+										height={36}
+									/>
 								</Stack>
 							</Flex>
 						</Title>
@@ -414,7 +428,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								hideControls
 								onInput={e =>
 									(e.currentTarget.value = e.currentTarget.value.replace(
-										/[^0-9\.]/g,
+										/[^0-9\\.]/g,
 										""
 									))
 								}
@@ -491,7 +505,7 @@ export const getServerSideProps = withSession<Props>(async ({ user, params }) =>
 	return {
 		props: {
 			user,
-			currencyPair: params!["currency-pair-id"]
+			currencyPair: params["currency-pair-id"]
 				.toUpperCase()
 				.replace("-", "_") as CURRENCY_PAIR
 		}

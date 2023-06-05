@@ -1,8 +1,10 @@
+import Image from "next/image"
 import { ForwardedRef, forwardRef, useEffect, useImperativeHandle, useState } from "react"
 
-import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
 import { Button, Checkbox, Flex, Grid, Modal } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
+
+import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
 
 export type EventsFiltersModalRef = {
 	open: () => void
@@ -48,7 +50,18 @@ export default forwardRef(function EventsFiltersModal(
 								key={c}
 								span={4}>
 								<Checkbox
-									label={CURRENCY_FLAGS[c] + " " + c}
+									label={
+										<>
+											<Image
+												style={{ marginRight: 8 }}
+												src={CURRENCY_FLAGS[c]}
+												alt={c}
+												height={24}
+												width={32}
+											/>
+											{c}
+										</>
+									}
 									value={c}
 								/>
 							</Grid.Col>

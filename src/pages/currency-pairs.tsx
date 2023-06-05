@@ -1,6 +1,21 @@
 import Head from "next/head"
+import Image from "next/image"
 import Link from "next/link"
 import { CSSProperties, useContext, useEffect, useState } from "react"
+
+import {
+	ActionIcon,
+	Box,
+	Flex,
+	Loader,
+	Skeleton,
+	Stack,
+	Table,
+	Title,
+	useMantineTheme
+} from "@mantine/core"
+import { usePrevious } from "@mantine/hooks"
+import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
 
 import { OandaPrice } from "@/@types/oanda"
 import { User } from "@/@types/types"
@@ -10,11 +25,6 @@ import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/const
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import UserContext from "@/contexts/UserContext"
 import { withSession } from "@/utils/middlewares"
-import {
-	ActionIcon, Box, Flex, Loader, Skeleton, Stack, Table, Text, Title, useMantineTheme
-} from "@mantine/core"
-import { usePrevious } from "@mantine/hooks"
-import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
 
 type Props = {
 	user: User | null
@@ -139,7 +149,12 @@ function CurrencyPair({
 						<Stack
 							sx={{ flexDirection: "row", alignItems: "center" }}
 							spacing="0.5rem">
-							<Text fz="1.25rem">{CURRENCY_FLAGS[base]}</Text>
+							<Image
+								src={CURRENCY_FLAGS[base]}
+								alt={base}
+								width={32}
+								height={24}
+							/>
 							{base}
 						</Stack>
 						<IconArrowsHorizontal size={16} />
@@ -147,7 +162,12 @@ function CurrencyPair({
 							sx={{ flexDirection: "row", alignItems: "center" }}
 							spacing="0.5rem">
 							{quote}
-							<Text fz="1.25rem">{CURRENCY_FLAGS[quote]}</Text>
+							<Image
+								src={CURRENCY_FLAGS[quote]}
+								alt={quote}
+								width={32}
+								height={24}
+							/>
 						</Stack>
 					</Flex>
 				</Link>
@@ -174,7 +194,7 @@ export default function CurrencyPairs({ user }: Props) {
 
 	useEffect(() => {
 		setCurrencyPairs([...CURRENCY_PAIRS])
-	}, [])
+	}, [setCurrencyPairs])
 
 	const numericHeaderStyle: CSSProperties = {
 		width: "10%",

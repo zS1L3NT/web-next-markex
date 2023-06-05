@@ -1,18 +1,34 @@
 import { AnimatePresence, motion } from "framer-motion"
+import Image from "next/image"
 import Link from "next/link"
 import { useContext, useEffect } from "react"
+
+import {
+	ActionIcon,
+	Box,
+	Button,
+	createStyles,
+	Divider,
+	Navbar as MantineNavbar,
+	ScrollArea,
+	Stack,
+	Text,
+	Title,
+	useMantineTheme
+} from "@mantine/core"
+import { useMediaQuery } from "@mantine/hooks"
+import {
+	IconArrowsHorizontal,
+	IconCurrency,
+	IconDashboard,
+	IconList,
+	IconWallet,
+	IconX
+} from "@tabler/icons-react"
 
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import NavigatorContext from "@/contexts/NavigatorContext"
 import UserContext from "@/contexts/UserContext"
-import {
-	ActionIcon, Box, Button, createStyles, Divider, Navbar as MantineNavbar, ScrollArea, Stack,
-	Text, Title, useMantineTheme
-} from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
-import {
-	IconArrowsHorizontal, IconCurrency, IconDashboard, IconList, IconWallet, IconX
-} from "@tabler/icons-react"
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
 	button: {
@@ -34,9 +50,9 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 	return (
 		<Button
 			sx={{
-				width: opened ? "100%" : 46,
-				paddingLeft: opened ? 12 : 6,
-				paddingRight: opened ? 12 : 6,
+				width: opened ? "100%" : 50,
+				paddingLeft: opened ? 12 : 4,
+				paddingRight: opened ? 12 : 4,
 				"& .mantine-Button-label": {
 					width: "100%",
 					position: "relative",
@@ -55,12 +71,16 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 			size="md"
 			component={Link}
 			href={"/currency-pairs/" + currencyPair.toLowerCase().replace("_", "-")}>
-			<Text
-				left={opened ? 12 : -4}
-				top={opened ? "initial" : 0}
-				fz="1.5rem">
-				{CURRENCY_FLAGS[base]}
-			</Text>
+			<Image
+				style={{
+					left: opened ? 12 : 0,
+					top: opened ? "initial" : 2
+				}}
+				src={CURRENCY_FLAGS[base]}
+				alt={base}
+				height={18}
+				width={24}
+			/>
 			<AnimatePresence>
 				{opened && (
 					<motion.div
@@ -90,12 +110,16 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 					</motion.div>
 				)}
 			</AnimatePresence>
-			<Text
-				right={opened ? 12 : -4}
-				bottom={opened ? "initial" : 0}
-				fz="1.5rem">
-				{CURRENCY_FLAGS[quote]}
-			</Text>
+			<Image
+				style={{
+					right: opened ? 12 : 0,
+					bottom: opened ? "initial" : 2
+				}}
+				src={CURRENCY_FLAGS[quote]}
+				alt={quote}
+				height={18}
+				width={24}
+			/>
 		</Button>
 	)
 }
@@ -120,13 +144,13 @@ export default function Navbar({
 		if (!isAboveLg) {
 			setOpened(false)
 		}
-	}, [isAboveLg])
+	}, [setOpened, isAboveLg])
 
 	useEffect(() => {
 		if (isBelowXs) {
 			setOpened(true)
 		}
-	}, [isBelowXs])
+	}, [setOpened, isBelowXs])
 
 	return (
 		<MantineNavbar

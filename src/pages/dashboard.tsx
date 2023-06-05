@@ -1,7 +1,26 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Head from "next/head"
+import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useMemo, useRef, useState } from "react"
+
+import {
+	ActionIcon,
+	Badge,
+	Box,
+	Card,
+	Flex,
+	Grid,
+	Image as MantineImage,
+	Loader,
+	SegmentedControl,
+	Stack,
+	Table,
+	Text,
+	Title,
+	useMantineTheme
+} from "@mantine/core"
+import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
 import { User } from "@/@types/types"
@@ -10,14 +29,9 @@ import EventHistoryModal, { EventHistoryModalRef } from "@/components/Modals/Eve
 import EventsDatesModal, { EventsDatesModalRef } from "@/components/Modals/EventsDatesModal"
 import EventsFiltersModal, { EventsFiltersModalRef } from "@/components/Modals/EventsFiltersModal"
 import Shell from "@/components/Shell"
-import { CURRENCIES, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
+import { CURRENCIES, CURRENCY, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewportState from "@/hooks/useIsInViewportState"
 import { withSession } from "@/utils/middlewares"
-import {
-	ActionIcon, Badge, Box, Card, Flex, Grid, Image, Loader, SegmentedControl, Stack, Table, Text,
-	Title, useMantineTheme
-} from "@mantine/core"
-import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
 type Props = {
 	user: User | null
@@ -53,7 +67,7 @@ export default function Dashboard({ user }: Props) {
 		const map = Object.fromEntries(events) as Record<string, FXEmpireEvent[]>
 		return Object.keys(map)
 			.sort()
-			.map(d => [new Date(d), ...map[d]!])
+			.map(d => [new Date(d), ...(map[d] ?? [])])
 			.flat()
 	}, [events])
 	const eventHistoryModalRef = useRef<EventHistoryModalRef>(null)
@@ -84,7 +98,7 @@ export default function Dashboard({ user }: Props) {
 			setIsAtBottom(false)
 			setIsFetchingLock(false)
 		}
-	}, [eventsQuery, page])
+	}, [setIsAtBottom, eventsQuery, page])
 
 	useEffect(() => {
 		setPage(1)
@@ -123,11 +137,11 @@ export default function Dashboard({ user }: Props) {
 							component={Link}
 							href={n.FullUrl}>
 							<Card.Section withBorder>
-								<Image
+								<MantineImage
 									style={{ objectFit: "contain" }}
 									src={n.ImageUrl}
-									height={180}
 									alt={n.Title}
+									height={180}
 								/>
 							</Card.Section>
 
@@ -249,7 +263,7 @@ export default function Dashboard({ user }: Props) {
 									const event = eod
 									const currency = CURRENCIES.find(
 										c => event.country === FXEMPIRE_COUNTRIES[c]
-									)!
+									) as CURRENCY
 									return (
 										<motion.tr
 											key={event.id}
@@ -263,7 +277,12 @@ export default function Dashboard({ user }: Props) {
 												})}
 											</td>
 											<td>
-												{CURRENCY_FLAGS[currency]}
+												<Image
+													src={CURRENCY_FLAGS[currency]}
+													alt={currency}
+													width={32}
+													height={24}
+												/>
 												{" " + currency}
 											</td>
 											<Box
@@ -284,7 +303,7 @@ export default function Dashboard({ user }: Props) {
 														onClick={() => {
 															eventHistoryModalRef.current?.open({
 																country: event.country,
-																category: event.category!
+																category: event.category ?? ""
 															})
 														}}>
 														<IconHistory size={14} />
@@ -295,9 +314,9 @@ export default function Dashboard({ user }: Props) {
 											<td>
 												<Badge
 													color={
-														[, "green", "yellow", "red"][event.impact]!
+														["", "green", "yellow", "red"][event.impact]
 													}>
-													{[, "Low", "Medium", "High"][event.impact]}
+													{["", "Low", "Medium", "High"][event.impact]}
 												</Badge>
 											</td>
 											<td
