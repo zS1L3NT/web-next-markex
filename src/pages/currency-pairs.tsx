@@ -98,7 +98,12 @@ function CurrencyPair({
 		if ("data" in appUser) {
 			setUser({
 				...user,
-				app: appUser.data,
+				app: {
+					...user.app,
+					bookmarks: user.app.bookmarks.includes(currencyPair)
+					? user.app.bookmarks.filter(b => b !== currencyPair)
+					: [...user.app.bookmarks, currencyPair],
+				},
 			})
 		}
 	}
