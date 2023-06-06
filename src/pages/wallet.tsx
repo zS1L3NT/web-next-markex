@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Head from "next/head"
+import Image from "next/image"
 import { useRouter } from "next/router"
 import { useContext, useMemo, useState } from "react"
 
@@ -196,13 +197,20 @@ export default function Wallet({ user }: Props) {
 								md={6}
 								span={21}>
 								<Card
+								sx={{
+									display: "flex",
+									flexDirection: "column",
+									alignItems: "center",
+									gap: "0.5rem",
+								}}
 									withBorder
 									p="xs">
-									<Text
-										align="center"
-										truncate>
-										{CURRENCY_FLAGS[c]} {c}{" "}
-									</Text>
+									<Image
+										src={CURRENCY_FLAGS[c]}
+										alt={c}
+										width={32}
+										height={24}
+									/>
 									<Text
 										align="center"
 										weight={700}
