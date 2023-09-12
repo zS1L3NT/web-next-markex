@@ -7,5 +7,7 @@ declare namespace NodeJS {
 		readonly FIDOR_CLIENT_ID: string
 		readonly FIDOR_CLIENT_SECRET: string
 		readonly FIDOR_REDIRECT_URI: string
+		readonly NEXT_PUBLIC_APCA_API_KEY_ID: string
+		readonly NEXT_PUBLIC_APCA_API_SECRET_KEY: string
 	}
 }
