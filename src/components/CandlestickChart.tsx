@@ -1,35 +1,30 @@
 import Highcharts from "highcharts/highstock"
 import HighchartsReact from "highcharts-react-official"
-import { useEffect, useRef, useState } from "react"
+import { useRef, useEffect, useState } from "react"
 
-import { Flex, Loader, useMantineTheme } from "@mantine/core"
+import { useMantineTheme } from "@mantine/core"
 import { useMediaQuery, usePrevious } from "@mantine/hooks"
 
-import { useGetOandaCandlesQuery } from "@/api/prices"
-import { CURRENCY_PAIR } from "@/constants"
-
-// There is some bug where charts show the full extremes for a split second before setting the extremes
 export default function CandlestickChart({
 	type,
-	currencyPair,
-	period,
+	seriesName,
+	candles,
+	candlesAreFetching,
+	units = undefined,
+	status = undefined,
+	period = undefined,
 }: {
 	type: "candlestick" | "ohlc"
-	currencyPair: CURRENCY_PAIR | null
-	period: "H1" | "D" | "W" | "M"
+	seriesName: string
+	candles: [number, number, number, number, number][]
+	candlesAreFetching: boolean
+	units?: [[string, [number]]] | undefined
+	status?: string | undefined
+	period?: string | undefined
 }) {
 	const theme = useMantineTheme()
 
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
-
-	const {
-		data: candles,
-		isFetching: candlesAreFetching,
-		status: candlesStatus,
-	} = useGetOandaCandlesQuery(
-		{ currencyPair: currencyPair as CURRENCY_PAIR, period },
-		{ skip: !currencyPair, pollingInterval: 60_000 },
-	)
 
 	const [opacity, setOpacity] = useState(0)
 	const ref = useRef<HighchartsReact.RefObject>(null)
@@ -39,7 +34,7 @@ export default function CandlestickChart({
 	 * If the candles were fetching, then I don't want to animate the navigator because it will look weird
 	 * If the candles were not fetching, then I do want to animate the navigator when switching periods
 	 */
-	const candlesWereFetching = usePrevious(candlesStatus) === "pending"
+	const candlesWereFetching = usePrevious(status) === "pending"
 
 	useEffect(() => {
 		const navigator = ref.current?.chart?.xAxis?.[0]
@@ -47,8 +42,8 @@ export default function CandlestickChart({
 		const end = candles?.at(-1)
 		if (navigator && start && end) {
 			navigator.setExtremes(
-				new Date(start.time).getTime(),
-				new Date(end.time).getTime(),
+				new Date(start[0]).getTime(),
+				new Date(end[0]).getTime(),
 				true,
 				!candlesWereFetching,
 			)
@@ -78,7 +73,7 @@ export default function CandlestickChart({
 		}
 	}, [opacity])
 
-	return candles && !candlesAreFetching ? (
+	return (
 		<HighchartsReact
 			ref={ref}
 			highcharts={Highcharts}
@@ -154,39 +149,15 @@ export default function CandlestickChart({
 					series: [
 						{
 							type,
-							name: currencyPair?.replace("_", " / ") ?? "",
-							data: candles.map(c => [
-								new Date(c.time).getTime(),
-								c.mid.o,
-								c.mid.h,
-								c.mid.l,
-								c.mid.c,
-							]),
+							name: seriesName,
+							data: candles,
 							dataGrouping: {
-								units: [
-									period === "H1" ? ["hour", [1]] : null,
-									period === "D" ? ["day", [1]] : null,
-									period === "W" ? ["week", [1]] : null,
-									period === "M" ? ["month", [1]] : null,
-								].filter(Boolean) as [[string, [number]]],
+								units: units,
 							},
 						},
 					],
 				} satisfies Highcharts.Options
 			}
 		/>
-	) : (
-		<Flex
-			sx={{
-				width: "100%",
-				height: "100%",
-				justifyContent: "center",
-				alignItems: "center",
-			}}>
-			<Loader
-				size={24}
-				color="gray"
-			/>
-		</Flex>
 	)
 }

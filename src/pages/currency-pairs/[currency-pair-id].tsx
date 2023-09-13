@@ -25,7 +25,7 @@ import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@ta
 
 import { User } from "@/@types/types"
 import { useCreateAppTransactionMutation } from "@/api/transactions"
-import CandlestickChart from "@/components/CandlestickChart"
+import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
@@ -337,7 +337,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								height: isBelowSm ? 300 : "calc(100% - 8px) !important",
 							},
 						}}>
-						<CandlestickChart
+						<CurrencyChart
 							type={type}
 							currencyPair={currencyPair}
 							period={period}
