@@ -3,6 +3,7 @@ import { arrayOf, type } from "arktype"
 import { OandaCandle, OandaPrice } from "@/@types/oanda"
 import api, { ensureResponseType } from "@/api/api"
 import { CURRENCY_PAIR } from "@/constants"
+import { AlpacaBar, AlpacaInterval } from "@/@types/alpaca"
 
 const MARKET_API_ENDPOINT = "https://data.alpaca.markets/v2/stocks"
 
@@ -66,6 +67,31 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res =>
 				ensureResponseType(type({ quote: { ap: "number", bp: "number" } }))(res),
+		}),
+		getAlpacaCandles: builder.query<
+			{
+				next_page_token: string | undefined
+				bars: AlpacaBar[]
+			},
+			{ symbol: string; start: string; interval: AlpacaInterval }
+		>({
+			query: ({ symbol, start, interval }) => ({
+				url:
+					`${MARKET_API_ENDPOINT}/${symbol}/bars?timeframe=${interval}&start=${start}` +
+					new URLSearchParams({
+						timeframe: interval,
+						start: start,
+					}).toString(),
+				method: "GET",
+				headers: {
+					"Apca-Api-Key-Id": `${process.env.NEXT_PUBLIC_APCA_API_KEY_ID}`,
+					"Apca-Api-Secret-Key": `${process.env.NEXT_PUBLIC_APCA_API_SECRET_KEY}`,
+				},
+			}),
+			transformResponse: res =>
+				ensureResponseType(
+					type({ bars: arrayOf(AlpacaBar), next_page_token: "string|undefined" }),
+				)(res),
 		}),
 	}),
 })
