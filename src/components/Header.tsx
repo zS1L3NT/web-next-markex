@@ -44,7 +44,7 @@ export default function Header() {
 
 	const getResults = () => {
 		const currencies = CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))
-		const results = [...(symbols ?? []), ...currencies]
+		const results = [...(symbols ?? []).filter(x => x.tradable), ...currencies]
 		return results
 			.map(item => {
 				return {
