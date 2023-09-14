@@ -13,14 +13,16 @@ export default function CandlestickChart({
 	units = undefined,
 	status = undefined,
 	period = undefined,
+	height = undefined
 }: {
 	type: "candlestick" | "ohlc"
 	seriesName: string
 	candles: [number, number, number, number, number][]
 	candlesAreFetching: boolean
-	units?: [[string, [number]]] | undefined
+	units?: any[] | undefined
 	status?: string | undefined
 	period?: string | undefined
+	height?: number | undefined
 }) {
 	const theme = useMantineTheme()
 
@@ -85,7 +87,7 @@ export default function CandlestickChart({
 					},
 					chart: {
 						backgroundColor: theme.colors.dark[8],
-						height: isBelowSm ? 300 : null,
+						height: isBelowSm ? 300 : height,
 						style: {
 							fontFamily: "inherit",
 							// Default all chart opacities to 0, then animate them to 1
