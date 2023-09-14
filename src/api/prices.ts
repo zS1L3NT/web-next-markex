@@ -70,17 +70,17 @@ const prices = api.injectEndpoints({
 		}),
 		getAlpacaCandles: builder.query<
 			{
-				next_page_token: string | undefined
+				next_page_token: string | null
 				bars: AlpacaBar[]
 			},
-			{ symbol: string; start: string; interval: AlpacaInterval }
+			{ symbol: string; interval: AlpacaInterval }
 		>({
-			query: ({ symbol, start, interval }) => ({
+			query: ({ symbol, interval }) => ({
 				url:
-					`${MARKET_API_ENDPOINT}/${symbol}/bars?timeframe=${interval}&start=${start}` +
+					`${MARKET_API_ENDPOINT}/${symbol}/bars?` +
 					new URLSearchParams({
 						timeframe: interval,
-						start: start,
+						start: new Date(Date.now() - (30 * 24 * 60 * 60 * 1000) / 2).toISOString(),
 					}).toString(),
 				method: "GET",
 				headers: {
@@ -90,7 +90,7 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res =>
 				ensureResponseType(
-					type({ bars: arrayOf(AlpacaBar), next_page_token: "string|undefined" }),
+					type({ bars: arrayOf(AlpacaBar), next_page_token: "string|null", symbol: "string" }),
 				)(res),
 		}),
 	}),
@@ -105,4 +105,6 @@ export const {
 	useLazyGetLatestQuoteQuery,
 	useGetLatestTradeQuery,
 	useLazyGetLatestTradeQuery,
+	useGetAlpacaCandlesQuery,
+	useLazyGetAlpacaCandlesQuery,
 } = prices
