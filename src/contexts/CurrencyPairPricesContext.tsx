@@ -70,56 +70,56 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 				return
 			}
 
-			// Acknowledgement of subscription or unsubscription
-			if (events.every(e => e.type === 3)) {
-				const added = events
-					.filter(e => e.target === "subscribe")
-					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
-					.sort()
-				const removed = events
-					.filter(e => e.target === "unsubscribe")
-					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
-					.sort()
-
-				if (pendingCurrencyPairs) {
-					const difference = diff(currencyPairs, pendingCurrencyPairs)
-					if (
-						JSON.stringify(added) === JSON.stringify(difference.added.sort()) &&
-						JSON.stringify(removed) === JSON.stringify(difference.removed.sort())
-					) {
-						setPendingCurrencyPairs(null)
-						setCurrencyPairs(pendingCurrencyPairs)
-					} else {
-						console.warn("Uneqal lists of currency pairs", {
-							currencyPairs,
-							pendingCurrencyPairs,
-							events,
-						})
-						notifications.show({
-							withCloseButton: true,
-							autoClose: 10000,
-							title: "WebSocket Subscription Warning",
-							message: "Uneqal lists of currency pairs",
-							color: "orange",
-							icon: <IconExclamationMark />,
-						})
-					}
-				} else {
-					console.warn("No pending currency pairs but received subscription events", {
-						events,
-					})
-					notifications.show({
-						withCloseButton: true,
-						autoClose: 10000,
-						title: "WebSocket Subscription Warning",
-						message: "No pending currency pairs but received subscription events",
-						color: "orange",
-						icon: <IconExclamationMark />,
-					})
-				}
-
-				return
-			}
+			//			// Acknowledgement of subscription or unsubscription
+			//			if (events.every(e => e.type === 3)) {
+			//				const added = events
+			//					.filter(e => e.target === "subscribe")
+			//					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
+			//					.sort()
+			//				const removed = events
+			//					.filter(e => e.target === "unsubscribe")
+			//					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
+			//					.sort()
+			//
+			//				if (pendingCurrencyPairs) {
+			//					const difference = diff(currencyPairs, pendingCurrencyPairs)
+			//					if (
+			//						JSON.stringify(added) === JSON.stringify(difference.added.sort()) &&
+			//						JSON.stringify(removed) === JSON.stringify(difference.removed.sort())
+			//					) {
+			//						setPendingCurrencyPairs(null)
+			//						setCurrencyPairs(pendingCurrencyPairs)
+			//					} else {
+			//						console.warn("Unequal lists of currency pairs", {
+			//							currencyPairs,
+			//							pendingCurrencyPairs,
+			//							events,
+			//						})
+			//						notifications.show({
+			//							withCloseButton: true,
+			//							autoClose: 10000,
+			//							title: "WebSocket Subscription Warning",
+			//							message: "Unequal lists of currency pairs",
+			//							color: "orange",
+			//							icon: <IconExclamationMark />,
+			//						})
+			//					}
+			//				} else {
+			//					console.warn("No pending currency pairs but received subscription events", {
+			//						events,
+			//					})
+			//					notifications.show({
+			//						withCloseButton: true,
+			//						autoClose: 10000,
+			//						title: "WebSocket Subscription Warning",
+			//						message: "No pending currency pairs but received subscription events",
+			//						color: "orange",
+			//						icon: <IconExclamationMark />,
+			//					})
+			//				}
+			//
+			//				return
+			//			}
 
 			// Acknowledgement of connection still being alive
 			if (events.length === 1 && events[0].type === 6) {
@@ -202,11 +202,35 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 			let events = ""
 
 			for (const added of difference.added) {
-				events += `{"arguments":["oanda_priceMessage","instrumentPrice_OAP_${added}"],"target":"subscribe","type":1}${CHAR}`
+				events +=
+					JSON.stringify({
+						arguments: [
+							"oanda_priceMessage",
+							{
+								groupName: `instrumentPrice_OAP_${added}`,
+								ApiKey: "4b12e6bb-7ecd-49f7-9bbc-2e03644ce41f",
+							},
+						],
+						invocationId: "0",
+						target: "subscribe",
+						type: 1,
+					}) + CHAR
 			}
 
 			for (const removed of difference.removed) {
-				events += `{"arguments":["oanda_priceMessage","instrumentPrice_OAP_${removed}"],"target":"unsubscribe","type":1}${CHAR}`
+				events +=
+					JSON.stringify({
+						arguments: [
+							"oanda_priceMessage",
+							{
+								groupName: `instrumentPrice_OAP_${removed}`,
+								ApiKey: "4b12e6bb-7ecd-49f7-9bbc-2e03644ce41f",
+							},
+						],
+						invocationId: "0",
+						target: "unsubscribe",
+						type: 1,
+					}) + CHAR
 			}
 
 			if (events) {
