@@ -1,7 +1,6 @@
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useContext, forwardRef } from "react"
-import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
+import { forwardRef,useContext } from "react"
 
 import {
 	ActionIcon,
@@ -10,16 +9,17 @@ import {
 	Button,
 	Drawer,
 	Flex,
+	Group,
 	Header as MantineHeader,
 	Menu,
 	Select,
-	Group,
 	Text,
 	useMantineTheme,
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
 import { IconLogout, IconMenu2, IconSearch, IconUser } from "@tabler/icons-react"
 
+import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
 import { useGetFidorAvailableQuery } from "@/api/users"
 import { CURRENCY_PAIRS } from "@/constants"
 import UserContext from "@/contexts/UserContext"
@@ -111,7 +111,7 @@ export default function Header() {
 							limit={10}
 							data={getResults()}
 							onChange={e => {
-								if (e !== null && e.startsWith("/currency-pairs")) {
+								if (e) {
 									router.push(e)
 								}
 							}}
