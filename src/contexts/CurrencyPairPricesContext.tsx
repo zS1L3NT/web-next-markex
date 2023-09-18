@@ -70,56 +70,56 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 				return
 			}
 
-			//			// Acknowledgement of subscription or unsubscription
-			//			if (events.every(e => e.type === 3)) {
-			//				const added = events
-			//					.filter(e => e.target === "subscribe")
-			//					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
-			//					.sort()
-			//				const removed = events
-			//					.filter(e => e.target === "unsubscribe")
-			//					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
-			//					.sort()
-			//
-			//				if (pendingCurrencyPairs) {
-			//					const difference = diff(currencyPairs, pendingCurrencyPairs)
-			//					if (
-			//						JSON.stringify(added) === JSON.stringify(difference.added.sort()) &&
-			//						JSON.stringify(removed) === JSON.stringify(difference.removed.sort())
-			//					) {
-			//						setPendingCurrencyPairs(null)
-			//						setCurrencyPairs(pendingCurrencyPairs)
-			//					} else {
-			//						console.warn("Unequal lists of currency pairs", {
-			//							currencyPairs,
-			//							pendingCurrencyPairs,
-			//							events,
-			//						})
-			//						notifications.show({
-			//							withCloseButton: true,
-			//							autoClose: 10000,
-			//							title: "WebSocket Subscription Warning",
-			//							message: "Unequal lists of currency pairs",
-			//							color: "orange",
-			//							icon: <IconExclamationMark />,
-			//						})
-			//					}
-			//				} else {
-			//					console.warn("No pending currency pairs but received subscription events", {
-			//						events,
-			//					})
-			//					notifications.show({
-			//						withCloseButton: true,
-			//						autoClose: 10000,
-			//						title: "WebSocket Subscription Warning",
-			//						message: "No pending currency pairs but received subscription events",
-			//						color: "orange",
-			//						icon: <IconExclamationMark />,
-			//					})
-			//				}
-			//
-			//				return
-			//			}
+			// Acknowledgement of subscription or unsubscription
+			if (events.every(e => e.type === 3)) {
+				const added = events
+					.filter(e => e.target === "subscribe")
+					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
+					.sort()
+				const removed = events
+					.filter(e => e.target === "unsubscribe")
+					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
+					.sort()
+
+				if (pendingCurrencyPairs) {
+					const difference = diff(currencyPairs, pendingCurrencyPairs)
+					if (
+						JSON.stringify(added) === JSON.stringify(difference.added.sort()) &&
+						JSON.stringify(removed) === JSON.stringify(difference.removed.sort())
+					) {
+						setPendingCurrencyPairs(null)
+						setCurrencyPairs(pendingCurrencyPairs)
+					} else {
+						console.warn("Unequal lists of currency pairs", {
+							currencyPairs,
+							pendingCurrencyPairs,
+							events,
+						})
+						// notifications.show({
+						// 	withCloseButton: true,
+						// 	autoClose: 10000,
+						// 	title: "WebSocket Subscription Warning",
+						// 	message: "Unequal lists of currency pairs",
+						// 	color: "orange",
+						// 	icon: <IconExclamationMark />,
+						// })
+					}
+				} else {
+					console.warn("No pending currency pairs but received subscription events", {
+						events,
+					})
+					// notifications.show({
+					// 	withCloseButton: true,
+					// 	autoClose: 10000,
+					// 	title: "WebSocket Subscription Warning",
+					// 	message: "No pending currency pairs but received subscription events",
+					// 	color: "orange",
+					// 	icon: <IconExclamationMark />,
+					// })
+				}
+
+				return
+			}
 
 			// Acknowledgement of connection still being alive
 			if (events.length === 1 && events[0].type === 6) {
@@ -140,14 +140,14 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 			}
 
 			console.warn("Unhandled WebSocket event", { events })
-			notifications.show({
-				withCloseButton: true,
-				autoClose: 10000,
-				title: "WebSocket Error",
-				message: "Unhandled WebSocket event",
-				color: "orange",
-				icon: <IconExclamationMark />,
-			})
+			// notifications.show({
+			// 	withCloseButton: true,
+			// 	autoClose: 10000,
+			// 	title: "WebSocket Error",
+			// 	message: "Unhandled WebSocket event",
+			// 	color: "orange",
+			// 	icon: <IconExclamationMark />,
+			// })
 		}
 
 		socket.onopen = () => {
