@@ -14,8 +14,8 @@ export default withApiSession(async ({ req, res, user }) => {
 			data: { ...req.body, user_id: user.id },
 		})
 
-		if (transaction.currency_pair) {
-			const [base, quote] = transaction.currency_pair.split("_") as [CURRENCY, CURRENCY]
+		if (transaction.instrument?.includes("_")) {
+			const [base, quote] = transaction.instrument.split("_") as [CURRENCY, CURRENCY]
 
 			await prisma.$transaction([
 				prisma.balance.upsert({
@@ -63,6 +63,57 @@ export default withApiSession(async ({ req, res, user }) => {
 								transaction.type === "sell"
 									? transaction.amount
 									: transaction.amount * transaction.price,
+						},
+					},
+				}),
+			])
+		} else if (transaction.instrument) {
+			await prisma.$transaction([
+				prisma.balance.upsert({
+					where: {
+						user_id_currency: {
+							user_id: user.id,
+							currency: transaction.instrument, // SGD
+						},
+					},
+					create: {
+						user_id: user.id,
+						currency: transaction.instrument,
+						amount:
+							transaction.type === "sell"
+								? transaction.amount * transaction.price
+								: 0, // Invalid case, just set to 0
+					},
+					update: {
+						amount: {
+							increment:
+								transaction.type === "sell"
+									? transaction.amount * transaction.price
+									: -transaction.amount * transaction.price,
+						},
+					},
+				}),
+				prisma.asset.upsert({
+					where: {
+						user_id_instrument: {
+							user_id: user.id,
+							instrument: transaction.instrument,
+						},
+					},
+					create: {
+						user_id: user.id,
+						instrument: transaction.instrument,
+						quantity:
+							transaction.type === "sell"
+								? 0 // Invalid case, just set to 0
+								: transaction.amount,
+					},
+					update: {
+						quantity: {
+							increment:
+								transaction.type === "sell"
+									? -transaction.amount
+									: transaction.amount,
 						},
 					},
 				}),

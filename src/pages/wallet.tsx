@@ -23,7 +23,7 @@ import {
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
-import { Transaction, TransactionType } from "@prisma/client"
+import { Transaction } from "@prisma/client"
 import { IconCheck, IconShoppingCart } from "@tabler/icons-react"
 
 import { FidorInternalTransfer } from "@/@types/fidor"
@@ -34,7 +34,7 @@ import {
 	useGetFidorInternalTransfersQuery,
 } from "@/api/transactions"
 import Shell from "@/components/Shell"
-import { CURRENCIES, CURRENCY, CURRENCY_FLAGS } from "@/constants"
+import { CURRENCIES, CURRENCY_FLAGS } from "@/constants"
 import UserContext from "@/contexts/UserContext"
 import { withSession } from "@/utils/middlewares"
 
@@ -67,7 +67,7 @@ function FidorToMarkex({ isDrawer = false }: { isDrawer?: boolean }) {
 			if ("data" in fidorResult) {
 				const appResult = await createAppTransaction({
 					id: uuid,
-					currency_pair: null,
+					instrument: null,
 					type: "buy",
 					amount,
 					price: 1,
@@ -156,12 +156,6 @@ export default function Wallet({ user }: Props) {
 	)
 	const [opened, { open, close }] = useDisclosure(false)
 
-	const getCurrency = (t: (typeof transactions)[number], tt: TransactionType): CURRENCY =>
-		(t.fidor?.currency as CURRENCY | undefined) ||
-		(t.app?.currency_pair
-			? (t.app.currency_pair.split("_")[Number(t.app.type === tt)] as CURRENCY)
-			: "SGD")
-
 	return (
 		<Shell user={user}>
 			<Head>
@@ -197,12 +191,12 @@ export default function Wallet({ user }: Props) {
 								md={6}
 								span={21}>
 								<Card
-								sx={{
-									display: "flex",
-									flexDirection: "column",
-									alignItems: "center",
-									gap: "0.5rem",
-								}}
+									sx={{
+										display: "flex",
+										flexDirection: "column",
+										alignItems: "center",
+										gap: "0.5rem",
+									}}
 									withBorder
 									p="xs">
 									<Image
@@ -237,55 +231,62 @@ export default function Wallet({ user }: Props) {
 								<tr>
 									<th>Transaction Date</th>
 									<th>Type</th>
-									<th>Paid</th>
-									<th>Received</th>
-									<th>Currency Pair</th>
+									<th>Order Type</th>
+									<th>Instrument</th>
 									<th>Price</th>
+									<th>Amount</th>
 								</tr>
 							</thead>
 							<tbody>
 								<AnimatePresence>
-									{transactions.map(t => (
-										<motion.tr
-											key={t.id}
-											layoutId={t.id}
-											style={{ background: theme.colors.dark[6] }}>
-											<td>
-												{t.date.toLocaleString("en-SG", {
-													year: "numeric",
-													month: "long",
-													day: "numeric",
-													hour: "numeric",
-													minute: "numeric",
-													second: "numeric",
-												})}
-											</td>
-											<td>
-												{t.app?.currency_pair === null ? (
-													<Badge color="green">Deposit</Badge>
-												) : t.app ? (
-													<Badge color="red">Exchange</Badge>
-												) : (
-													<Badge color="blue">Fidor</Badge>
-												)}
-											</td>
-											<td>
-												{(t.app?.amount ?? t.fidor?.amount)?.toFixed(5)}
-												{" " + getCurrency(t, "buy")}
-											</td>
-											<td>
-												{(
-													(t.app?.amount ?? t.fidor?.amount ?? 0) *
-													(t.app?.price ?? 0)
-												).toFixed(5)}
-												{" " + getCurrency(t, "sell")}
-											</td>
-											<td>
-												{t.app?.currency_pair?.replace("_", " / ") ?? "-"}
-											</td>
-											<td>{t.app?.price.toFixed(5) ?? "-"}</td>
-										</motion.tr>
-									))}
+									{transactions
+										.filter(t => !!t.app)
+										.map(t => (
+											<motion.tr
+												key={t.id}
+												layoutId={t.id}
+												style={{ background: theme.colors.dark[6] }}>
+												<td>
+													{t.date.toLocaleString("en-SG", {
+														year: "numeric",
+														month: "long",
+														day: "numeric",
+														hour: "numeric",
+														minute: "numeric",
+														second: "numeric",
+													})}
+												</td>
+												<td>
+													{t.app ? (
+														t.app.instrument === null ? (
+															<Badge color="green">Deposit</Badge>
+														) : t.app.instrument.includes("_") ? (
+															<Badge color="red">Currency</Badge>
+														) : (
+															<Badge color="red">Stock</Badge>
+														)
+													) : (
+														<Badge color="blue">Fidor</Badge>
+													)}
+												</td>
+												<td>
+													{t.app
+														? t.app.type === "buy"
+															? "Buy"
+															: "Sell"
+														: "-"}
+												</td>
+												<td>
+													{t.app?.instrument?.replace("_", " / ") ?? "-"}
+												</td>
+												<td>{t.app?.price.toFixed(5) ?? "-"}</td>
+												<td>
+													{t.app
+														? (t.app.price * t.app.amount).toFixed(5)
+														: "-"}
+												</td>
+											</motion.tr>
+										))}
 								</AnimatePresence>
 							</tbody>
 						</Table>

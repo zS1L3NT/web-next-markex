@@ -1,5 +1,5 @@
 datasource db {
-    provider = "postgresql"
+    provider = "cockroachdb"
     url      = env("DATABASE_URL")
 }
 
@@ -8,13 +8,13 @@ generator client {
 }
 
 model Transaction {
-    id            String          @id @default(uuid())
-    user_id       String
-    currency_pair String?
-    type          TransactionType
-    amount        Float
-    price         Float
-    created_at    DateTime        @default(now())
+    id         String          @id @default(uuid())
+    user_id    String
+    instrument String?
+    type       TransactionType
+    amount     Float
+    price      Float
+    created_at DateTime        @default(now())
 }
 
 model Balance {
@@ -23,6 +23,14 @@ model Balance {
     amount   Float
 
     @@unique([user_id, currency])
+}
+
+model Asset {
+    user_id  String
+    instrument String
+    quantity   Float
+
+    @@unique([user_id, instrument])
 }
 
 model Bookmark {

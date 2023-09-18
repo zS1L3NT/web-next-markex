@@ -192,7 +192,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 		if (price && values.amount) {
 			const result = await createAppTransaction({
 				id: URL.createObjectURL(new Blob([])).split("/").at(-1) ?? "",
-				currency_pair: currencyPair,
+				instrument: currencyPair,
 				type: values.mode as TransactionType,
 				amount,
 				price: values.mode === "sell" ? price.s : price.b,
