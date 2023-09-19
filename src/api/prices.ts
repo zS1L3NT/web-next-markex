@@ -3,7 +3,7 @@ import { arrayOf, type } from "arktype"
 import { OandaCandle, OandaPrice } from "@/@types/oanda"
 import api, { ensureResponseType } from "@/api/api"
 import { CURRENCY_PAIR } from "@/constants"
-import { AlpacaBar, AlpacaInterval } from "@/@types/alpaca"
+import { AlpacaBar, AlpacaInterval, AlpacaQuote } from "@/@types/alpaca"
 
 const MARKET_API_ENDPOINT = "https://data.alpaca.markets/v2/stocks"
 
@@ -56,7 +56,7 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res => ensureResponseType(type({ trade: { p: "number" } }))(res),
 		}),
-		getLatestQuote: builder.query<{ quote: { ap: number; bp: number } }, { symbol: string }>({
+		getLatestQuote: builder.query<{ quote: AlpacaQuote, symbol: string }, { symbol: string }>({
 			query: ({ symbol }) => ({
 				url: `${MARKET_API_ENDPOINT}/${symbol}/quotes/latest`,
 				method: "GET",
@@ -66,7 +66,7 @@ const prices = api.injectEndpoints({
 				},
 			}),
 			transformResponse: res =>
-				ensureResponseType(type({ quote: { ap: "number", bp: "number" } }))(res),
+				ensureResponseType(type({ quote: AlpacaQuote, symbol: "string" }))(res),
 		}),
 		getAlpacaCandles: builder.query<
 			{
