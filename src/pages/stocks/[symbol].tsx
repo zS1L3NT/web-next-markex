@@ -198,68 +198,75 @@ export default function Symbol({ user, symbol }: Props) {
 							/>
 						</Flex>
 					)}
+
 					{trends && trends.length > 0 && (
-						<HighchartsReact
-							highcharts={Highcharts}
-							options={
-								{
-									chart: {
-										type: "column",
-										backgroundColor: "transparent",
-									},
-									title: {
-										text: undefined,
-									},
-									legend: {
-										itemStyle: {
-											color: theme.colors.gray[5],
-										},
-										itemHoverStyle: {
-											color: theme.colors.gray[7],
-										},
-									},
-									xAxis: {
-										categories: trends.map(({ period }) => period),
-										gridLineColor: theme.colors.dark[5],
-										labels: {
-											style: {
-												color: theme.colors.gray[5],
-											},
-										},
-									},
-									yAxis: {
-										gridLineColor: theme.colors.dark[5],
-										labels: {
-											style: {
-												color: theme.colors.gray[5],
-											},
+						<>
+							<Divider
+								mt={"sm"}
+								mb={"lg"}
+							/>
+							<HighchartsReact
+								highcharts={Highcharts}
+								options={
+									{
+										chart: {
+											type: "column",
+											backgroundColor: "transparent",
 										},
 										title: {
-											text: "Sentiment",
+											text: undefined,
 										},
-									},
-									credits: {
-										enabled: false,
-									},
-									series: series as SeriesOptionsType[],
-									plotOptions: {
-										column: {
-											stacking: "normal",
+										legend: {
+											itemStyle: {
+												color: theme.colors.gray[5],
+											},
+											itemHoverStyle: {
+												color: theme.colors.gray[7],
+											},
 										},
-										series: {
-											borderWidth: 0,
+										xAxis: {
+											categories: trends.map(({ period }) => period),
+											gridLineColor: theme.colors.dark[5],
+											labels: {
+												style: {
+													color: theme.colors.gray[5],
+												},
+											},
 										},
-									},
-									colors: [
-										theme.colors.green[9],
-										theme.colors.green[7],
-										theme.colors.yellow[8],
-										theme.colors.pink[8],
-										theme.colors.red[8],
-									],
-								} satisfies Highcharts.Options
-							}
-						/>
+										yAxis: {
+											gridLineColor: theme.colors.dark[5],
+											labels: {
+												style: {
+													color: theme.colors.gray[5],
+												},
+											},
+											title: {
+												text: "Trends",
+											},
+										},
+										credits: {
+											enabled: false,
+										},
+										series: series as SeriesOptionsType[],
+										plotOptions: {
+											column: {
+												stacking: "normal",
+											},
+											series: {
+												borderWidth: 0,
+											},
+										},
+										colors: [
+											theme.colors.green[9],
+											theme.colors.green[7],
+											theme.colors.yellow[8],
+											theme.colors.pink[8],
+											theme.colors.red[8],
+										],
+									} satisfies Highcharts.Options
+								}
+							/>
+						</>
 					)}
 				</Flex>
 				<Divider
@@ -285,31 +292,35 @@ export default function Symbol({ user, symbol }: Props) {
 						/>
 					</Flex>
 					<Divider />
-					{metrics &&
-						Object.entries(metrics)
-							.filter(([key]) => key in metricKeyMappings)
-							.map(([key, value]) => {
-								return (
-									<Box
-										key={`${symbol}-${key}`}
-										sx={{
-											borderBottom: `1px solid ${theme.colors.gray[8]}`,
-										}}>
-										<Flex
-											pb="xs"
-											align={"center"}>
-											<Badge size="xs">
-												{metricKeyMappings[key as keyof FinnhubMetric]}
-											</Badge>
-											<div
-												style={{
-													flex: "auto",
-												}}></div>
-											<Text fz={"sm"}>{value}</Text>
-										</Flex>
-									</Box>
-								)
-							})}
+					{metrics && (
+						<>
+							<Text fw={500}>Key Metrics</Text>
+							{Object.entries(metrics)
+								.filter(([key]) => key in metricKeyMappings)
+								.map(([key, value]) => {
+									return (
+										<Box
+											key={`${symbol}-${key}`}
+											sx={{
+												borderBottom: `1px solid ${theme.colors.gray[8]}`,
+											}}>
+											<Flex
+												pb="xs"
+												align={"center"}>
+												<Badge size="xs">
+													{metricKeyMappings[key as keyof FinnhubMetric]}
+												</Badge>
+												<div
+													style={{
+														flex: "auto",
+													}}></div>
+												<Text fz={"sm"}>{value}</Text>
+											</Flex>
+										</Box>
+									)
+								})}
+						</>
+					)}
 				</Stack>
 			</Flex>
 		</Shell>
