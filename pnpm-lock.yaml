@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -80,6 +80,9 @@ dependencies:
   react-redux:
     specifier: ^8.0.5
     version: 8.0.5(@types/react-dom@18.2.4)(@types/react@18.2.6)(react-dom@18.2.0)(react@18.2.0)(redux@4.2.1)
+  react-use-websocket:
+    specifier: ^4.4.0
+    version: 4.4.0(react-dom@18.2.0)(react@18.2.0)
   typescript:
     specifier: 5.0.4
     version: 5.0.4
@@ -201,6 +204,7 @@ packages:
 
   /@emotion/memoize@0.7.4:
     resolution: {integrity: sha512-Ja/Vfqe3HpuzRsG1oBtWTHk2PGZ7GR+2Vz5iYGelAw8dx32K0y7PjVuxK6z1nMpZOqAFsRUPCkK1YjJ56qJlgw==}
+    requiresBuild: true
     dev: false
     optional: true
 
@@ -3075,6 +3079,16 @@ packages:
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
+      react: 18.2.0
+      react-dom: 18.2.0(react@18.2.0)
+    dev: false
+
+  /react-use-websocket@4.4.0(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-V48JEPMwTUp31oXxBZYTk27aHOHwTeYEhCOb2uPXwcnzolMkLacesRdu4TmEuN5QeuKRenEjCBMVKPsB98aaDg==}
+    peerDependencies:
+      react: '>= 18.0.0'
+      react-dom: '>= 18.0.0'
+    dependencies:
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
     dev: false

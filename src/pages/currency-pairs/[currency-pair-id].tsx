@@ -25,7 +25,7 @@ import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@ta
 
 import { User } from "@/@types/types"
 import { useCreateAppTransactionMutation } from "@/api/transactions"
-import CandlestickChart from "@/components/CandlestickChart"
+import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
@@ -192,7 +192,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 		if (price && values.amount) {
 			const result = await createAppTransaction({
 				id: URL.createObjectURL(new Blob([])).split("/").at(-1) ?? "",
-				currency_pair: currencyPair,
+				instrument: currencyPair,
 				type: values.mode as TransactionType,
 				amount,
 				price: values.mode === "sell" ? price.s : price.b,
@@ -337,7 +337,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 								height: isBelowSm ? 300 : "calc(100% - 8px) !important",
 							},
 						}}>
-						<CandlestickChart
+						<CurrencyChart
 							type={type}
 							currencyPair={currencyPair}
 							period={period}

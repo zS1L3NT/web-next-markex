@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { useContext } from "react"
+import { forwardRef,useContext } from "react"
 
 import {
 	ActionIcon,
@@ -9,14 +9,17 @@ import {
 	Button,
 	Drawer,
 	Flex,
+	Group,
 	Header as MantineHeader,
 	Menu,
 	Select,
+	Text,
 	useMantineTheme,
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
 import { IconLogout, IconMenu2, IconSearch, IconUser } from "@tabler/icons-react"
 
+import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
 import { useGetFidorAvailableQuery } from "@/api/users"
 import { CURRENCY_PAIRS } from "@/constants"
 import UserContext from "@/contexts/UserContext"
@@ -35,7 +38,52 @@ export default function Header() {
 		pollingInterval: 60_000,
 	})
 
+	const { data: symbols } = useGetAlpacaSymbolsQuery()
+
 	const [opened, { toggle, close }] = useDisclosure(false)
+
+	const getResults = () => {
+		const currencies = CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))
+		const results = [...(symbols ?? []).filter(x => x.tradable), ...currencies]
+		return results
+			.map(item => {
+				return {
+					label: typeof item !== "string" ? item.symbol : item,
+					description: typeof item !== "string" ? item.name : undefined,
+					value:
+						typeof item !== "string"
+							? `/stocks/${item.symbol}`
+							: `/currency-pairs/${item.toLowerCase().replace(" / ", "-")}`,
+				}
+			})
+			.sort((a, b) => {
+				return a.label.localeCompare(b.label)
+			})
+	}
+
+	interface ItemProps extends React.ComponentPropsWithoutRef<"div"> {
+		label: string
+		description: string | undefined
+	}
+
+	const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
+		({ description, label, ...others }: ItemProps, ref) => (
+			<div
+				ref={ref}
+				{...others}>
+				<Group noWrap>
+					<div>
+						<Text size="sm">{label}</Text>
+						<Text
+							size="xs"
+							opacity={0.65}>
+							{description}
+						</Text>
+					</div>
+				</Group>
+			</div>
+		),
+	)
 
 	return (
 		<MantineHeader
@@ -59,12 +107,12 @@ export default function Header() {
 							icon={<IconSearch size={20} />}
 							searchable
 							nothingFound="No currency pairs found"
-							data={CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))}
+							itemComponent={SelectItem}
+							limit={10}
+							data={getResults()}
 							onChange={e => {
-								if (e !== null) {
-									router.push(
-										"/currency-pairs/" + e.toLowerCase().replace(" / ", "-"),
-									)
+								if (e) {
+									router.push(e)
 								}
 							}}
 						/>

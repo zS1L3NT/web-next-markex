@@ -1,8 +1,6 @@
-import { arrayOf, type } from "arktype"
-
 import { Transaction } from "@prisma/client"
 
-import { FidorCollection, FidorInternalTransfer, FidorPageableCollection } from "@/@types/fidor"
+import { FidorInternalTransfer } from "@/@types/fidor"
 import api, { ensureResponseType } from "@/api/api"
 
 const transfers = api.injectEndpoints({
@@ -30,26 +28,7 @@ const transfers = api.injectEndpoints({
 				transformResponse: ensureResponseType(FidorInternalTransfer),
 			},
 		),
-		getFidorInternalTransfers: builder.query<FidorCollection<FidorInternalTransfer>, void>({
-			query: () => ({
-				url: "https://api.tp.sandbox.fidorfzco.com/internal_transfers?per_page=100",
-				method: "GET",
-				proxy: true,
-				auth: true,
-			}),
-			transformResponse: ensureResponseType(
-				type({
-					data: arrayOf(FidorInternalTransfer),
-					collection: FidorPageableCollection,
-				}),
-			),
-		}),
 	}),
 })
 
-export const {
-	useCreateAppTransactionMutation,
-	useCreateFidorInternalTransferMutation,
-	useGetFidorInternalTransfersQuery,
-	useLazyGetFidorInternalTransfersQuery,
-} = transfers
+export const { useCreateAppTransactionMutation, useCreateFidorInternalTransferMutation } = transfers
