@@ -16,7 +16,6 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
 import {
 	IconArrowsHorizontal,
 	IconCurrency,
@@ -133,11 +132,7 @@ export default function Navbar({
 }) {
 	const theme = useMantineTheme()
 	const { user } = useContext(UserContext)
-	const { opened: opened_, setOpened } = useContext(NavigatorContext)
-	const opened = opened_ || opened_ === undefined
-
-	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
-	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
+	const { isBelowXs, isAboveLg, opened, setOpened } = useContext(NavigatorContext)
 	const { classes } = useStyles({ opened })
 
 	useEffect(() => {
