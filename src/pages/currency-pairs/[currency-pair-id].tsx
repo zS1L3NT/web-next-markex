@@ -30,75 +30,11 @@ import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import { withSession } from "@/utils/middlewares"
+import BidAskBox from "@/components/BidAskBox"
 
 type Props = {
 	user: User | null
 	currencyPair: CURRENCY_PAIR
-}
-
-function BidAskBox({
-	type,
-	price,
-	color,
-}: {
-	type: "Bid" | "Ask"
-	price: number | null
-	color: "green" | "red" | "white"
-}) {
-	const theme = useMantineTheme()
-
-	const mantineColor = color === "white" ? "white" : theme.colors[color][5]
-
-	return (
-		<Box
-			sx={{
-				flex: 1,
-				padding: "0.25rem 0.5rem",
-				textAlign: type === "Bid" ? "start" : "end",
-				border: `1px solid ${mantineColor}`,
-				backgroundColor: `${mantineColor}22`,
-			}}>
-			{price ? (
-				<Flex
-					direction={type === "Bid" ? "row" : "row-reverse"}
-					align="center">
-					<Text
-						sx={{ width: "fit-content" }}
-						fz="lg"
-						color={mantineColor}
-						weight={700}>
-						{price}
-					</Text>
-
-					{color === "green" && (
-						<IconCaretUp
-							color="transparent"
-							fill={mantineColor}
-						/>
-					)}
-
-					{color === "red" && (
-						<IconCaretDown
-							color="transparent"
-							fill={mantineColor}
-						/>
-					)}
-				</Flex>
-			) : (
-				<Skeleton
-					width="60%"
-					height={19.9}
-					ml={type === "Bid" ? 0 : "auto"}
-					my={4}
-				/>
-			)}
-			<Text
-				fz="sm"
-				color={mantineColor}>
-				{type}
-			</Text>
-		</Box>
-	)
 }
 
 function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | null }) {
@@ -357,7 +293,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 						gap="xs">
 						<BidAskBox
 							type="Bid"
-							price={price?.s ?? null}
+							value={price?.s ?? null}
 							color={askColor}
 						/>
 						<Box
@@ -394,7 +330,7 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 						</Box>
 						<BidAskBox
 							type="Ask"
-							price={price?.b ?? null}
+							value={price?.b ?? null}
 							color={bidColor}
 						/>
 					</Flex>
