@@ -101,8 +101,8 @@ function CurrencyPair({
 				app: {
 					...user.app,
 					bookmarks: user.app.bookmarks.includes(currencyPair)
-					? user.app.bookmarks.filter(b => b !== currencyPair)
-					: [...user.app.bookmarks, currencyPair],
+						? user.app.bookmarks.filter(b => b !== currencyPair)
+						: [...user.app.bookmarks, currencyPair],
 				},
 			})
 		}

@@ -16,7 +16,6 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
 import {
 	IconArrowsHorizontal,
 	IconCurrency,
@@ -133,31 +132,16 @@ export default function Navbar({
 }) {
 	const theme = useMantineTheme()
 	const { user } = useContext(UserContext)
-	const { opened: opened_, setOpened } = useContext(NavigatorContext)
-	const opened = opened_ || opened_ === undefined
-
-	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
-	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
+	const { isBelowXs, isAboveLg, opened, setOpened } = useContext(NavigatorContext)
 	const { classes } = useStyles({ opened })
 
 	useEffect(() => {
-		if (!isAboveLg) {
-			setOpened(false)
-		}
-	}, [setOpened, isAboveLg])
-
-	useEffect(() => {
-		if (isBelowXs) {
-			setOpened(true)
-		}
-	}, [setOpened, isBelowXs])
+		setOpened(isBelowXs !== isAboveLg)
+	}, [setOpened, isBelowXs, isAboveLg])
 
 	return (
 		<MantineNavbar
 			width={{ base: opened || isDrawer ? (isDrawer ? 0 : 280) : 64 }}
-			onMouseEnter={() => isAboveLg && setOpened(true)}
-			onMouseOver={() => isAboveLg && setOpened(true)}
-			onMouseLeave={() => isAboveLg && setOpened(false)}
 			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
@@ -287,6 +271,7 @@ export default function Navbar({
 							<Text
 								align="center"
 								fz="xs"
+								sx={{ wordBreak: "break-all" }}
 								color={theme.colors.gray[7]}>
 								No bookmarks
 							</Text>
