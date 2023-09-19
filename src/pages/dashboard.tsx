@@ -9,13 +9,10 @@ import {
 	Anchor,
 	Badge,
 	Box,
-	Card,
 	Flex,
 	Grid,
-	Image as MantineImage,
 	Loader,
 	SegmentedControl,
-	Stack,
 	Table,
 	Text,
 	Title,
@@ -122,91 +119,96 @@ export default function Dashboard({ user }: Props) {
 			<Head>
 				<title>Markex | Dashboard</title>
 			</Head>
-			{news && (
-				<>
-					<Title my="md">Latest News</Title>
-					<Grid
-						gutter={"lg"}
-						px={"xs"}>
-						{news
-							.reduce(
-								(
-									accu,
-									{ Summary, Title, PublicationTime, objectID, FullUrl },
-									index,
-								) => {
-									const item = (
-										<Grid.Col
-											key={objectID}
-											sm={12}
-											md={6}
-											lg={4}
-											mih={140}>
-											<Anchor
-												color="white"
-												underline={false}
-												component={Link}
-												target="_blank"
-												href={FullUrl}>
-												<Flex
-													direction={"column"}
-													sx={{
-														height: "100%",
-													}}>
-													<Text
-														lineClamp={2}
-														fz="md"
-														fw={500}>
-														{Title}
-													</Text>
-													<Text
-														color="dimmed"
-														lineClamp={2}
-														fz="xs">
-														{Summary}
-													</Text>
+
+			<Box
+				mah={{ base: news ? "200vh" : "0vh", md: news ? "100vh" : 0 }}
+				sx={{ overflow: "hidden", transition: "max-height 0.5s ease" }}>
+				{news && (
+					<>
+						<Title my="md">Latest News</Title>
+						<Grid
+							gutter={"lg"}
+							px={"xs"}>
+							{news
+								.reduce(
+									(
+										accu,
+										{ Summary, Title, PublicationTime, objectID, FullUrl },
+										index,
+									) => {
+										const item = (
+											<Grid.Col
+												key={objectID}
+												sm={12}
+												md={6}
+												lg={4}
+												mih={140}>
+												<Anchor
+													color="white"
+													underline={false}
+													component={Link}
+													target="_blank"
+													href={FullUrl}>
 													<Flex
-														style={{
-															flex: "auto",
-														}}></Flex>
-													<Text
-														c="dimmed"
-														fz="xs">
-														{new Intl.DateTimeFormat("en-US", {
-															weekday: "long",
-															month: "long",
-															day: "numeric",
-														}).format(PublicationTime * 1000)}
-													</Text>
-												</Flex>
-											</Anchor>
-										</Grid.Col>
-									)
-									if (index % 3 === 0) {
-										accu.push([item])
-									} else {
-										accu[accu.length - 1]?.push(item)
-									}
-									return accu
-								},
-								[] as JSX.Element[][],
-							)
-							.map((row, index, arr) => (
-								<Grid.Col
-									span={12}
-									key={`row-${index}`}
-									sx={{
-										borderBottom:
-											arr.length - 1 !== index
-												? `1px solid ${theme.colors.gray[8]}`
-												: undefined,
-									}}>
-									<Grid gutter={"xl"}>{row}</Grid>
-								</Grid.Col>
-							))}
-					</Grid>
-				</>
-			)}
+														direction={"column"}
+														sx={{
+															height: "100%",
+														}}>
+														<Text
+															lineClamp={2}
+															fz="md"
+															fw={500}>
+															{Title}
+														</Text>
+														<Text
+															color="dimmed"
+															lineClamp={2}
+															fz="xs">
+															{Summary}
+														</Text>
+														<Flex
+															style={{
+																flex: "auto",
+															}}></Flex>
+														<Text
+															c="dimmed"
+															fz="xs">
+															{new Intl.DateTimeFormat("en-US", {
+																weekday: "long",
+																month: "long",
+																day: "numeric",
+															}).format(PublicationTime * 1000)}
+														</Text>
+													</Flex>
+												</Anchor>
+											</Grid.Col>
+										)
+										if (index % 3 === 0) {
+											accu.push([item])
+										} else {
+											accu[accu.length - 1]?.push(item)
+										}
+										return accu
+									},
+									[] as JSX.Element[][],
+								)
+								.map((row, index, arr) => (
+									<Grid.Col
+										span={12}
+										key={`row-${index}`}
+										sx={{
+											borderBottom:
+												arr.length - 1 !== index
+													? `1px solid ${theme.colors.gray[8]}`
+													: undefined,
+										}}>
+										<Grid gutter={"xl"}>{row}</Grid>
+									</Grid.Col>
+								))}
+						</Grid>
+					</>
+				)}
+			</Box>
 
 			<Title
 				mt="xl"

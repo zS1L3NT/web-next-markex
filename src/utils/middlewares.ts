@@ -39,7 +39,7 @@ const getUser = async (session: IronSession): Promise<User | null> => {
 							({
 								...tx,
 								created_at: tx.created_at.getTime(),
-							} as Exclude<Transaction, "created_at"> & { created_at: number }),
+							}) as Exclude<Transaction, "created_at"> & { created_at: number },
 					),
 				),
 		},

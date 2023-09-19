@@ -16,7 +16,7 @@ const news = api.injectEndpoints({
 						{
 							indexName: "FxsIndexPro",
 							params: new URLSearchParams({
-								hitsPerPage: "8",
+								hitsPerPage: "9",
 								filters:
 									"CultureName:en AND (Category:'News' OR Category:'Breaking News' OR Category:'Premium News')",
 							}).toString(),
