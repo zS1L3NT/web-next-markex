@@ -1,3 +1,5 @@
+import { getCookie } from "cookies-next"
+import { GetServerSidePropsContext } from "next"
 import { AppProps } from "next/app"
 import { Provider as ReduxProvider } from "react-redux"
 
@@ -5,16 +7,25 @@ import { MantineProvider } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 
 import { CurrencyPairPricesProvider } from "@/contexts/CurrencyPairPricesContext"
-import { StockLivePricesProvider } from "@/contexts/StockLivePricesContext"
 import { NavigatorProvider } from "@/contexts/NavigatorContext"
+import { StockLivePricesProvider } from "@/contexts/StockLivePricesContext"
 import store from "@/store"
 
-export default function App({ Component, pageProps }: AppProps) {
+export type BrowserSize = {
+	isBelowXs: boolean
+	isAboveLg: boolean
+}
+
+export default function App({
+	Component,
+	pageProps,
+	size,
+}: AppProps & { size: BrowserSize | null }) {
 	return (
 		<ReduxProvider store={store}>
 			<StockLivePricesProvider>
 				<CurrencyPairPricesProvider>
-					<NavigatorProvider>
+					<NavigatorProvider size={size}>
 						<MantineProvider
 							withGlobalStyles
 							withNormalizeCSS
@@ -28,3 +39,9 @@ export default function App({ Component, pageProps }: AppProps) {
 		</ReduxProvider>
 	)
 }
+
+App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
+	size: getCookie("browser-size", ctx)
+		? JSON.parse(getCookie("browser-size", ctx) as string)
+		: null,
+})
