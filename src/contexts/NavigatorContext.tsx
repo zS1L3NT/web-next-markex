@@ -34,7 +34,7 @@ export const NavigatorProvider = ({
 	}, [theme.breakpoints.xs, theme.breakpoints.lg])
 
 	const [size, setSize] = useState(size_ ?? calculate())
-	const [opened, setOpened] = useState(false)
+	const [opened, setOpened] = useState(size.isBelowXs !== size.isAboveLg)
 
 	const onResize = useCallback(() => {
 		setCookie("browser-size", JSON.stringify(calculate()), { maxAge: 60 * 60 * 24 * 365 })
