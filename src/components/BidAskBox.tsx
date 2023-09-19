@@ -26,7 +26,7 @@ export default function BidAskBox({
 				border: `1px solid ${borderColor}`,
 				backgroundColor: backgroundColor,
 			}}>
-			{value ? (
+			{value != null ? (
 				<Flex
 					direction={type === "Bid" ? "row" : "row-reverse"}
 					align="center">
