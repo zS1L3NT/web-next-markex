@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import Head from "next/head"
 import Image from "next/image"
 import { useRouter } from "next/router"
-import { useContext, useMemo, useState } from "react"
+import { useContext, useState } from "react"
 
 import {
 	ActionIcon,
@@ -23,15 +23,12 @@ import {
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
 import { notifications } from "@mantine/notifications"
-import { Transaction } from "@prisma/client"
 import { IconCheck, IconShoppingCart } from "@tabler/icons-react"
 
-import { FidorInternalTransfer } from "@/@types/fidor"
 import { User } from "@/@types/types"
 import {
 	useCreateAppTransactionMutation,
 	useCreateFidorInternalTransferMutation,
-	useGetFidorInternalTransfersQuery,
 } from "@/api/transactions"
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY_FLAGS } from "@/constants"
@@ -127,33 +124,6 @@ export default function Wallet({ user }: Props) {
 
 	const isAboveLg = useMediaQuery(`(min-width: ${theme.breakpoints.lg})`)
 
-	const { data: transfers } = useGetFidorInternalTransfersQuery()
-
-	const transactions: {
-		id: string
-		date: Date
-		app: Transaction | null
-		fidor: FidorInternalTransfer | null
-	}[] = useMemo(
-		() =>
-			[
-				...user.app.transactions.map(t => ({
-					id: t.id,
-					date: new Date(t.created_at),
-					app: t,
-					fidor: transfers?.data.find(tf => tf.external_uid === t.id) ?? null,
-				})),
-				...(transfers?.data ?? [])
-					.filter(t => !user.app.transactions.find(tx => tx.id === t.external_uid))
-					.map(t => ({
-						id: t.id ?? "",
-						date: new Date(t.created_at ?? ""),
-						app: null,
-						fidor: t,
-					})),
-			].sort((a, b) => b.date.getTime() - a.date.getTime()),
-		[user, transfers],
-	)
 	const [opened, { open, close }] = useDisclosure(false)
 
 	return (
@@ -239,54 +209,36 @@ export default function Wallet({ user }: Props) {
 							</thead>
 							<tbody>
 								<AnimatePresence>
-									{transactions
-										.filter(t => !!t.app)
-										.map(t => (
-											<motion.tr
-												key={t.id}
-												layoutId={t.id}
-												style={{ background: theme.colors.dark[6] }}>
-												<td>
-													{t.date.toLocaleString("en-SG", {
-														year: "numeric",
-														month: "long",
-														day: "numeric",
-														hour: "numeric",
-														minute: "numeric",
-														second: "numeric",
-													})}
-												</td>
-												<td>
-													{t.app ? (
-														t.app.instrument === null ? (
-															<Badge color="green">Deposit</Badge>
-														) : t.app.instrument.includes("_") ? (
-															<Badge color="red">Currency</Badge>
-														) : (
-															<Badge color="red">Stock</Badge>
-														)
-													) : (
-														<Badge color="blue">Fidor</Badge>
-													)}
-												</td>
-												<td>
-													{t.app
-														? t.app.type === "buy"
-															? "Buy"
-															: "Sell"
-														: "-"}
-												</td>
-												<td>
-													{t.app?.instrument?.replace("_", " / ") ?? "-"}
-												</td>
-												<td>{t.app?.price.toFixed(5) ?? "-"}</td>
-												<td>
-													{t.app
-														? (t.app.price * t.app.amount).toFixed(5)
-														: "-"}
-												</td>
-											</motion.tr>
-										))}
+									{user.app.transactions.map(t => (
+										<motion.tr
+											key={t.id}
+											layoutId={t.id}
+											style={{ background: theme.colors.dark[6] }}>
+											<td>
+												{t.created_at.toLocaleString("en-SG", {
+													year: "numeric",
+													month: "long",
+													day: "numeric",
+													hour: "numeric",
+													minute: "numeric",
+													second: "numeric",
+												})}
+											</td>
+											<td>
+												{t.instrument === null ? (
+													<Badge color="green">Deposit</Badge>
+												) : t.instrument.includes("_") ? (
+													<Badge color="red">Currency</Badge>
+												) : (
+													<Badge color="red">Stock</Badge>
+												)}
+											</td>
+											<td>{t.type === "buy" ? "Buy" : "Sell"}</td>
+											<td>{t.instrument?.replace("_", " / ") ?? "-"}</td>
+											<td>{t.price.toFixed(5) ?? "-"}</td>
+											<td>{(t.price * t.amount).toFixed(5)}</td>
+										</motion.tr>
+									))}
 								</AnimatePresence>
 							</tbody>
 						</Table>
