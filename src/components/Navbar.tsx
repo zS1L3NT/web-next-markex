@@ -136,23 +136,12 @@ export default function Navbar({
 	const { classes } = useStyles({ opened })
 
 	useEffect(() => {
-		if (!isAboveLg) {
-			setOpened(false)
-		}
-	}, [setOpened, isAboveLg])
-
-	useEffect(() => {
-		if (isBelowXs) {
-			setOpened(true)
-		}
-	}, [setOpened, isBelowXs])
+		setOpened(isBelowXs !== isAboveLg)
+	}, [setOpened, isBelowXs, isAboveLg])
 
 	return (
 		<MantineNavbar
 			width={{ base: opened || isDrawer ? (isDrawer ? 0 : 280) : 64 }}
-			onMouseEnter={() => isAboveLg && setOpened(true)}
-			onMouseOver={() => isAboveLg && setOpened(true)}
-			onMouseLeave={() => isAboveLg && setOpened(false)}
 			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
