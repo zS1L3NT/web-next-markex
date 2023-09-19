@@ -122,7 +122,7 @@ export default function Dashboard({ user }: Props) {
 
 			<Box
 				mah={{ base: news ? "200vh" : "0vh", md: news ? "100vh" : 0 }}
-				sx={{ overflow: "hidden", transition: "max-height 0.5s ease" }}>
+				sx={{ overflow: "hidden", transition: "max-height 1s ease" }}>
 				{news && (
 					<>
 						<Title my="md">Latest News</Title>
