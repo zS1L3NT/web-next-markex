@@ -271,6 +271,7 @@ export default function Navbar({
 							<Text
 								align="center"
 								fz="xs"
+								sx={{ wordBreak: "break-all" }}
 								color={theme.colors.gray[7]}>
 								No bookmarks
 							</Text>
