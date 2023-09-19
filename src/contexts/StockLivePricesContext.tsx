@@ -1,7 +1,8 @@
-import { AlpacaLiveTrade, AlpacaLiveQuote } from "@/@types/alpaca"
 import { useRouter } from "next/router"
-import { PropsWithChildren, useState, useEffect, createContext } from "react"
+import { createContext, PropsWithChildren, useEffect, useState } from "react"
 import useWebSocket from "react-use-websocket"
+
+import { AlpacaLiveQuote, AlpacaLiveTrade } from "@/@types/alpaca"
 
 export const StockLivePricesContext = createContext<{
 	price: number | undefined
@@ -11,7 +12,7 @@ export const StockLivePricesContext = createContext<{
 	quote: undefined,
 })
 
-export const StockLivePricesProvider = ({ children }: PropsWithChildren<{}>) => {
+export const StockLivePricesProvider = ({ children }: PropsWithChildren) => {
 	const router = useRouter()
 	const {
 		route,
@@ -23,33 +24,6 @@ export const StockLivePricesProvider = ({ children }: PropsWithChildren<{}>) => 
 	const [quote, setQuote] = useState<{ bidPrice: number; askPrice: number } | undefined>(
 		undefined,
 	)
-
-	useEffect(() => {
-		if (connected) {
-			sendAlpaca(
-				JSON.stringify({
-					action: "unsubscribe",
-					trades: ["*"],
-					quotes: ["*"],
-				}),
-			)
-		}
-
-		if (typeof symbol !== "string") {
-			setPrice(undefined)
-			setQuote(undefined)
-			return
-		}
-
-		// Subscribe to quotes and trades
-		sendAlpaca(
-			JSON.stringify({
-				action: "subscribe",
-				trades: [symbol],
-				quotes: [symbol],
-			}),
-		)
-	}, [route, symbol])
 
 	// WebSocket
 	const { sendMessage: sendAlpaca } = useWebSocket("wss://stream.data.alpaca.markets/v2/iex", {
@@ -95,6 +69,32 @@ export const StockLivePricesProvider = ({ children }: PropsWithChildren<{}>) => 
 			}
 		},
 	})
+	useEffect(() => {
+		if (connected) {
+			sendAlpaca(
+				JSON.stringify({
+					action: "unsubscribe",
+					trades: ["*"],
+					quotes: ["*"],
+				}),
+			)
+		}
+
+		if (typeof symbol !== "string") {
+			setPrice(undefined)
+			setQuote(undefined)
+			return
+		}
+
+		// Subscribe to quotes and trades
+		sendAlpaca(
+			JSON.stringify({
+				action: "subscribe",
+				trades: [symbol],
+				quotes: [symbol],
+			}),
+		)
+	}, [connected, route, symbol, sendAlpaca])
 
 	return (
 		<StockLivePricesContext.Provider value={{ quote, price }}>

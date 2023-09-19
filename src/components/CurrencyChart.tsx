@@ -2,6 +2,7 @@ import { Flex, Loader } from "@mantine/core"
 
 import { useGetOandaCandlesQuery } from "@/api/prices"
 import { CURRENCY_PAIR } from "@/constants"
+
 import CandlestickChart from "./CandlestickChart"
 
 // There is some bug where charts show the full extremes for a split second before setting the extremes

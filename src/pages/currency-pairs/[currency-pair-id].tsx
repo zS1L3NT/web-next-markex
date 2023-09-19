@@ -25,12 +25,12 @@ import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@ta
 
 import { User } from "@/@types/types"
 import { useCreateAppTransactionMutation } from "@/api/transactions"
+import BidAskBox from "@/components/BidAskBox"
 import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 import { withSession } from "@/utils/middlewares"
-import BidAskBox from "@/components/BidAskBox"
 
 type Props = {
 	user: User | null

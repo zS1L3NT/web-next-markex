@@ -1,6 +1,7 @@
 import { arrayOf } from "arktype"
-import api, { ensureResponseType } from "@/api/api"
+
 import { AlpacaSymbol } from "@/@types/alpaca"
+import api, { ensureResponseType } from "@/api/api"
 
 const TRADING_API_ENDPOINT = "https://paper-api.alpaca.markets"
 

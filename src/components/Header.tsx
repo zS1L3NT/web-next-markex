@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { useRouter } from "next/router"
-import { forwardRef,useContext } from "react"
+import { forwardRef, useContext } from "react"
 
 import {
 	ActionIcon,
@@ -66,8 +66,11 @@ export default function Header() {
 		description: string | undefined
 	}
 
-	const SelectItem = forwardRef<HTMLDivElement, ItemProps>(
-		({ description, label, ...others }: ItemProps, ref) => (
+	const SelectItem = forwardRef<HTMLDivElement, ItemProps>(function SelectItem(
+		{ description, label, ...others }: ItemProps,
+		ref,
+	) {
+		return (
 			<div
 				ref={ref}
 				{...others}>
@@ -82,8 +85,8 @@ export default function Header() {
 					</div>
 				</Group>
 			</div>
-		),
-	)
+		)
+	})
 
 	return (
 		<MantineHeader

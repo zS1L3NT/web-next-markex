@@ -1,9 +1,9 @@
 import { arrayOf, type } from "arktype"
 
+import { AlpacaBar, AlpacaInterval, AlpacaQuote } from "@/@types/alpaca"
 import { OandaCandle, OandaPrice } from "@/@types/oanda"
 import api, { ensureResponseType } from "@/api/api"
 import { CURRENCY_PAIR } from "@/constants"
-import { AlpacaBar, AlpacaInterval, AlpacaQuote } from "@/@types/alpaca"
 
 const MARKET_API_ENDPOINT = "https://data.alpaca.markets/v2/stocks"
 
@@ -56,7 +56,7 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res => ensureResponseType(type({ trade: { p: "number" } }))(res),
 		}),
-		getLatestQuote: builder.query<{ quote: AlpacaQuote, symbol: string }, { symbol: string }>({
+		getLatestQuote: builder.query<{ quote: AlpacaQuote; symbol: string }, { symbol: string }>({
 			query: ({ symbol }) => ({
 				url: `${MARKET_API_ENDPOINT}/${symbol}/quotes/latest`,
 				method: "GET",
@@ -90,7 +90,11 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res =>
 				ensureResponseType(
-					type({ bars: arrayOf(AlpacaBar), next_page_token: "string|null", symbol: "string" }),
+					type({
+						bars: arrayOf(AlpacaBar),
+						next_page_token: "string|null",
+						symbol: "string",
+					}),
 				)(res),
 		}),
 	}),

@@ -16,7 +16,6 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core"
-import { useForm } from "@mantine/form"
 import { useMediaQuery } from "@mantine/hooks"
 
 import { AlpacaInterval } from "@/@types/alpaca"
@@ -89,13 +88,6 @@ export default function Symbol({ user, symbol }: Props) {
 	const { data: metrics } = useGetMetricsQuery({ symbol }, { pollingInterval: 60_000 * 5 })
 	const { data: trends } = useGetTrendsQuery({ symbol }, { pollingInterval: 60_000 * 5 })
 
-	const form = useForm({
-		initialValues: {
-			mode: "sell",
-			amount: 0 as number | undefined,
-		},
-	})
-
 	const keyMappings: {
 		[key in keyof Omit<FinnhubTrend, "symbol" | "period">]: string
 	} = {
@@ -115,10 +107,6 @@ export default function Symbol({ user, symbol }: Props) {
 					}
 			  })
 			: []
-
-	const sellBuyValue = <T,>(sell: T, buy: T) => {
-		return form.values.mode === "sell" ? sell : buy
-	}
 
 	return (
 		<Shell user={user}>

@@ -13,7 +13,7 @@ export default function CandlestickChart({
 	units = undefined,
 	status = undefined,
 	period = undefined,
-	height = undefined
+	height = undefined,
 }: {
 	type: "candlestick" | "ohlc"
 	seriesName: string

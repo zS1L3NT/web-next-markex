@@ -8,8 +8,8 @@
 		"next/core-web-vitals",
 		"eslint:recommended",
 		"plugin:react/recommended",
-		"plugin:prettier/recommended",
-		"plugin:@typescript-eslint/recommended"
+		"plugin:@typescript-eslint/recommended",
+		"prettier"
 	],
 	"overrides": [],
 	"parser": "@typescript-eslint/parser",
@@ -17,21 +17,32 @@
 		"ecmaVersion": "latest",
 		"sourceType": "module"
 	},
-	"plugins": ["react", "@typescript-eslint", "simple-import-sort"],
+	"plugins": [
+		"react",
+		"@typescript-eslint",
+		"simple-import-sort"
+	],
 	"rules": {
 		"@typescript-eslint/ban-ts-comment": "off",
 		"@typescript-eslint/ban-types": "warn",
 		"@typescript-eslint/no-empty-function": "off",
 		"@typescript-eslint/no-explicit-any": "off",
-		"indent": "off",
+		"@typescript-eslint/no-unused-vars": [
+			"warn",
+			{ 
+				"argsIgnorePattern": "^_",
+				"varsIgnorePattern": "^_",
+				"caughtErrorsIgnorePattern": "^_"
+			}
+		],
+		"@typescript-eslint/no-non-null-assertion": "off",
 		"linebreak-style": ["error", "unix"],
+		"no-empty": "warn",
+		"no-empty-function": "off",
 		"no-empty-pattern": "warn",
-		"prettier/prettier": "warn",
-		"quotes": ["error", "double"],
 		"react/react-in-jsx-scope": "off",
-		"semi": ["error", "never"],
 		"simple-import-sort/imports": [
-			"error",
+			"warn",
 			{
 				"groups": [["^\\w"], ["^@\\w+"], ["^@/"], ["^\\."]]
 			}
