@@ -20,7 +20,6 @@ export default function Shell(props: PropsWithChildren<{ user: User | null }>) {
 	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)
 
 	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
-	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const [user, setUser] = useState(props.user)
 	const [notified, setNotified] = useState<string[]>([])
@@ -71,7 +70,6 @@ export default function Shell(props: PropsWithChildren<{ user: User | null }>) {
 					background: "rgb(20, 21, 23)",
 					"& .mantine-AppShell-main": {
 						width: "100%",
-						transition: isBelowSm ? undefined : "padding 0.5s ease",
 						overflow: "hidden",
 					},
 				}}
