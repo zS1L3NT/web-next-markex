@@ -103,10 +103,10 @@ export default function Header() {
 					<Box sx={{ flex: 1 }}>
 						<Select
 							sx={{ width: "60%", margin: "auto" }}
-							placeholder="Search for a currency pair"
+							placeholder="Search for a instrument"
 							icon={<IconSearch size={20} />}
 							searchable
-							nothingFound="No currency pairs found"
+							nothingFound="No instrument found"
 							itemComponent={SelectItem}
 							limit={10}
 							data={getResults()}
