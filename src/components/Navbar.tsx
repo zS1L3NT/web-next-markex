@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { PropsWithChildren, useContext } from "react"
+import { useContext } from "react"
 
 import {
 	ActionIcon,
@@ -204,42 +204,10 @@ export default function Navbar({
 	const theme = useMantineTheme()
 	const { classes } = useStyles({ isBelowXs, isAboveLg })
 
-	const Wrapper = ({
-		children,
-		width,
-		transition,
-	}: PropsWithChildren<{
-		width: number | string
-		transition: string | undefined
-	}>) => {
-		if (drawer) {
-			return (
-				<Box
-					sx={{
-						transition,
-						width,
-						height: "100%",
-						display: "flex",
-						flexDirection: "column",
-					}}>
-					{children}
-				</Box>
-			)
-		} else {
-			return (
-				<MantineNavbar
-					width={{ base: width }}
-					sx={{ transition }}>
-					{children}
-				</MantineNavbar>
-			)
-		}
-	}
-
 	return (
-		<Wrapper
-			width={isBelowXs ? (drawer?.isOpened ? "100%" : 0) : isAboveLg ? 280 : 64}
-			transition={isBelowXs ? undefined : "width 0.5s ease"}>
+		<MantineNavbar
+			width={{ base: isBelowXs ? (drawer?.isOpened ? "100%" : 0) : isAboveLg ? 280 : 64 }}
+			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
 					display: "flex",
@@ -286,7 +254,6 @@ export default function Navbar({
 				sx={{
 					borderTop: `1px solid ${theme.colors.dark[5]}`,
 					borderBottom: `1px solid ${theme.colors.dark[5]}`,
-					height: "100%",
 				}}
 				component={ScrollArea}
 				p="0.5rem"
@@ -422,6 +389,6 @@ export default function Navbar({
 					)}
 				</Stack>
 			</MantineNavbar.Section>
-		</Wrapper>
+		</MantineNavbar>
 	)
 }
