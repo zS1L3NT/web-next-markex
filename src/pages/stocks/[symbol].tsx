@@ -2,13 +2,16 @@ import Highcharts, { SeriesOptionsType } from "highcharts/highstock"
 import HighchartsReact from "highcharts-react-official"
 import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
+import { useSession } from "next-auth/react"
 import { useContext, useState } from "react"
 
 import {
+	ActionIcon,
 	Badge,
 	Box,
 	Divider,
 	Flex,
+	Group,
 	Loader,
 	SegmentedControl,
 	Skeleton,
@@ -18,9 +21,11 @@ import {
 	useMantineTheme,
 } from "@mantine/core"
 import { useMediaQuery } from "@mantine/hooks"
+import { IconBookmark } from "@tabler/icons-react"
 
 import { AlpacaInterval } from "@/@types/alpaca"
 import { FinnhubMetric, FinnhubTrend } from "@/@types/finnhub"
+import { useGetBookmarksQuery, useUpdateBookmarksMutation } from "@/api/bookmarks"
 import { useGetFinnhubMetricsQuery, useGetFinnhubTrendsQuery } from "@/api/extras"
 import {
 	useGetAlpacaCandlesQuery,
@@ -38,6 +43,12 @@ type Props = {
 }
 
 export default function Symbol({ symbol }: Props) {
+	const { data: session } = useSession()
+	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
+		pollingInterval: 60_000,
+		skip: !session,
+	})
+	const [updateBookmarks, { isLoading: updateBookmarksIsLoading }] = useUpdateBookmarksMutation()
 	const theme = useMantineTheme()
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
@@ -112,6 +123,15 @@ export default function Symbol({ symbol }: Props) {
 			  })
 			: []
 
+	const toggleBookmark = async () => {
+		if (!bookmarks) return
+		await updateBookmarks(
+			bookmarks.includes(symbol)
+				? bookmarks.filter(b => b !== symbol)
+				: [...bookmarks, symbol],
+		)
+	}
+
 	return (
 		<Shell>
 			{asset && (
@@ -127,9 +147,33 @@ export default function Symbol({ symbol }: Props) {
 					direction={"column"}
 					gap={"md"}>
 					<Stack>
-						<Stack spacing={0}>
+						<Stack spacing={"xs"}>
 							{asset ? (
-								<Title mt="md">{asset.symbol.toUpperCase()}</Title>
+								<Group
+									spacing={"md"}
+									mt={"md"}
+									align={"center"}>
+									<Title>{asset.symbol.toUpperCase()}</Title>
+									<ActionIcon
+										disabled={!session}
+										loading={updateBookmarksIsLoading}
+										radius={"lg"}
+										color="blue"
+										variant="filled"
+										size="md"
+										onClick={toggleBookmark}
+										aria-label="Bookmark">
+										<IconBookmark
+											fill={
+												bookmarks?.includes(symbol)
+													? "white"
+													: "transparent"
+											}
+											style={{ width: "60%", height: "60%" }}
+											stroke={1.5}
+										/>
+									</ActionIcon>
+								</Group>
 							) : (
 								<Skeleton
 									w={100}
