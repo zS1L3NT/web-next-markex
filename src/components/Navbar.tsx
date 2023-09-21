@@ -124,6 +124,36 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 	)
 }
 
+function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
+	return (
+		<Button
+			sx={{
+				width: opened ? "100%" : 50,
+				paddingLeft: opened ? 12 : 4,
+				paddingRight: opened ? 12 : 4,
+				"& .mantine-Button-label": {
+					width: "100%",
+					position: "relative",
+					"& *": {
+						position: "absolute",
+						transition: "all 0.5s ease",
+					},
+					"& > .mantine-Text-root": {
+						lineHeight: 1,
+					},
+				},
+				transition: "width 0.5s ease",
+			}}
+			variant="subtle"
+			color="gray"
+			size="md"
+			component={Link}
+			href={"/stocks/" + symbol}>
+			{symbol}
+		</Button>
+	)
+}
+
 export default function Navbar({
 	isDrawer = false,
 	closeDrawer,
@@ -264,13 +294,21 @@ export default function Navbar({
 
 					{session && bookmarks ? (
 						bookmarks.length ? (
-							bookmarks.map(c => (
-								<CurrencyPair
-									key={c}
-									currencyPair={c as CURRENCY_PAIR}
-									opened={opened}
-								/>
-							))
+							bookmarks.map(i =>
+								(CURRENCY_PAIRS as any).includes(i) ? (
+									<CurrencyPair
+										key={i}
+										currencyPair={i as CURRENCY_PAIR}
+										opened={opened}
+									/>
+								) : (
+									<Symbol
+										key={i}
+										symbol={i}
+										opened={opened}
+									/>
+								),
+							)
 						) : (
 							<Text
 								align="center"
