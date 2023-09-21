@@ -19,7 +19,6 @@ import {
 } from "@mantine/core"
 import {
 	IconArrowsHorizontal,
-	IconCurrency,
 	IconDashboard,
 	IconList,
 	IconTicket,
@@ -159,11 +158,17 @@ export default function Navbar({
 				px={16}
 				py={8}>
 				<Box
-					w={20}
-					h={20}
-					my={10}
-					mx={6}>
-					<IconCurrency size={20} />
+					w={24}
+					h={24}
+					my={8}
+					mx={4}>
+					<Image
+						src="/logo.png"
+						alt="Logo"
+						width={24}
+						height={24}
+						style={{ verticalAlign: "initial" }}
+					/>
 				</Box>
 				<AnimatePresence>
 					{opened && (
