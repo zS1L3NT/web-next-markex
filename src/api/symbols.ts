@@ -58,10 +58,10 @@ const symbols = api.injectEndpoints({
 })
 
 export const {
-	useGetAlpacaSymbolsQuery,
-	useLazyGetAlpacaSymbolsQuery,
 	useGetAlpacaSymbolQuery,
-	useLazyGetAlpacaSymbolQuery,
+	useGetAlpacaSymbolsQuery,
 	useGetFXEmpirePopularSymbolsQuery,
+	useLazyGetAlpacaSymbolQuery,
+	useLazyGetAlpacaSymbolsQuery,
 	useLazyGetFXEmpirePopularSymbolsQuery,
 } = symbols

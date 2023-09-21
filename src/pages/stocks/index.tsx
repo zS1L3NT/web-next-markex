@@ -6,8 +6,8 @@ import { ActionIcon, Box, Flex, Skeleton, Table, Title } from "@mantine/core"
 import { useMantineTheme } from "@mantine/core"
 import { IconCalendar } from "@tabler/icons-react"
 
-import { useGetEarningsQuery } from "@/api/earnings"
-import { useLazyGetLatestQuoteQuery, useLazyGetLatestTradeQuery } from "@/api/prices"
+import { useGetFinnhubEarningsQuery } from "@/api/extras"
+import { useLazyGetAlpacaLatestQuoteQuery, useLazyGetAlpacaLatestTradeQuery } from "@/api/prices"
 import {
 	useGetAlpacaSymbolsQuery,
 	useGetFXEmpirePopularSymbolsQuery,
@@ -44,15 +44,15 @@ export default function Stocks() {
 		{ category: "stocks", size: 100, locale: "en" },
 		{ pollingInterval: 60_000 * 5 },
 	)
-	const { data: earnings, isFetching: earningsAreFetching } = useGetEarningsQuery({
+	const { data: earnings, isFetching: earningsAreFetching } = useGetFinnhubEarningsQuery({
 		startDate: startDate,
 		endDate: endDate,
 	})
 	const { data: symbols } = useGetAlpacaSymbolsQuery()
 
 	const [getAlpacaSymbol] = useLazyGetAlpacaSymbolQuery()
-	const [getLatestTrade] = useLazyGetLatestTradeQuery()
-	const [getLatestQuote] = useLazyGetLatestQuoteQuery()
+	const [getLatestTrade] = useLazyGetAlpacaLatestTradeQuery()
+	const [getLatestQuote] = useLazyGetAlpacaLatestQuoteQuery()
 	const theme = useMantineTheme()
 	const eventsDatesModalRef = useRef<EventsDatesModalRef>(null)
 
