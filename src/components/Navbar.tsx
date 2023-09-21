@@ -44,7 +44,15 @@ const useStyles = createStyles(
 	}),
 )
 
-function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; opened: boolean }) {
+function CurrencyPair({
+	currencyPair,
+	close,
+	opened,
+}: {
+	currencyPair: CURRENCY_PAIR
+	close: () => void
+	opened: boolean
+}) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
 	return (
@@ -70,7 +78,8 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 			color="gray"
 			size="md"
 			component={Link}
-			href={"/currency-pairs/" + currencyPair.toLowerCase().replace("_", "-")}>
+			href={"/currency-pairs/" + currencyPair.toLowerCase().replace("_", "-")}
+			onClick={close}>
 			<Image
 				style={{
 					left: opened ? 12 : 0,
@@ -124,7 +133,7 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 	)
 }
 
-function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
+function Symbol({ symbol, close, opened }: { symbol: string; close: () => void; opened: boolean }) {
 	return (
 		<Button
 			sx={{
@@ -148,7 +157,8 @@ function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
 			color="gray"
 			size="md"
 			component={Link}
-			href={"/stocks/" + symbol}>
+			href={"/stocks/" + symbol}
+			onClick={close}>
 			<Avatar
 				style={{
 					left: opened ? 12 : 0,
@@ -190,8 +200,8 @@ export default function Navbar({
 		close: () => void
 	}
 }) {
-	const theme = useMantineTheme()
 	const { isBelowXs, isAboveLg } = useContext(MediaQueryContext)
+	const theme = useMantineTheme()
 	const { classes } = useStyles({ isBelowXs, isAboveLg })
 
 	const Wrapper = ({
@@ -289,7 +299,8 @@ export default function Navbar({
 						size="md"
 						leftIcon={<IconDashboard size={20} />}
 						component={Link}
-						href="/dashboard">
+						href="/dashboard"
+						onClick={() => drawer?.close()}>
 						<AnimatePresence>
 							{(isBelowXs || isAboveLg) && (
 								<motion.div
@@ -310,7 +321,8 @@ export default function Navbar({
 						size="md"
 						leftIcon={<IconList size={20} />}
 						component={Link}
-						href="/currency-pairs">
+						href="/currency-pairs"
+						onClick={() => drawer?.close()}>
 						<AnimatePresence>
 							{(isBelowXs || isAboveLg) && (
 								<motion.div
@@ -331,7 +343,8 @@ export default function Navbar({
 						size="md"
 						leftIcon={<IconTicket size={20} />}
 						component={Link}
-						href="/stocks">
+						href="/stocks"
+						onClick={() => drawer?.close()}>
 						<AnimatePresence>
 							{(isBelowXs || isAboveLg) && (
 								<motion.div
@@ -357,12 +370,14 @@ export default function Navbar({
 									<CurrencyPair
 										key={i}
 										currencyPair={i as CURRENCY_PAIR}
+										close={() => drawer?.close()}
 										opened={isBelowXs || isAboveLg}
 									/>
 								) : (
 									<Symbol
 										key={i}
 										symbol={i}
+										close={() => drawer?.close()}
 										opened={isBelowXs || isAboveLg}
 									/>
 								),
@@ -382,6 +397,7 @@ export default function Navbar({
 								<CurrencyPair
 									key={c}
 									currencyPair={c}
+									close={() => drawer?.close()}
 									opened={isBelowXs || isAboveLg}
 								/>
 							))}
