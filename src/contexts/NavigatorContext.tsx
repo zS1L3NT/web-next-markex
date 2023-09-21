@@ -37,8 +37,12 @@ export const NavigatorProvider = ({
 	const [opened, setOpened] = useState(size.isBelowXs !== size.isAboveLg)
 
 	const onResize = useCallback(() => {
-		setCookie("browser-size", JSON.stringify(calculate()), { maxAge: 60 * 60 * 24 * 365 })
-		setSize(calculate())
+		const size = calculate()
+		setSize(size)
+		setCookie("browser-size", JSON.stringify(size), {
+			maxAge: 60 * 60 * 24 * 365,
+			sameSite: true,
+		})
 	}, [calculate])
 
 	useEffect(() => {
