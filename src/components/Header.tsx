@@ -309,7 +309,10 @@ export default function Header({ bookmarks }: { bookmarks: string[] | undefined 
 				)}
 
 				<Drawer
-					sx={{ "*": { transition: "initial" } }}
+					sx={{
+						"*": { transition: "initial" },
+						"& .mantine-Drawer-body": { height: "100%", padding: 0 },
+					}}
 					opened={isOpened}
 					onClose={() => setIsOpened(false)}
 					withCloseButton={false}
