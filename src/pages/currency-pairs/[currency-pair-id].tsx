@@ -24,7 +24,7 @@ import { useGetOandaChartsDataQuery } from "@/api/extras"
 import BidAskBox from "@/components/BidAskBox"
 import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
-import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
+import { CURRENCY, CURRENCY_FLAGS, CURRENCY_NAMES, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
 
 type Props = {
@@ -135,6 +135,10 @@ export default function CurrencyPair({ currencyPair }: Props) {
 								</Stack>
 							</Flex>
 						</Title>
+
+						<Text size="md">
+							{CURRENCY_NAMES[base]} / {CURRENCY_NAMES[quote]}
+						</Text>
 
 						{price ? (
 							<Text
