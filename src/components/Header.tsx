@@ -27,7 +27,7 @@ import { IconArrowLeft, IconLogin, IconLogout, IconMenu2, IconSearch } from "@ta
 
 import { AlpacaSymbol } from "@/@types/alpaca"
 import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
-import { CURRENCY_PAIRS } from "@/constants"
+import { CURRENCY, CURRENCY_NAMES, CURRENCY_PAIRS } from "@/constants"
 
 import Navbar from "./Navbar"
 
@@ -39,7 +39,12 @@ const getResults = (symbols: AlpacaSymbol[] | undefined) => {
 		.map(item => ({
 			group: typeof item !== "string" ? "Stocks" : "Currency Pairs",
 			label: typeof item !== "string" ? item.symbol : item,
-			description: typeof item !== "string" ? item.name : undefined,
+			description:
+				typeof item !== "string"
+					? item.name
+					: `${CURRENCY_NAMES[item.split(" / ")[0] as CURRENCY]} / ${
+							CURRENCY_NAMES[item.split(" / ")[1] as CURRENCY]
+					  }`,
 			value:
 				typeof item !== "string"
 					? `/stocks/${item.symbol}`

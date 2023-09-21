@@ -61,31 +61,34 @@ export const CURRENCY_PAIRS = [
 	"TRY_JPY",
 ] as const
 
-export type CURRENCY = CURRENCIES[number]
-export type CURRENCIES = typeof CURRENCIES
-export const CURRENCIES = [
-	"SGD",
-	"EUR",
-	"USD",
-	"GBP",
-	"CAD",
-	"CHF",
-	"JPY",
-	"AUD",
-	"CZK",
-	"HUF",
-	"NZD",
-	"SEK",
-	"DKK",
-	"NOK",
-	"PLN",
-	"TRY",
-	"ZAR",
-	"CNH",
-	"HKD",
-	"THB",
-	"MXN",
-] as const
+export type CURRENCY_NAMES = typeof CURRENCY_NAMES
+export const CURRENCY_NAMES = {
+	SGD: "Singapore Dollar",
+	EUR: "Euro",
+	USD: "US Dollar",
+	GBP: "British Pound",
+	CAD: "Canadian Dollar",
+	CHF: "Swiss Franc",
+	JPY: "Japanese Yen",
+	AUD: "Australian Dollar",
+	CZK: "Czech Koruna",
+	HUF: "Hungarian Forint",
+	NZD: "New Zealand Dollar",
+	SEK: "Swedish Krona",
+	DKK: "Danish Krone",
+	NOK: "Norwegian Krone",
+	PLN: "Polish Zloty",
+	TRY: "Turkish Lira",
+	ZAR: "South African Rand",
+	CNH: "Chinese Yuan",
+	HKD: "Hong Kong Dollar",
+	THB: "Thai Baht",
+	MXN: "Mexican Peso",
+} as const
+
+export type CURRENCY = keyof CURRENCY_NAMES
+export type CURRENCIES = CURRENCY[]
+export const CURRENCIES = Object.keys(CURRENCY_NAMES) as CURRENCIES
 
 export type FXEMPIRE_COUNTRIES = typeof FXEMPIRE_COUNTRIES
 export const FXEMPIRE_COUNTRIES = {
