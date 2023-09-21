@@ -18,6 +18,7 @@ export const ensureResponseType =
 const api = createApi({
 	reducerPath: "api",
 	baseQuery: axiosBaseQuery,
+	tagTypes: ["Bookmarks"],
 	endpoints: () => ({}),
 })
 

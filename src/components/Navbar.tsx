@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { useContext, useEffect } from "react"
 
 import {
@@ -22,13 +23,12 @@ import {
 	IconDashboard,
 	IconList,
 	IconTicket,
-	IconWallet,
 	IconX,
 } from "@tabler/icons-react"
 
+import { useGetBookmarksQuery } from "@/api/bookmarks"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import NavigatorContext from "@/contexts/NavigatorContext"
-import UserContext from "@/contexts/UserContext"
 
 const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
 	button: {
@@ -131,10 +131,15 @@ export default function Navbar({
 	isDrawer?: boolean
 	closeDrawer?: () => void
 }) {
+	const { data: session } = useSession()
 	const theme = useMantineTheme()
-	const { user } = useContext(UserContext)
 	const { isBelowXs, isAboveLg, opened, setOpened } = useContext(NavigatorContext)
 	const { classes } = useStyles({ opened })
+
+	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
+		pollingInterval: 60_000,
+		skip: !session,
+	})
 
 	useEffect(() => {
 		setOpened(isBelowXs !== isAboveLg)
@@ -252,40 +257,17 @@ export default function Navbar({
 						</AnimatePresence>
 					</Button>
 
-					{user && (
-						<Button
-							className={classes.button}
-							variant="subtle"
-							color="gray"
-							size="md"
-							leftIcon={<IconWallet size={20} />}
-							component={Link}
-							href="/wallet">
-							<AnimatePresence>
-								{opened && (
-									<motion.div
-										style={{ marginLeft: 10 }}
-										initial={{ opacity: 1 }}
-										animate={{ opacity: 1 }}
-										exit={{ opacity: 0 }}>
-										My Wallet
-									</motion.div>
-								)}
-							</AnimatePresence>
-						</Button>
-					)}
-
 					<Divider
 						my="0.25rem"
 						color={theme.colors.dark[5]}
 					/>
 
-					{user ? (
-						user.app.bookmarks.length ? (
-							user.app.bookmarks.map(c => (
+					{session && bookmarks ? (
+						bookmarks.length ? (
+							bookmarks.map(c => (
 								<CurrencyPair
 									key={c}
-									currencyPair={c}
+									currencyPair={c as CURRENCY_PAIR}
 									opened={opened}
 								/>
 							))

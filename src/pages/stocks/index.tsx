@@ -6,7 +6,6 @@ import { ActionIcon, Box, Flex, Skeleton, Table, Title } from "@mantine/core"
 import { useMantineTheme } from "@mantine/core"
 import { IconCalendar } from "@tabler/icons-react"
 
-import { User } from "@/@types/types"
 import { useGetEarningsQuery } from "@/api/earnings"
 import { useLazyGetLatestQuoteQuery, useLazyGetLatestTradeQuery } from "@/api/prices"
 import {
@@ -16,9 +15,8 @@ import {
 } from "@/api/symbols"
 import EventsDatesModal, { EventsDatesModalRef } from "@/components/Modals/EventsDatesModal"
 import Shell from "@/components/Shell"
-import { withSession } from "@/utils/middlewares"
 
-export default function Stocks({ user }: Props) {
+export default function Stocks() {
 	const startOfWeek = (date: Date) => {
 		const diff = date.getDate() - date.getDay() + (date.getDay() === 0 ? -6 : 1)
 		return new Date(date.setDate(diff))
@@ -109,7 +107,7 @@ export default function Stocks({ user }: Props) {
 	)
 
 	return (
-		<Shell user={user}>
+		<Shell>
 			<Head>
 				<title>{"Markex | Stocks"}</title>
 			</Head>
@@ -280,14 +278,3 @@ export default function Stocks({ user }: Props) {
 		</Shell>
 	)
 }
-
-type Props = {
-	user: User | null
-}
-export const getServerSideProps = withSession<Props>(async ({ user }) => {
-	return {
-		props: {
-			user,
-		},
-	}
-})

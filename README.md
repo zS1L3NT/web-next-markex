@@ -89,5 +89,7 @@ Data sources:
         -   [![highcharts](https://img.shields.io/badge/highcharts-%5E11.0.1-red?style=flat-square)](https://npmjs.com/package/highcharts/v/11.0.1)
         -   [![highcharts-react-official](https://img.shields.io/badge/highcharts--react--official-%5E3.2.0-red?style=flat-square)](https://npmjs.com/package/highcharts-react-official/v/3.2.0)
         -   [![iron-session](https://img.shields.io/badge/iron--session-%5E6.3.1-red?style=flat-square)](https://npmjs.com/package/iron-session/v/6.3.1)
+        -   [![next-auth](https://img.shields.io/badge/next--auth-%5E4.23.1-red?style=flat-square)](https://npmjs.com/package/next-auth/v/4.23.1)
+        -   [![next-pwa](https://img.shields.io/badge/next--pwa-%5E5.6.0-red?style=flat-square)](https://npmjs.com/package/next-pwa/v/5.6.0)
         -   [![react-use-websocket](https://img.shields.io/badge/react--use--websocket-%5E4.4.0-red?style=flat-square)](https://npmjs.com/package/react-use-websocket/v/4.4.0)
         -   [![use-is-in-viewport](https://img.shields.io/badge/use--is--in--viewport-%5E1.0.9-red?style=flat-square)](https://npmjs.com/package/use-is-in-viewport/v/1.0.9)

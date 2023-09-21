@@ -1,42 +1,34 @@
-import Link from "next/link"
 import { useRouter } from "next/router"
-import { forwardRef, useContext } from "react"
+import { signIn, signOut, useSession } from "next-auth/react"
+import { forwardRef } from "react"
 
 import {
 	ActionIcon,
-	Avatar,
 	Box,
 	Button,
 	Drawer,
 	Flex,
 	Group,
 	Header as MantineHeader,
-	Menu,
 	Select,
 	Text,
 	useMantineTheme,
 } from "@mantine/core"
 import { useDisclosure, useMediaQuery } from "@mantine/hooks"
-import { IconLogout, IconMenu2, IconSearch, IconUser } from "@tabler/icons-react"
+import { IconMenu2, IconSearch } from "@tabler/icons-react"
 
 import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
-import { useGetFidorAvailableQuery } from "@/api/users"
 import { CURRENCY_PAIRS } from "@/constants"
-import UserContext from "@/contexts/UserContext"
 
 import Navbar from "./Navbar"
 
 export default function Header() {
+	const { data: session } = useSession()
 	const theme = useMantineTheme()
-	const { user } = useContext(UserContext)
 	const router = useRouter()
 
 	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
-
-	const { error: down, isLoading: downIsLoading } = useGetFidorAvailableQuery(undefined, {
-		pollingInterval: 60_000,
-	})
 
 	const { data: symbols } = useGetAlpacaSymbolsQuery()
 
@@ -135,43 +127,23 @@ export default function Header() {
 					</Box>
 				)}
 
-				{user ? (
-					<Menu width={200}>
-						<Menu.Target>
-							<Avatar
-								sx={{ cursor: "pointer" }}
-								size="md"
-								m={isBelowXs ? "sm" : "md"}
-								src={null}
-							/>
-						</Menu.Target>
-
-						<Menu.Dropdown>
-							<Menu.Item
-								icon={<IconUser size={14} />}
-								component={Link}
-								href="/profile">
-								Profile
-							</Menu.Item>
-							<Menu.Item
-								icon={<IconLogout size={14} />}
-								component={Link}
-								href="/logout">
-								Logout
-							</Menu.Item>
-						</Menu.Dropdown>
-					</Menu>
+				{session ? (
+					<Button
+						variant="light"
+						color="gray"
+						size="sm"
+						m={isBelowXs ? "sm" : "md"}
+						onClick={() => signOut()}>
+						Logout
+					</Button>
 				) : (
 					<Button
 						variant="light"
 						color="gray"
 						size="sm"
 						m={isBelowXs ? "sm" : "md"}
-						component={Link}
-						href="/login"
-						loading={downIsLoading}
-						disabled={!!down}>
-						Sign in with Fidor
+						onClick={() => signIn()}>
+						Sign in with Google
 					</Button>
 				)}
 

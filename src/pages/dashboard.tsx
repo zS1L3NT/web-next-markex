@@ -21,7 +21,6 @@ import {
 import { IconCalendar, IconFilter, IconHistory } from "@tabler/icons-react"
 
 import { FXEmpireEvent } from "@/@types/fxempire"
-import { User } from "@/@types/types"
 import { useGetFXEmpireEventsQuery, useGetFXStreetNewsQuery } from "@/api/news"
 import EventHistoryModal, { EventHistoryModalRef } from "@/components/Modals/EventHistoryModal"
 import EventsDatesModal, { EventsDatesModalRef } from "@/components/Modals/EventsDatesModal"
@@ -29,13 +28,8 @@ import EventsFiltersModal, { EventsFiltersModalRef } from "@/components/Modals/E
 import Shell from "@/components/Shell"
 import { CURRENCIES, CURRENCY, CURRENCY_FLAGS, FXEMPIRE_COUNTRIES } from "@/constants"
 import useIsInViewportState from "@/hooks/useIsInViewportState"
-import { withSession } from "@/utils/middlewares"
 
-type Props = {
-	user: User | null
-}
-
-export default function Dashboard({ user }: Props) {
+export default function Dashboard() {
 	const theme = useMantineTheme()
 
 	const [page, setPage] = useState(1)
@@ -115,7 +109,7 @@ export default function Dashboard({ user }: Props) {
 	}, [])
 
 	return (
-		<Shell user={user}>
+		<Shell>
 			<Head>
 				<title>Markex | Dashboard</title>
 			</Head>
@@ -421,11 +415,3 @@ export default function Dashboard({ user }: Props) {
 		</Shell>
 	)
 }
-
-export const getServerSideProps = withSession<Props>(async ({ user }) => {
-	return {
-		props: {
-			user,
-		},
-	}
-})

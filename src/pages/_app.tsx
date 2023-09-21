@@ -2,6 +2,8 @@ import { getCookie } from "cookies-next"
 import { GetServerSidePropsContext } from "next"
 import { AppProps } from "next/app"
 import Head from "next/head"
+import { Session } from "next-auth"
+import { SessionProvider } from "next-auth/react"
 import { Provider as ReduxProvider } from "react-redux"
 
 import { MantineProvider } from "@mantine/core"
@@ -20,8 +22,12 @@ export type BrowserSize = {
 export default function App({
 	Component,
 	pageProps,
+	session,
 	size,
-}: AppProps & { size: BrowserSize | null }) {
+}: AppProps & {
+	session: Session
+	size: BrowserSize | null
+}) {
 	return (
 		<>
 			<Head>
@@ -75,21 +81,23 @@ export default function App({
 				/>
 			</Head>
 
-			<ReduxProvider store={store}>
-				<StockLivePricesProvider>
-					<CurrencyPairPricesProvider>
-						<NavigatorProvider size={size}>
-							<MantineProvider
-								withGlobalStyles
-								withNormalizeCSS
-								theme={{ colorScheme: "dark" }}>
-								<Notifications />
-								<Component {...pageProps} />
-							</MantineProvider>
-						</NavigatorProvider>
-					</CurrencyPairPricesProvider>
-				</StockLivePricesProvider>
-			</ReduxProvider>
+			<SessionProvider session={session}>
+				<ReduxProvider store={store}>
+					<StockLivePricesProvider>
+						<CurrencyPairPricesProvider>
+							<NavigatorProvider size={size}>
+								<MantineProvider
+									withGlobalStyles
+									withNormalizeCSS
+									theme={{ colorScheme: "dark" }}>
+									<Notifications />
+									<Component {...pageProps} />
+								</MantineProvider>
+							</NavigatorProvider>
+						</CurrencyPairPricesProvider>
+					</StockLivePricesProvider>
+				</ReduxProvider>
+			</SessionProvider>
 		</>
 	)
 }

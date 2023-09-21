@@ -1,6 +1,7 @@
 import Head from "next/head"
 import Image from "next/image"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
 import { CSSProperties, useContext, useEffect, useState } from "react"
 
 import {
@@ -18,17 +19,10 @@ import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark } from "@tabler/icons-react"
 
 import { OandaPrice } from "@/@types/oanda"
-import { User } from "@/@types/types"
-import { useUpdateAppUserMutation } from "@/api/users"
+import { useGetBookmarksQuery, useUpdateBookmarksMutation } from "@/api/bookmarks"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
-import UserContext from "@/contexts/UserContext"
-import { withSession } from "@/utils/middlewares"
-
-type Props = {
-	user: User | null
-}
 
 function CurrencyPair({
 	currencyPair,
@@ -39,10 +33,14 @@ function CurrencyPair({
 }) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 
+	const { data: session } = useSession()
 	const theme = useMantineTheme()
-	const { user, setUser } = useContext(UserContext)
 
-	const [updateAppUser, { isLoading: updateAppUserIsLoading }] = useUpdateAppUserMutation()
+	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
+		pollingInterval: 60_000,
+		skip: !session,
+	})
+	const [updateBookmarks, { isLoading: updateBookmarksIsLoading }] = useUpdateBookmarksMutation()
 
 	const [bidStyle, setBidStyle] = useState<CSSProperties>({})
 	const [askStyle, setAskStyle] = useState<CSSProperties>({})
@@ -87,25 +85,12 @@ function CurrencyPair({
 	}, [theme, price, previousPrice])
 
 	const toggleBookmark = async () => {
-		if (!user) return
-
-		const appUser = await updateAppUser({
-			bookmarks: user.app.bookmarks.includes(currencyPair)
-				? user.app.bookmarks.filter(b => b !== currencyPair)
-				: [...user.app.bookmarks, currencyPair],
-		})
-
-		if ("data" in appUser) {
-			setUser({
-				...user,
-				app: {
-					...user.app,
-					bookmarks: user.app.bookmarks.includes(currencyPair)
-						? user.app.bookmarks.filter(b => b !== currencyPair)
-						: [...user.app.bookmarks, currencyPair],
-				},
-			})
-		}
+		if (!bookmarks) return
+		await updateBookmarks(
+			bookmarks.includes(currencyPair)
+				? bookmarks.filter(b => b !== currencyPair)
+				: [...bookmarks, currencyPair],
+		)
 	}
 
 	const loader = (
@@ -117,16 +102,12 @@ function CurrencyPair({
 
 	return (
 		<tr style={{ textAlign: "center" }}>
-			{user && (
+			{bookmarks && (
 				<td>
-					{!updateAppUserIsLoading ? (
+					{!updateBookmarksIsLoading ? (
 						<ActionIcon onClick={toggleBookmark}>
 							<IconBookmark
-								fill={
-									user.app.bookmarks.includes(currencyPair)
-										? "white"
-										: "transparent"
-								}
+								fill={bookmarks.includes(currencyPair) ? "white" : "transparent"}
 								size={20}
 							/>
 						</ActionIcon>
@@ -193,7 +174,8 @@ function CurrencyPair({
 	)
 }
 
-export default function CurrencyPairs({ user }: Props) {
+export default function CurrencyPairs() {
+	const { data: session } = useSession()
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
 
@@ -207,7 +189,7 @@ export default function CurrencyPairs({ user }: Props) {
 	}
 
 	return (
-		<Shell user={user}>
+		<Shell>
 			<Head>
 				<title>Markex | Currency Pairs</title>
 			</Head>
@@ -222,7 +204,7 @@ export default function CurrencyPairs({ user }: Props) {
 					withColumnBorders>
 					<thead>
 						<tr>
-							{user ? <th style={{ width: 20 }} /> : null}
+							{session ? <th style={{ width: 20 }} /> : null}
 							<th>Currency Pair</th>
 							<th style={numericHeaderStyle}>Change</th>
 							<th style={numericHeaderStyle}>Bid</th>
@@ -247,11 +229,3 @@ export default function CurrencyPairs({ user }: Props) {
 		</Shell>
 	)
 }
-
-export const getServerSideProps = withSession<Props>(async ({ user }) => {
-	return {
-		props: {
-			user,
-		},
-	}
-})

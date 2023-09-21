@@ -1,15 +1,13 @@
+import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
 import Image from "next/image"
-import { useRouter } from "next/router"
 import { useContext, useEffect, useState } from "react"
 
 import {
 	Box,
-	Button,
 	Center,
 	Divider,
 	Flex,
-	NumberInput,
 	SegmentedControl,
 	Skeleton,
 	Stack,
@@ -17,23 +15,16 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core"
-import { useForm } from "@mantine/form"
 import { useMediaQuery, usePrevious } from "@mantine/hooks"
-import { notifications } from "@mantine/notifications"
-import { TransactionType } from "@prisma/client"
-import { IconArrowsHorizontal, IconCaretDown, IconCaretUp, IconCheck } from "@tabler/icons-react"
+import { IconArrowsHorizontal, IconCaretDown, IconCaretUp } from "@tabler/icons-react"
 
-import { User } from "@/@types/types"
-import { useCreateAppTransactionMutation } from "@/api/transactions"
 import BidAskBox from "@/components/BidAskBox"
 import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
-import { withSession } from "@/utils/middlewares"
 
 type Props = {
-	user: User | null
 	currencyPair: CURRENCY_PAIR
 }
 
@@ -60,38 +51,13 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 	)
 }
 
-function DetailItem({
-	label,
-	value,
-	color,
-}: {
-	label: string
-	value: string | number
-	color?: string
-}) {
-	return (
-		<Flex justify="space-between">
-			<Text w="fit-content">{label}</Text>
-			<Text
-				color={color}
-				weight={700}>
-				{value}
-			</Text>
-		</Flex>
-	)
-}
-
-export default function CurrencyPair({ user, currencyPair }: Props) {
+export default function CurrencyPair({ currencyPair }: Props) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
-	const router = useRouter()
 
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
-
-	const [createAppTransaction, { isLoading: createAppTransactionIsLoading }] =
-		useCreateAppTransactionMutation()
 
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")
@@ -99,12 +65,6 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 	const [askColor, setAskColor] = useState<"green" | "red" | "white">("white")
 	const previousCurrencyPair = usePrevious(currencyPair)
 	const previousPrice = usePrevious(prices[currencyPair])
-	const form = useForm({
-		initialValues: {
-			mode: "sell",
-			amount: 0 as number | undefined,
-		},
-	})
 
 	const price = prices[currencyPair]
 
@@ -124,46 +84,8 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 		}
 	}, [previousCurrencyPair, currencyPair, price, previousPrice])
 
-	const onSubmit = form.onSubmit(async values => {
-		if (price && values.amount) {
-			const result = await createAppTransaction({
-				id: URL.createObjectURL(new Blob([])).split("/").at(-1) ?? "",
-				instrument: currencyPair,
-				type: values.mode as TransactionType,
-				amount,
-				price: values.mode === "sell" ? price.s : price.b,
-			})
-
-			if ("data" in result) {
-				form.setValues({ amount: 0 })
-				router.push(router.asPath)
-				notifications.show({
-					withCloseButton: true,
-					autoClose: 10000,
-					message: `${values.mode === "sell" ? "Sold" : "Bought"} ${base} ${amount}`,
-					color: "green",
-					icon: <IconCheck />,
-				})
-			}
-		}
-	})
-
-	const sellBuyValue = <T,>(sell: T, buy: T) => {
-		return form.values.mode === "sell" ? sell : buy
-	}
-
-	const amount = form.values.amount || 0
-	const tradeValue = amount * (price ? sellBuyValue(price.s, price.b) : 0)
-	const initialBaseBalance = user?.app.balances[base] || 0
-	const initialQuoteBalance = user?.app.balances[quote] || 0
-	const finalBaseBalance = sellBuyValue(initialBaseBalance - amount, initialBaseBalance + amount)
-	const finalQuoteBalance = sellBuyValue(
-		initialQuoteBalance + tradeValue,
-		initialQuoteBalance - tradeValue,
-	)
-
 	return (
-		<Shell user={user}>
+		<Shell>
 			<Head>
 				<title>{"Markex | " + currencyPairPretty}</title>
 			</Head>
@@ -347,103 +269,19 @@ export default function CurrencyPair({ user, currencyPair }: Props) {
 
 					<Divider />
 
-					{user ? (
-						<>
-							<SegmentedControl
-								color={sellBuyValue("red", "blue")}
-								data={[
-									{ value: "sell", label: "Sell" },
-									{ value: "buy", label: "Buy" },
-								]}
-								{...form.getInputProps("mode")}
-							/>
-
-							<NumberInput
-								label="Amount"
-								description={`Amount of ${base} to ${form.values.mode}`}
-								hideControls
-								onInput={e =>
-									(e.currentTarget.value = e.currentTarget.value.replace(
-										/[^0-9\\.]/g,
-										"",
-									))
-								}
-								{...form.getInputProps("amount")}
-							/>
-
-							<Stack spacing="0.25rem">
-								<DetailItem
-									label={`Initial ${base} Balance`}
-									value={[base, initialBaseBalance.toFixed(5)].join(" ")}
-								/>
-
-								<DetailItem
-									label={`Initial ${quote} Balance`}
-									value={[quote, initialQuoteBalance.toFixed(5)].join(" ")}
-								/>
-
-								<DetailItem
-									label={sellBuyValue("Deducted", "Added") + " Amount"}
-									value={[base, sellBuyValue("-", "+") + amount.toFixed(5)].join(
-										" ",
-									)}
-								/>
-
-								<DetailItem
-									label={sellBuyValue("Added", "Deducted") + " Amount"}
-									value={[
-										quote,
-										sellBuyValue("+", "-") + tradeValue.toFixed(5),
-									].join(" ")}
-								/>
-
-								<DetailItem
-									label={`Final ${base} Balance`}
-									value={[base, finalBaseBalance.toFixed(5)].join(" ")}
-									color={finalBaseBalance < 0 ? theme.colors.red[5] : undefined}
-								/>
-
-								<DetailItem
-									label={`Final ${quote} Balance`}
-									value={[quote, finalQuoteBalance.toFixed(5)].join(" ")}
-									color={finalQuoteBalance < 0 ? theme.colors.red[5] : undefined}
-								/>
-							</Stack>
-
-							<Button
-								color={sellBuyValue("red", "blue")}
-								onClick={() => onSubmit()}
-								loading={createAppTransactionIsLoading}
-								disabled={
-									!price ||
-									!amount ||
-									finalBaseBalance < 0 ||
-									finalQuoteBalance < 0
-								}>
-								Make Exchange
-							</Button>
-						</>
-					) : (
-						<Text
-							align="center"
-							c="dimmed"
-							fz="xs">
-							Sign in to Buy and Sell {currencyPairPretty}
-						</Text>
-					)}
+					{/** More information about currency pair */}
 				</Stack>
 			</Flex>
 		</Shell>
 	)
 }
 
-export const getServerSideProps = withSession<Props>(async ({ user, params }) => {
+export const getServerSideProps = async ({ params }: GetServerSidePropsContext) => {
 	return {
 		props: {
-			user,
-			currencyPair: params["currency-pair-id"]
+			currencyPair: (params!["currency-pair-id"] as string)
 				.toUpperCase()
 				.replace("-", "_") as CURRENCY_PAIR,
 		},
 	}
-})
+}

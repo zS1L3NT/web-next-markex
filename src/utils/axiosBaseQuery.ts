@@ -4,18 +4,13 @@ import { BaseQueryFn } from "@reduxjs/toolkit/dist/query"
 
 export default (async config => {
 	try {
-		let result: any
-		if (config.proxy) {
-			result = await axios.post("/api/proxy", config)
-		} else {
-			result = await axios({
-				url: config.url,
-				method: config.method,
-				data: config.body,
-				params: config.params,
-				headers: config.headers,
-			})
-		}
+		const result = await axios({
+			url: config.url,
+			method: config.method,
+			data: config.body,
+			params: config.params,
+			headers: config.headers,
+		})
 		return { data: result.data }
 	} catch (e) {
 		const error = <AxiosError>e
@@ -32,7 +27,6 @@ export default (async config => {
 		body?: AxiosRequestConfig["data"]
 		params?: AxiosRequestConfig["params"]
 		headers?: AxiosRequestConfig["headers"]
-		proxy?: boolean
 		auth?: boolean
 	},
 	unknown,

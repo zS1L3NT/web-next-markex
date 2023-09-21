@@ -1,5 +1,6 @@
 import Highcharts, { SeriesOptionsType } from "highcharts/highstock"
 import HighchartsReact from "highcharts-react-official"
+import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
 import { useContext, useState } from "react"
 
@@ -20,7 +21,6 @@ import { useMediaQuery } from "@mantine/hooks"
 
 import { AlpacaInterval } from "@/@types/alpaca"
 import { FinnhubMetric, FinnhubTrend } from "@/@types/finnhub"
-import { User } from "@/@types/types"
 import { useGetMetricsQuery } from "@/api/metrics"
 import {
 	useGetAlpacaCandlesQuery,
@@ -33,9 +33,12 @@ import BidAskBox from "@/components/BidAskBox"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
 import { StockLivePricesContext } from "@/contexts/StockLivePricesContext"
-import { withSession } from "@/utils/middlewares"
 
-export default function Symbol({ user, symbol }: Props) {
+type Props = {
+	symbol: string
+}
+
+export default function Symbol({ symbol }: Props) {
 	const theme = useMantineTheme()
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
@@ -109,7 +112,7 @@ export default function Symbol({ user, symbol }: Props) {
 			: []
 
 	return (
-		<Shell user={user}>
+		<Shell>
 			{asset && (
 				<Head>
 					<title>{"Markex | " + asset.symbol.toUpperCase()}</title>
@@ -337,16 +340,10 @@ export default function Symbol({ user, symbol }: Props) {
 	)
 }
 
-type Props = {
-	user: User | null
-	symbol: string
-}
-
-export const getServerSideProps = withSession<Props>(async ({ user, params }) => {
+export const getServerSideProps = async ({ params }: GetServerSidePropsContext) => {
 	return {
 		props: {
-			user,
-			symbol: params["symbol"].toString().toUpperCase(),
+			symbol: (params!["symbol"] as string).toUpperCase(),
 		},
 	}
-})
+}
