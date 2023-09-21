@@ -8,7 +8,7 @@ const width = getCookie("browser-width")
 if (!width || +width !== window.innerWidth) {
 	document.cookie = `browser-width=${window.innerWidth}; path=/; max-age=${
 		60 * 60 * 24 * 365
-	}; same-site=strict`
+	}; same-site=lax`
 
 	if (sessionStorage.getItem("reloaded")) {
 		sessionStorage.removeItem("reloaded")
