@@ -1,6 +1,6 @@
 import { useRouter } from "next/router"
 import { signIn, signOut, useSession } from "next-auth/react"
-import { forwardRef } from "react"
+import { forwardRef, useEffect, useState } from "react"
 
 import {
 	ActionIcon,
@@ -14,8 +14,8 @@ import {
 	Text,
 	useMantineTheme,
 } from "@mantine/core"
-import { useDisclosure, useMediaQuery } from "@mantine/hooks"
-import { IconMenu2, IconSearch } from "@tabler/icons-react"
+import { useMediaQuery } from "@mantine/hooks"
+import { IconLogin, IconLogout, IconMenu2, IconSearch } from "@tabler/icons-react"
 
 import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
 import { CURRENCY_PAIRS } from "@/constants"
@@ -32,7 +32,14 @@ export default function Header() {
 
 	const { data: symbols } = useGetAlpacaSymbolsQuery()
 
-	const [opened, { toggle, close }] = useDisclosure(false)
+	const [isOpened, setIsOpened] = useState(false)
+	const [isSearching, setIsSearching] = useState(false)
+
+	useEffect(() => {
+		if (!isBelowXs) {
+			setIsOpened(false)
+		}
+	}, [isBelowXs, setIsOpened])
 
 	const getResults = () => {
 		const currencies = CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))
@@ -90,14 +97,22 @@ export default function Header() {
 			height={57}>
 			<Flex
 				h="100%"
-				align="center"
-				justify={isBelowXs ? "space-between" : "initial"}>
+				align="center">
 				{isBelowXs ? (
-					<ActionIcon
-						m="sm"
-						onClick={toggle}>
-						<IconMenu2 />
-					</ActionIcon>
+					<>
+						<ActionIcon
+							ml="md"
+							onClick={() => setIsOpened(o => !o)}>
+							<IconMenu2 />
+						</ActionIcon>
+						<ActionIcon
+							variant="light"
+							size="lg"
+							ml="auto"
+							onClick={() => setIsSearching(s => !s)}>
+							<IconSearch size="1.25rem" />
+						</ActionIcon>
+					</>
 				) : (
 					<Box sx={{ flex: 1 }}>
 						<Select
@@ -128,14 +143,34 @@ export default function Header() {
 				)}
 
 				{session ? (
-					<Button
+					isBelowXs ? (
+						<ActionIcon
+							variant="light"
+							size="lg"
+							ml="xs"
+							mr="md"
+							onClick={() => signOut()}>
+							<IconLogout size="1.25rem" />
+						</ActionIcon>
+					) : (
+						<Button
+							variant="light"
+							color="gray"
+							size="sm"
+							m={isBelowXs ? "sm" : "md"}
+							onClick={() => signOut()}>
+							Logout
+						</Button>
+					)
+				) : isBelowXs ? (
+					<ActionIcon
 						variant="light"
-						color="gray"
-						size="sm"
-						m={isBelowXs ? "sm" : "md"}
-						onClick={() => signOut()}>
-						Logout
-					</Button>
+						size="lg"
+						ml="xs"
+						mr="md"
+						onClick={() => signIn()}>
+						<IconLogin size="1.25rem" />
+					</ActionIcon>
 				) : (
 					<Button
 						variant="light"
@@ -148,13 +183,13 @@ export default function Header() {
 				)}
 
 				<Drawer
-					opened={opened}
-					onClose={close}
+					opened={isOpened}
+					onClose={() => setIsOpened(false)}
 					withCloseButton={false}
 					size="100%">
 					<Navbar
 						isDrawer
-						closeDrawer={close}
+						closeDrawer={() => setIsOpened(false)}
 					/>
 				</Drawer>
 			</Flex>
