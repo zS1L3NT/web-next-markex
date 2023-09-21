@@ -64,3 +64,17 @@ export const FXEmpireHistory = type({
 		}),
 	),
 })
+
+export type FXEmpireSearchResult = typeof FXEmpireSearchResult.infer
+export const FXEmpireSearchResult = type({
+	slug: "string",
+	title: "string",
+	subtitle: "string",
+	category: "string",
+	"exchange?": "string",
+	hash: "string",
+	"price?": {
+		last: "number",
+		percentChange: "number",
+	},
+})
