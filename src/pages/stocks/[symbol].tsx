@@ -123,14 +123,24 @@ export default function Symbol({ user, symbol }: Props) {
 					direction={"column"}
 					gap={"md"}>
 					<Stack>
-						{asset ? (
-							<Title mt="md">{asset.symbol.toUpperCase()}</Title>
-						) : (
-							<Skeleton
-								w={100}
-								h={50}
-							/>
-						)}
+						<Stack spacing={0}>
+							{asset ? (
+								<Title mt="md">{asset.symbol.toUpperCase()}</Title>
+							) : (
+								<Skeleton
+									w={100}
+									h={50}
+								/>
+							)}
+							{asset ? (
+								<Text>{asset.name}</Text>
+							) : (
+								<Skeleton
+									w={100}
+									h={24.8}
+								/>
+							)}
+						</Stack>
 						{latestTrade || price ? (
 							<Title
 								order={2}

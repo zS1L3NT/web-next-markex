@@ -24,3 +24,16 @@ export const FinnhubTrend = type({
 	strongSell: "number",
 	symbol: "string",
 })
+
+export type FinnhubEarnings = typeof FinnhubEarnings.infer
+export const FinnhubEarnings = type({
+	date: "string", // format YYYY-MM-DD
+	epsActual: "number|null",
+	epsEstimate: "number|null",
+	hour: "'amc'|'bmo'|'dmh'|''", // after market close, before market open, during market hours
+	quarter: "number", // earnings quarter
+	revenueActual: "number|null",
+	revenueEstimate: "number|null",
+	symbol: "string",
+	year: "number", // earnings year
+})

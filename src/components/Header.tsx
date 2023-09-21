@@ -44,10 +44,14 @@ export default function Header() {
 
 	const getResults = () => {
 		const currencies = CURRENCY_PAIRS.map(cp => cp.replace("_", " / "))
-		const results = [...(symbols ?? []).filter(x => x.tradable), ...currencies]
+		const results = [
+			...(symbols ?? []).filter(x => x.tradable && x.exchange === "NASDAQ"),
+			...currencies,
+		]
 		return results
 			.map(item => {
 				return {
+					group: typeof item !== "string" ? "Stocks" : "Currency Pairs",
 					label: typeof item !== "string" ? item.symbol : item,
 					description: typeof item !== "string" ? item.name : undefined,
 					value:
@@ -112,6 +116,15 @@ export default function Header() {
 							nothingFound="No instrument found"
 							itemComponent={SelectItem}
 							limit={10}
+							filter={(value, item) => {
+								const regex = /[/\s]/g
+								return item.group === "Currency Pairs"
+									? item
+											.label!.replace(regex, "")
+											.toLowerCase()
+											.includes(value.replace(regex, "").toLowerCase())
+									: item.label!.toLowerCase().includes(value.toLowerCase())
+							}}
 							data={getResults()}
 							onChange={e => {
 								if (e) {

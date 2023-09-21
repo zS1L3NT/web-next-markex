@@ -21,6 +21,7 @@ import {
 	IconCurrency,
 	IconDashboard,
 	IconList,
+	IconTicket,
 	IconWallet,
 	IconX,
 } from "@tabler/icons-react"
@@ -225,6 +226,27 @@ export default function Navbar({
 									animate={{ opacity: 1 }}
 									exit={{ opacity: 0 }}>
 									Currency Pairs
+								</motion.div>
+							)}
+						</AnimatePresence>
+					</Button>
+
+					<Button
+						className={classes.button}
+						variant="subtle"
+						color="gray"
+						size="md"
+						leftIcon={<IconTicket size={20} />}
+						component={Link}
+						href="/stocks">
+						<AnimatePresence>
+							{opened && (
+								<motion.div
+									style={{ marginLeft: 10 }}
+									initial={{ opacity: 1 }}
+									animate={{ opacity: 1 }}
+									exit={{ opacity: 0 }}>
+									Stocks
 								</motion.div>
 							)}
 						</AnimatePresence>
