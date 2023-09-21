@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react"
 
 import {
 	ActionIcon,
+	Avatar,
 	Box,
 	Button,
 	createStyles,
@@ -149,7 +150,33 @@ function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
 			size="md"
 			component={Link}
 			href={"/stocks/" + symbol}>
-			{symbol}
+			<Avatar
+				style={{
+					left: opened ? 12 : 0,
+					width: opened ? undefined : "100%",
+					height: opened ? undefined : "100%",
+				}}
+				size={"sm"}
+				color="blue"
+				radius="md">
+				{symbol.slice(0, 2)}
+			</Avatar>
+			<AnimatePresence>
+				{opened && (
+					<motion.div
+						style={{ width: "100%" }}
+						initial={{ opacity: 1 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}>
+						<Text
+							sx={{ transform: "translateY(-50%)" }}
+							left={opened ? 44 : 0}
+							top="50%">
+							{symbol}
+						</Text>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</Button>
 	)
 }
