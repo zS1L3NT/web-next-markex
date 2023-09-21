@@ -195,7 +195,7 @@ function SearchButtonBar({
 	)
 }
 
-export default function Header() {
+export default function Header({ bookmarks }: { bookmarks: string[] | undefined }) {
 	const { data: session } = useSession()
 	const { isBelowXs, isBelowSm } = useContext(MediaQueryContext)
 	const router = useRouter()
@@ -315,6 +315,7 @@ export default function Header() {
 					withCloseButton={false}
 					size="100%">
 					<Navbar
+						bookmarks={bookmarks}
 						drawer={{
 							isOpened,
 							close: () => setIsOpened(false),

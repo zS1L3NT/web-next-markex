@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { useSession } from "next-auth/react"
 import { useContext } from "react"
 
 import {
@@ -26,7 +25,6 @@ import {
 	IconX,
 } from "@tabler/icons-react"
 
-import { useGetBookmarksQuery } from "@/api/bookmarks"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import MediaQueryContext from "@/contexts/MediaQueryContext"
 
@@ -183,22 +181,18 @@ function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
 }
 
 export default function Navbar({
+	bookmarks,
 	drawer,
 }: {
+	bookmarks: string[] | undefined
 	drawer?: {
 		isOpened: boolean
 		close: () => void
 	}
 }) {
-	const { data: session } = useSession()
 	const theme = useMantineTheme()
 	const { isBelowXs, isAboveLg } = useContext(MediaQueryContext)
 	const { classes } = useStyles({ isBelowXs, isAboveLg })
-
-	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
-		pollingInterval: 60_000,
-		skip: !session,
-	})
 
 	return (
 		<MantineNavbar
@@ -323,7 +317,7 @@ export default function Navbar({
 						color={theme.colors.dark[5]}
 					/>
 
-					{session && bookmarks ? (
+					{bookmarks ? (
 						bookmarks.length ? (
 							bookmarks.map(i =>
 								(CURRENCY_PAIRS as any).includes(i) ? (

@@ -1,4 +1,5 @@
 import { AxiosError } from "axios"
+import { useSession } from "next-auth/react"
 import { PropsWithChildren, useContext, useEffect, useState } from "react"
 import { TypedUseSelectorHook, useSelector } from "react-redux"
 
@@ -6,6 +7,7 @@ import { AppShell, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react"
 
+import { useGetBookmarksQuery } from "@/api/bookmarks"
 import MediaQueryContext from "@/contexts/MediaQueryContext"
 import { RootState } from "@/store"
 
@@ -13,8 +15,13 @@ import Header from "./Header"
 import Navbar from "./Navbar"
 
 export default function Shell(props: PropsWithChildren) {
+	const { data: session } = useSession()
 	const { isBelowXs } = useContext(MediaQueryContext)
 
+	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
+		pollingInterval: 60_000,
+		skip: !session,
+	})
 	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)
 
 	const [notified, setNotified] = useState<string[]>([])
@@ -62,8 +69,8 @@ export default function Shell(props: PropsWithChildren) {
 					overflow: "hidden",
 				},
 			}}
-			navbar={isBelowXs ? undefined : <Navbar />}
-			header={<Header />}
+			navbar={isBelowXs ? undefined : <Navbar bookmarks={bookmarks} />}
+			header={<Header bookmarks={bookmarks} />}
 			layout="alt">
 			{props.children}
 		</AppShell>
