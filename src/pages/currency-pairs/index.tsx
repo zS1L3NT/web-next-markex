@@ -117,7 +117,7 @@ function CurrencyPair({
 
 	return (
 		<tr style={{ textAlign: "center" }}>
-			{user ? (
+			{user && (
 				<td>
 					{!updateAppUserIsLoading ? (
 						<ActionIcon onClick={toggleBookmark}>
@@ -140,7 +140,7 @@ function CurrencyPair({
 						/>
 					)}
 				</td>
-			) : null}
+			)}
 			<td>
 				<Link
 					style={{
@@ -222,7 +222,7 @@ export default function CurrencyPairs({ user }: Props) {
 					withColumnBorders>
 					<thead>
 						<tr>
-							{user ? <th style={{ width: 20 }}></th> : null}
+							{user ? <th style={{ width: 20 }} /> : null}
 							<th>Currency Pair</th>
 							<th style={numericHeaderStyle}>Change</th>
 							<th style={numericHeaderStyle}>Bid</th>
