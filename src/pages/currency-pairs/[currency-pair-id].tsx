@@ -1,3 +1,5 @@
+import Highcharts from "highcharts/highstock"
+import { HighchartsReact } from "highcharts-react-official"
 import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
 import Image from "next/image"
@@ -18,6 +20,7 @@ import {
 import { useMediaQuery, usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconCaretDown, IconCaretUp } from "@tabler/icons-react"
 
+import { useGetOandaChartsDataQuery } from "@/api/extras"
 import BidAskBox from "@/components/BidAskBox"
 import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
@@ -57,6 +60,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
 
+	const { data: chartsData } = useGetOandaChartsDataQuery({ currencyPair })
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
@@ -269,7 +273,92 @@ export default function CurrencyPair({ currencyPair }: Props) {
 
 					<Divider />
 
-					{/** More information about currency pair */}
+					{chartsData?.map(d => (
+						<Box key={d.tooltipProperty}>
+							<Flex justify="space-between">
+								<Text fw="bold">{d.name.split(/(?=[A-Z])/).join(" ")}</Text>
+								<Flex align="center">
+									{d.change > 0 ? (
+										<IconCaretUp
+											color="transparent"
+											size={20}
+											fill={theme.colors.green[5]}
+										/>
+									) : null}
+									{d.change < 0 ? (
+										<IconCaretDown
+											color="transparent"
+											size={20}
+											fill={theme.colors.red[5]}
+										/>
+									) : null}
+									<Text
+										size="sm"
+										color={
+											d.change
+												? theme.colors[d.change > 0 ? "green" : "red"][5]
+												: undefined
+										}>
+										{d.change}% in one day
+									</Text>
+								</Flex>
+							</Flex>
+
+							<HighchartsReact
+								highcharts={Highcharts}
+								constructorType="chart"
+								options={
+									{
+										title: {
+											text: undefined,
+										},
+										accessibility: {
+											enabled: false,
+										},
+										chart: {
+											backgroundColor: theme.colors.dark[8],
+											height: 160,
+											style: {
+												fontFamily: "inherit",
+												// Default all chart opacities to 0, then animate them to 1
+												transition: "opacity 0.5s ease",
+											},
+										},
+										xAxis: {
+											visible: false,
+											labels: {
+												enabled: false,
+											},
+										},
+										yAxis: {
+											gridLineColor: theme.colors.dark[5],
+											crosshair: false,
+											title: undefined,
+											labels: {
+												enabled: false,
+											},
+										},
+										legend: {
+											enabled: false,
+										},
+										credits: {
+											enabled: false,
+										},
+										tooltip: {
+											enabled: false,
+										},
+										series: [
+											{
+												name: "C",
+												type: "line",
+												data: d.data.map(d => d.Value),
+											},
+										],
+									} satisfies Highcharts.Options
+								}
+							/>
+						</Box>
+					))}
 				</Stack>
 			</Flex>
 		</Shell>
