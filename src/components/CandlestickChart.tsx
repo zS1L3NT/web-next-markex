@@ -1,6 +1,6 @@
 import Highcharts from "highcharts/highstock"
 import HighchartsReact from "highcharts-react-official"
-import { RefObject, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { useMantineTheme } from "@mantine/core"
 import { useMediaQuery, usePrevious } from "@mantine/hooks"
@@ -29,7 +29,7 @@ export default function CandlestickChart({
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const [opacity, setOpacity] = useState(0)
-	const ref = useRef<{ chart: Highcharts.Chart } & RefObject<HTMLElement>>(null)
+	const ref = useRef<HighchartsReact.RefObject>(null)
 
 	/**
 	 * Store this value so below I can use it to determine if I should animate the navigator
