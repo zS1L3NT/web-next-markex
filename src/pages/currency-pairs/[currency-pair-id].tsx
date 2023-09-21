@@ -3,13 +3,16 @@ import { HighchartsReact } from "highcharts-react-official"
 import { GetServerSidePropsContext } from "next"
 import Head from "next/head"
 import Image from "next/image"
+import { useSession } from "next-auth/react"
 import { useContext, useEffect, useState } from "react"
 
 import {
+	ActionIcon,
 	Box,
 	Center,
 	Divider,
 	Flex,
+	Group,
 	SegmentedControl,
 	Skeleton,
 	Stack,
@@ -18,8 +21,9 @@ import {
 	useMantineTheme,
 } from "@mantine/core"
 import { useMediaQuery, usePrevious } from "@mantine/hooks"
-import { IconArrowsHorizontal, IconCaretDown, IconCaretUp } from "@tabler/icons-react"
+import { IconArrowsHorizontal, IconBookmark, IconCaretDown, IconCaretUp } from "@tabler/icons-react"
 
+import { useGetBookmarksQuery, useUpdateBookmarksMutation } from "@/api/bookmarks"
 import { useGetOandaChartsDataQuery } from "@/api/extras"
 import BidAskBox from "@/components/BidAskBox"
 import CurrencyChart from "@/components/CurrencyChart"
@@ -59,6 +63,12 @@ export default function CurrencyPair({ currencyPair }: Props) {
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
+	const { data: session } = useSession()
+	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
+		pollingInterval: 60_000,
+		skip: !session,
+	})
+	const [updateBookmarks, { isLoading: updateBookmarksIsLoading }] = useUpdateBookmarksMutation()
 
 	const { data: chartsData } = useGetOandaChartsDataQuery({ currencyPair })
 	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
@@ -88,6 +98,16 @@ export default function CurrencyPair({ currencyPair }: Props) {
 		}
 	}, [previousCurrencyPair, currencyPair, price, previousPrice])
 
+	const toggleBookmark = async () => {
+		if (!bookmarks) return
+
+		await updateBookmarks(
+			bookmarks.includes([base, quote].join("_"))
+				? bookmarks.filter(b => b !== [base, quote].join("_"))
+				: [...bookmarks, [base, quote].join("_")],
+		)
+	}
+
 	return (
 		<Shell>
 			<Head>
@@ -106,35 +126,59 @@ export default function CurrencyPair({ currencyPair }: Props) {
 					direction="column"
 					gap="md">
 					<Stack>
-						<Title mt="md">
-							<Flex
-								align="center"
-								gap="sm">
-								<Stack
-									sx={{ flexDirection: "row", alignItems: "center" }}
-									spacing="0.5rem">
-									<Image
-										src={CURRENCY_FLAGS[base]}
-										alt={base}
-										width={48}
-										height={36}
-									/>
-									{base}
-								</Stack>
-								<IconArrowsHorizontal size={34} />
-								<Stack
-									sx={{ flexDirection: "row", alignItems: "center" }}
-									spacing="0.5rem">
-									{quote}
-									<Image
-										src={CURRENCY_FLAGS[quote]}
-										alt={quote}
-										width={48}
-										height={36}
-									/>
-								</Stack>
-							</Flex>
-						</Title>
+						<Group
+							spacing={"lg"}
+							mt={"md"}
+							align={"center"}>
+							<Title>
+								<Flex
+									align="center"
+									gap="sm">
+									<Stack
+										sx={{ flexDirection: "row", alignItems: "center" }}
+										spacing="0.5rem">
+										<Image
+											src={CURRENCY_FLAGS[base]}
+											alt={base}
+											width={48}
+											height={36}
+										/>
+										{base}
+									</Stack>
+									<IconArrowsHorizontal size={34} />
+									<Stack
+										sx={{ flexDirection: "row", alignItems: "center" }}
+										spacing="0.5rem">
+										{quote}
+										<Image
+											src={CURRENCY_FLAGS[quote]}
+											alt={quote}
+											width={48}
+											height={36}
+										/>
+									</Stack>
+								</Flex>
+							</Title>
+							<ActionIcon
+								loading={updateBookmarksIsLoading}
+								radius={"lg"}
+								color="blue"
+								variant="filled"
+								disabled={!session}
+								size="md"
+								onClick={toggleBookmark}
+								aria-label="Bookmark">
+								<IconBookmark
+									fill={
+										bookmarks?.includes([base, quote].join("_"))
+											? "white"
+											: "transparent"
+									}
+									style={{ width: "60%", height: "60%" }}
+									stroke={1.5}
+								/>
+							</ActionIcon>
+						</Group>
 
 						<Text size="md">
 							{CURRENCY_NAMES[base]} / {CURRENCY_NAMES[quote]}

@@ -6,6 +6,7 @@ import { useContext, useEffect } from "react"
 
 import {
 	ActionIcon,
+	Avatar,
 	Box,
 	Button,
 	createStyles,
@@ -119,6 +120,62 @@ function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; o
 				height={18}
 				width={24}
 			/>
+		</Button>
+	)
+}
+
+function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
+	return (
+		<Button
+			sx={{
+				width: opened ? "100%" : 50,
+				paddingLeft: opened ? 12 : 4,
+				paddingRight: opened ? 12 : 4,
+				"& .mantine-Button-label": {
+					width: "100%",
+					position: "relative",
+					"& *": {
+						position: "absolute",
+						transition: "all 0.5s ease",
+					},
+					"& > .mantine-Text-root": {
+						lineHeight: 1,
+					},
+				},
+				transition: "width 0.5s ease",
+			}}
+			variant="subtle"
+			color="gray"
+			size="md"
+			component={Link}
+			href={"/stocks/" + symbol}>
+			<Avatar
+				style={{
+					left: opened ? 12 : 0,
+					width: opened ? undefined : "100%",
+					height: opened ? undefined : "100%",
+				}}
+				size={"sm"}
+				color="blue"
+				radius="md">
+				{symbol.slice(0, 2)}
+			</Avatar>
+			<AnimatePresence>
+				{opened && (
+					<motion.div
+						style={{ width: "100%" }}
+						initial={{ opacity: 1 }}
+						animate={{ opacity: 1 }}
+						exit={{ opacity: 0 }}>
+						<Text
+							sx={{ transform: "translateY(-50%)" }}
+							left={opened ? 44 : 0}
+							top="50%">
+							{symbol}
+						</Text>
+					</motion.div>
+				)}
+			</AnimatePresence>
 		</Button>
 	)
 }
@@ -269,13 +326,21 @@ export default function Navbar({
 
 					{session && bookmarks ? (
 						bookmarks.length ? (
-							bookmarks.map(c => (
-								<CurrencyPair
-									key={c}
-									currencyPair={c as CURRENCY_PAIR}
-									opened={opened}
-								/>
-							))
+							bookmarks.map(i =>
+								(CURRENCY_PAIRS as any).includes(i) ? (
+									<CurrencyPair
+										key={i}
+										currencyPair={i as CURRENCY_PAIR}
+										opened={opened}
+									/>
+								) : (
+									<Symbol
+										key={i}
+										symbol={i}
+										opened={opened}
+									/>
+								),
+							)
 						) : (
 							<Text
 								align="center"

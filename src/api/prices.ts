@@ -56,7 +56,10 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res => ensureResponseType(type({ trade: { p: "number" } }))(res),
 		}),
-		getAlpacaLatestQuote: builder.query<{ quote: AlpacaQuote; symbol: string }, { symbol: string }>({
+		getAlpacaLatestQuote: builder.query<
+			{ quote: AlpacaQuote; symbol: string },
+			{ symbol: string }
+		>({
 			query: ({ symbol }) => ({
 				url: `${MARKET_API_ENDPOINT}/${symbol}/quotes/latest`,
 				method: "GET",
