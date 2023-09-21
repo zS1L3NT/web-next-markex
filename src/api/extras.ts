@@ -1,7 +1,9 @@
 import { arrayOf } from "arktype"
 
 import { FinnhubEarnings, FinnhubMetric, FinnhubTrend } from "@/@types/finnhub"
+import { OandaChartData } from "@/@types/oanda"
 import api, { ensureResponseType } from "@/api/api"
+import { CURRENCY_PAIR } from "@/constants"
 
 const extras = api.injectEndpoints({
 	endpoints: builder => ({
@@ -44,6 +46,22 @@ const extras = api.injectEndpoints({
 			transformResponse: res =>
 				ensureResponseType(arrayOf(FinnhubEarnings))(res.earningsCalendar),
 		}),
+		getOandaChartsData: builder.query<OandaChartData[], { currencyPair: CURRENCY_PAIR }>({
+			query: ({ currencyPair }) => ({
+				url:
+					"https://dashboard.acuitytrading.com/SentimentApi/GetInstrumentChartsData?apikey=" +
+					process.env.NEXT_PUBLIC_OANDA_API_KEY,
+				method: "POST",
+				body: new URLSearchParams({
+					instrumentName: currencyPair,
+					region: "OAP",
+				}).toString(),
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+			}),
+			transformResponse: ensureResponseType(arrayOf(OandaChartData)),
+		}),
 	}),
 })
 
@@ -51,7 +69,9 @@ export const {
 	useGetFinnhubEarningsQuery,
 	useGetFinnhubMetricsQuery,
 	useGetFinnhubTrendsQuery,
+	useGetOandaChartsDataQuery,
 	useLazyGetFinnhubEarningsQuery,
 	useLazyGetFinnhubMetricsQuery,
 	useLazyGetFinnhubTrendsQuery,
+	useLazyGetOandaChartsDataQuery,
 } = extras

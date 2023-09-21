@@ -1,4 +1,4 @@
-import { type } from "arktype"
+import { arrayOf, type } from "arktype"
 
 export type OandaPrice = typeof OandaPrice.infer
 export const OandaPrice = type({
@@ -19,4 +19,16 @@ export const OandaCandle = type({
 		h: "number",
 		l: "number",
 	},
+})
+
+export type OandaChartData = typeof OandaChartData.infer
+export const OandaChartData = type({
+	change: "number",
+	data: arrayOf({
+		DateCet: "string",
+		DateUtc: "string",
+		Value: "number",
+	}),
+	name: "string",
+	tooltipProperty: "string",
 })
