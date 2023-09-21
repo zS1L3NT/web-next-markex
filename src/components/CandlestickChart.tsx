@@ -5,7 +5,7 @@ import { useContext, useEffect, useRef, useState } from "react"
 import { useMantineTheme } from "@mantine/core"
 import { usePrevious } from "@mantine/hooks"
 
-import NavigatorContext from "@/contexts/NavigatorContext"
+import MediaQueryContext from "@/contexts/MediaQueryContext"
 
 export default function CandlestickChart({
 	type,
@@ -27,7 +27,7 @@ export default function CandlestickChart({
 	height?: number | undefined
 }) {
 	const theme = useMantineTheme()
-	const { isBelowSm } = useContext(NavigatorContext)
+	const { isBelowSm } = useContext(MediaQueryContext)
 
 	const [opacity, setOpacity] = useState(0)
 	const ref = useRef<HighchartsReact.RefObject>(null)

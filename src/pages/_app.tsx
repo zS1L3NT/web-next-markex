@@ -10,14 +10,9 @@ import { MantineProvider } from "@mantine/core"
 import { Notifications } from "@mantine/notifications"
 
 import { CurrencyPairPricesProvider } from "@/contexts/CurrencyPairPricesContext"
-import { NavigatorProvider } from "@/contexts/NavigatorContext"
+import { MediaQueryProvider } from "@/contexts/MediaQueryContext"
 import { StockLivePricesProvider } from "@/contexts/StockLivePricesContext"
 import store from "@/store"
-
-export type BrowserSize = Record<
-	`is${"Below" | "Above"}${"Xs" | "Sm" | "Md" | "Lg" | "Xl"}`,
-	boolean
->
 
 export default function App({
 	Component,
@@ -85,7 +80,7 @@ export default function App({
 				<ReduxProvider store={store}>
 					<StockLivePricesProvider>
 						<CurrencyPairPricesProvider>
-							<NavigatorProvider width={width}>
+							<MediaQueryProvider width={width}>
 								<MantineProvider
 									withGlobalStyles
 									withNormalizeCSS
@@ -93,7 +88,7 @@ export default function App({
 									<Notifications />
 									<Component {...pageProps} />
 								</MantineProvider>
-							</NavigatorProvider>
+							</MediaQueryProvider>
 						</CurrencyPairPricesProvider>
 					</StockLivePricesProvider>
 				</ReduxProvider>

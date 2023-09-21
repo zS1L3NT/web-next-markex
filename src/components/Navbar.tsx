@@ -28,7 +28,7 @@ import {
 
 import { useGetBookmarksQuery } from "@/api/bookmarks"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
-import NavigatorContext from "@/contexts/NavigatorContext"
+import MediaQueryContext from "@/contexts/MediaQueryContext"
 
 const useStyles = createStyles(
 	(theme, { isBelowXs, isAboveLg }: { isBelowXs: boolean; isAboveLg: boolean }) => ({
@@ -183,15 +183,16 @@ function Symbol({ symbol, opened }: { symbol: string; opened: boolean }) {
 }
 
 export default function Navbar({
-	isDrawer = false,
-	closeDrawer,
+	drawer,
 }: {
-	isDrawer?: boolean
-	closeDrawer?: () => void
+	drawer?: {
+		isOpened: boolean
+		close: () => void
+	}
 }) {
 	const { data: session } = useSession()
 	const theme = useMantineTheme()
-	const { isBelowXs, isAboveLg, isOpened } = useContext(NavigatorContext)
+	const { isBelowXs, isAboveLg } = useContext(MediaQueryContext)
 	const { classes } = useStyles({ isBelowXs, isAboveLg })
 
 	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
@@ -201,7 +202,7 @@ export default function Navbar({
 
 	return (
 		<MantineNavbar
-			width={{ base: isBelowXs ? (isOpened ? "100%" : 0) : isAboveLg ? 280 : 64 }}
+			width={{ base: isBelowXs ? (drawer?.isOpened ? "100%" : 0) : isAboveLg ? 280 : 64 }}
 			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
@@ -235,11 +236,11 @@ export default function Navbar({
 						</motion.div>
 					)}
 				</AnimatePresence>
-				{isDrawer && (
+				{drawer && (
 					<ActionIcon
 						size={16}
 						ml="auto"
-						onClick={closeDrawer}>
+						onClick={() => drawer.close()}>
 						<IconX />
 					</ActionIcon>
 				)}

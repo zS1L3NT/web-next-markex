@@ -30,7 +30,7 @@ import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_NAMES, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
-import NavigatorContext from "@/contexts/NavigatorContext"
+import MediaQueryContext from "@/contexts/MediaQueryContext"
 
 type Props = {
 	currencyPair: CURRENCY_PAIR
@@ -63,7 +63,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
-	const { isBelowSm } = useContext(NavigatorContext)
+	const { isBelowSm } = useContext(MediaQueryContext)
 	const theme = useMantineTheme()
 	const { data: session } = useSession()
 	const { data: bookmarks } = useGetBookmarksQuery(undefined, {

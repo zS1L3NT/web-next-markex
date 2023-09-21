@@ -35,7 +35,7 @@ import { useGetAlpacaSymbolQuery } from "@/api/symbols"
 import BidAskBox from "@/components/BidAskBox"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
-import NavigatorContext from "@/contexts/NavigatorContext"
+import MediaQueryContext from "@/contexts/MediaQueryContext"
 import { StockLivePricesContext } from "@/contexts/StockLivePricesContext"
 
 type Props = {
@@ -44,7 +44,7 @@ type Props = {
 
 export default function Symbol({ symbol }: Props) {
 	const { data: session } = useSession()
-	const { isBelowSm } = useContext(NavigatorContext)
+	const { isBelowSm } = useContext(MediaQueryContext)
 	const theme = useMantineTheme()
 
 	const { data: bookmarks } = useGetBookmarksQuery(undefined, {

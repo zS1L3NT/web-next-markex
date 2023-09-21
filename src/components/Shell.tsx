@@ -6,14 +6,14 @@ import { AppShell, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react"
 
-import NavigatorContext from "@/contexts/NavigatorContext"
+import MediaQueryContext from "@/contexts/MediaQueryContext"
 import { RootState } from "@/store"
 
 import Header from "./Header"
 import Navbar from "./Navbar"
 
 export default function Shell(props: PropsWithChildren) {
-	const { isBelowXs } = useContext(NavigatorContext)
+	const { isBelowXs } = useContext(MediaQueryContext)
 
 	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)
 

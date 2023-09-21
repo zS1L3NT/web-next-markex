@@ -1,16 +1,7 @@
 import { setCookie } from "cookies-next"
 import { createContext, PropsWithChildren, useCallback, useEffect, useState } from "react"
 
-import { BrowserSize } from "@/pages/_app"
-
-const NavigatorContext = createContext<
-	{
-		isOpened: boolean
-		setIsOpened: (opened: boolean) => void
-	} & BrowserSize
->({
-	isOpened: false,
-	setIsOpened: (() => {}) as (opened: boolean) => void,
+const MediaQueryContext = createContext({
 	isBelowXs: false,
 	isBelowSm: false,
 	isBelowMd: false,
@@ -23,10 +14,9 @@ const NavigatorContext = createContext<
 	isAboveXl: false,
 })
 
-export default NavigatorContext
-export const NavigatorProvider = (props: PropsWithChildren<{ width: number }>) => {
+export default MediaQueryContext
+export const MediaQueryProvider = (props: PropsWithChildren<{ width: number }>) => {
 	const [width, setWidth] = useState(props.width)
-	const [isOpened, setIsOpened] = useState(false)
 
 	const onResize = useCallback(() => {
 		setWidth(window.innerWidth)
@@ -45,10 +35,8 @@ export const NavigatorProvider = (props: PropsWithChildren<{ width: number }>) =
 	}, [onResize])
 
 	return (
-		<NavigatorContext.Provider
+		<MediaQueryContext.Provider
 			value={{
-				isOpened,
-				setIsOpened,
 				isBelowXs: width < 576,
 				isBelowSm: width < 768,
 				isBelowMd: width < 992,
@@ -61,6 +49,6 @@ export const NavigatorProvider = (props: PropsWithChildren<{ width: number }>) =
 				isAboveXl: width > 1408,
 			}}>
 			{props.children}
-		</NavigatorContext.Provider>
+		</MediaQueryContext.Provider>
 	)
 }
