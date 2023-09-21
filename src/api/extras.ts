@@ -1,4 +1,4 @@
-import { arrayOf } from "arktype"
+import { arrayOf, union } from "arktype"
 
 import { FinnhubEarnings, FinnhubMetric, FinnhubTrend } from "@/@types/finnhub"
 import { OandaChartData } from "@/@types/oanda"
@@ -46,22 +46,25 @@ const extras = api.injectEndpoints({
 			transformResponse: res =>
 				ensureResponseType(arrayOf(FinnhubEarnings))(res.earningsCalendar),
 		}),
-		getOandaChartsData: builder.query<OandaChartData[], { currencyPair: CURRENCY_PAIR }>({
-			query: ({ currencyPair }) => ({
-				url:
-					"https://dashboard.acuitytrading.com/SentimentApi/GetInstrumentChartsData?apikey=" +
-					process.env.NEXT_PUBLIC_OANDA_API_KEY,
-				method: "POST",
-				body: new URLSearchParams({
-					instrumentName: currencyPair,
-					region: "OAP",
-				}).toString(),
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-			}),
-			transformResponse: ensureResponseType(arrayOf(OandaChartData)),
-		}),
+		getOandaChartsData: builder.query<OandaChartData[] | null, { currencyPair: CURRENCY_PAIR }>(
+			{
+				query: ({ currencyPair }) => ({
+					url:
+						"https://dashboard.acuitytrading.com/SentimentApi/GetInstrumentChartsData?apikey=" +
+						process.env.NEXT_PUBLIC_OANDA_API_KEY,
+					method: "POST",
+					body: new URLSearchParams({
+						instrumentName: currencyPair,
+						region: "OAP",
+					}).toString(),
+					headers: {
+						"Content-Type": "application/x-www-form-urlencoded",
+					},
+				}),
+				transformResponse: res =>
+					ensureResponseType(union(arrayOf(OandaChartData), "null"))(res || null),
+			},
+		),
 	}),
 })
 
