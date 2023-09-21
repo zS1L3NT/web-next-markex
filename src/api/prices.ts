@@ -45,7 +45,7 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res => ensureResponseType(arrayOf(OandaCandle))(res.candles),
 		}),
-		getLatestTrade: builder.query<{ trade: { p: number } }, { symbol: string }>({
+		getAlpacaLatestTrade: builder.query<{ trade: { p: number } }, { symbol: string }>({
 			query: ({ symbol }) => ({
 				url: `${MARKET_API_ENDPOINT}/${symbol}/trades/latest`,
 				method: "GET",
@@ -56,7 +56,7 @@ const prices = api.injectEndpoints({
 			}),
 			transformResponse: res => ensureResponseType(type({ trade: { p: "number" } }))(res),
 		}),
-		getLatestQuote: builder.query<{ quote: AlpacaQuote; symbol: string }, { symbol: string }>({
+		getAlpacaLatestQuote: builder.query<{ quote: AlpacaQuote; symbol: string }, { symbol: string }>({
 			query: ({ symbol }) => ({
 				url: `${MARKET_API_ENDPOINT}/${symbol}/quotes/latest`,
 				method: "GET",
@@ -101,14 +101,14 @@ const prices = api.injectEndpoints({
 })
 
 export const {
-	useGetOandaCandlesQuery,
 	useGetOandaPriceQuery,
-	useLazyGetOandaCandlesQuery,
-	useLazyGetOandaPriceQuery,
-	useGetLatestQuoteQuery,
-	useLazyGetLatestQuoteQuery,
-	useGetLatestTradeQuery,
-	useLazyGetLatestTradeQuery,
 	useGetAlpacaCandlesQuery,
+	useGetAlpacaLatestQuoteQuery,
+	useGetAlpacaLatestTradeQuery,
+	useGetOandaCandlesQuery,
+	useLazyGetOandaPriceQuery,
 	useLazyGetAlpacaCandlesQuery,
+	useLazyGetAlpacaLatestQuoteQuery,
+	useLazyGetAlpacaLatestTradeQuery,
+	useLazyGetOandaCandlesQuery,
 } = prices

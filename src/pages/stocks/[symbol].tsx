@@ -21,14 +21,13 @@ import { useMediaQuery } from "@mantine/hooks"
 
 import { AlpacaInterval } from "@/@types/alpaca"
 import { FinnhubMetric, FinnhubTrend } from "@/@types/finnhub"
-import { useGetMetricsQuery } from "@/api/metrics"
+import { useGetFinnhubMetricsQuery, useGetFinnhubTrendsQuery } from "@/api/extras"
 import {
 	useGetAlpacaCandlesQuery,
-	useGetLatestQuoteQuery,
-	useGetLatestTradeQuery,
+	useGetAlpacaLatestQuoteQuery,
+	useGetAlpacaLatestTradeQuery,
 } from "@/api/prices"
 import { useGetAlpacaSymbolQuery } from "@/api/symbols"
-import { useGetTrendsQuery } from "@/api/trends"
 import BidAskBox from "@/components/BidAskBox"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
@@ -71,8 +70,10 @@ export default function Symbol({ symbol }: Props) {
 	const { price, quote } = useContext(StockLivePricesContext)
 	const [chart, setChart] = useState<"ohlc" | "candlestick">("candlestick")
 	const [interval, setInterval] = useState<AlpacaInterval>("1Hour")
-	const { data: latestTrade } = useGetLatestTradeQuery({ symbol })
-	const { data: latestQuote, isFetching: quoteIsFetching } = useGetLatestQuoteQuery({ symbol })
+	const { data: latestTrade } = useGetAlpacaLatestTradeQuery({ symbol })
+	const { data: latestQuote, isFetching: quoteIsFetching } = useGetAlpacaLatestQuoteQuery({
+		symbol,
+	})
 	const { data: asset } = useGetAlpacaSymbolQuery({ symbol })
 	const {
 		data: candles,
@@ -88,8 +89,8 @@ export default function Symbol({ symbol }: Props) {
 		},
 	)
 
-	const { data: metrics } = useGetMetricsQuery({ symbol }, { pollingInterval: 60_000 * 5 })
-	const { data: trends } = useGetTrendsQuery({ symbol }, { pollingInterval: 60_000 * 5 })
+	const { data: metrics } = useGetFinnhubMetricsQuery({ symbol }, { pollingInterval: 60_000 * 5 })
+	const { data: trends } = useGetFinnhubTrendsQuery({ symbol }, { pollingInterval: 60_000 * 5 })
 
 	const keyMappings: {
 		[key in keyof Omit<FinnhubTrend, "symbol" | "period">]: string
