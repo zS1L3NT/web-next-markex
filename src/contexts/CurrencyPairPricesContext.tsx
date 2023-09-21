@@ -21,16 +21,24 @@ const CurrencyPairPricesContext = createContext<{
 export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 	const [getOandaPrice] = useLazyGetOandaPriceQuery()
 
-	const socket = useMemo(
-		() => new WebSocket("wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets"),
-		[],
-	)
+	const socket = useMemo(() => {
+		try {
+			return new WebSocket(
+				"wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets",
+			)
+		} catch (e) {
+			console.error(e)
+			return null
+		}
+	}, [])
 	const [connected, setConnected] = useState(false)
 	const [pendingCurrencyPairs, setPendingCurrencyPairs] = useState<CURRENCY_PAIR[] | null>(null)
 	const [currencyPairs, setCurrencyPairs] = useState<CURRENCY_PAIR[]>([])
 	const [prices, setPrices] = useState<Partial<Record<CURRENCY_PAIR, OandaPrice | null>>>({})
 
 	useEffect(() => {
+		if (!socket) return
+
 		socket.onmessage = event => {
 			const events = event.data.split(CHAR).slice(0, -1).map(JSON.parse) as any[]
 
@@ -187,7 +195,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 	useEffect(() => {
 		if (connected) {
 			const interval = setInterval(() => {
-				socket.send(`{"type":6}${CHAR}`)
+				socket?.send(`{"type":6}${CHAR}`)
 			}, 15_000)
 
 			return () => clearInterval(interval)
@@ -234,7 +242,7 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 			}
 
 			if (events) {
-				socket.send(events)
+				socket?.send(events)
 			}
 		}
 	}, [socket, connected, currencyPairs, pendingCurrencyPairs])
