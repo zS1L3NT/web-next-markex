@@ -148,7 +148,14 @@ function SearchButtonBar({
 			{isSearching && (
 				<Select
 					ref={ref}
-					sx={{ "*": { transition: "initial" } }}
+					sx={{
+						"*": { transition: "initial" },
+						"& input": { border: "none" },
+						"& .mantine-Select-dropdown > * > *": {
+							overflowX: "hidden !important" as "hidden",
+						},
+					}}
+					dropdownComponent="div"
 					style={{ opacity: isFullyOpened ? 1 : 0 }}
 					variant="filled"
 					size="sm"
@@ -230,6 +237,7 @@ export default function Header() {
 								width: "60%",
 								margin: "auto",
 								"*": { transition: "initial" },
+								"& input": { border: "none" },
 							}}
 							variant="filled"
 							icon={<IconSearch size={20} />}
