@@ -20,7 +20,7 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core"
-import { useMediaQuery, usePrevious } from "@mantine/hooks"
+import { usePrevious } from "@mantine/hooks"
 import { IconArrowsHorizontal, IconBookmark, IconCaretDown, IconCaretUp } from "@tabler/icons-react"
 
 import { useGetBookmarksQuery, useUpdateBookmarksMutation } from "@/api/bookmarks"
@@ -30,6 +30,7 @@ import CurrencyChart from "@/components/CurrencyChart"
 import Shell from "@/components/Shell"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_NAMES, CURRENCY_PAIR } from "@/constants"
 import CurrencyPairPricesContext from "@/contexts/CurrencyPairPricesContext"
+import NavigatorContext from "@/contexts/NavigatorContext"
 
 type Props = {
 	currencyPair: CURRENCY_PAIR
@@ -62,6 +63,7 @@ export default function CurrencyPair({ currencyPair }: Props) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
 	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
+	const { isBelowSm } = useContext(NavigatorContext)
 	const theme = useMantineTheme()
 	const { data: session } = useSession()
 	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
@@ -71,7 +73,6 @@ export default function CurrencyPair({ currencyPair }: Props) {
 	const [updateBookmarks, { isLoading: updateBookmarksIsLoading }] = useUpdateBookmarksMutation()
 
 	const { data: chartsData } = useGetOandaChartsDataQuery({ currencyPair })
-	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const [type, setType] = useState<"candlestick" | "ohlc">("candlestick")
 	const [period, setPeriod] = useState<"H1" | "D" | "W" | "M">("H1")

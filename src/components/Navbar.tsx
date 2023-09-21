@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { useSession } from "next-auth/react"
-import { useContext, useEffect } from "react"
+import { useContext } from "react"
 
 import {
 	ActionIcon,
@@ -30,19 +30,21 @@ import { useGetBookmarksQuery } from "@/api/bookmarks"
 import { CURRENCY, CURRENCY_FLAGS, CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 import NavigatorContext from "@/contexts/NavigatorContext"
 
-const useStyles = createStyles((theme, { opened }: { opened: boolean }) => ({
-	button: {
-		width: opened ? "100%" : "fit-content",
-		paddingLeft: 12,
-		paddingRight: 12,
-		"& .mantine-Button-inner": {
-			justifyContent: "start",
+const useStyles = createStyles(
+	(theme, { isBelowXs, isAboveLg }: { isBelowXs: boolean; isAboveLg: boolean }) => ({
+		button: {
+			width: isBelowXs || isAboveLg ? "100%" : "fit-content",
+			paddingLeft: 12,
+			paddingRight: 12,
+			"& .mantine-Button-inner": {
+				justifyContent: "start",
+			},
+			"& .mantine-Button-leftIcon": {
+				marginRight: 0,
+			},
 		},
-		"& .mantine-Button-leftIcon": {
-			marginRight: 0,
-		},
-	},
-}))
+	}),
+)
 
 function CurrencyPair({ currencyPair, opened }: { currencyPair: CURRENCY_PAIR; opened: boolean }) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
@@ -189,21 +191,17 @@ export default function Navbar({
 }) {
 	const { data: session } = useSession()
 	const theme = useMantineTheme()
-	const { isBelowXs, isAboveLg, opened, setOpened } = useContext(NavigatorContext)
-	const { classes } = useStyles({ opened })
+	const { isBelowXs, isAboveLg, isOpened } = useContext(NavigatorContext)
+	const { classes } = useStyles({ isBelowXs, isAboveLg })
 
 	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
 		pollingInterval: 60_000,
 		skip: !session,
 	})
 
-	useEffect(() => {
-		setOpened(isBelowXs !== isAboveLg)
-	}, [setOpened, isBelowXs, isAboveLg])
-
 	return (
 		<MantineNavbar
-			width={{ base: opened || isDrawer ? (isDrawer ? 0 : 280) : 64 }}
+			width={{ base: isBelowXs ? (isOpened ? "100%" : 0) : isAboveLg ? 280 : 64 }}
 			sx={{ transition: isBelowXs ? undefined : "width 0.5s ease" }}>
 			<MantineNavbar.Section
 				sx={{
@@ -228,7 +226,7 @@ export default function Navbar({
 					/>
 				</Box>
 				<AnimatePresence>
-					{opened && (
+					{(isBelowXs || isAboveLg) && (
 						<motion.div
 							initial={{ opacity: 1 }}
 							animate={{ opacity: 1 }}
@@ -265,7 +263,7 @@ export default function Navbar({
 						component={Link}
 						href="/dashboard">
 						<AnimatePresence>
-							{opened && (
+							{(isBelowXs || isAboveLg) && (
 								<motion.div
 									style={{ marginLeft: 10 }}
 									initial={{ opacity: 1 }}
@@ -286,7 +284,7 @@ export default function Navbar({
 						component={Link}
 						href="/currency-pairs">
 						<AnimatePresence>
-							{opened && (
+							{(isBelowXs || isAboveLg) && (
 								<motion.div
 									style={{ marginLeft: 10 }}
 									initial={{ opacity: 1 }}
@@ -307,7 +305,7 @@ export default function Navbar({
 						component={Link}
 						href="/stocks">
 						<AnimatePresence>
-							{opened && (
+							{(isBelowXs || isAboveLg) && (
 								<motion.div
 									style={{ marginLeft: 10 }}
 									initial={{ opacity: 1 }}
@@ -331,13 +329,13 @@ export default function Navbar({
 									<CurrencyPair
 										key={i}
 										currencyPair={i as CURRENCY_PAIR}
-										opened={opened}
+										opened={isBelowXs || isAboveLg}
 									/>
 								) : (
 									<Symbol
 										key={i}
 										symbol={i}
-										opened={opened}
+										opened={isBelowXs || isAboveLg}
 									/>
 								),
 							)
@@ -356,11 +354,11 @@ export default function Navbar({
 								<CurrencyPair
 									key={c}
 									currencyPair={c}
-									opened={opened}
+									opened={isBelowXs || isAboveLg}
 								/>
 							))}
 							<AnimatePresence>
-								{opened && (
+								{(isBelowXs || isAboveLg) && (
 									<motion.div
 										initial={{ opacity: 1 }}
 										animate={{ opacity: 1 }}

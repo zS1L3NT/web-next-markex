@@ -20,7 +20,6 @@ import {
 	Title,
 	useMantineTheme,
 } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
 import { IconBookmark } from "@tabler/icons-react"
 
 import { AlpacaInterval } from "@/@types/alpaca"
@@ -36,6 +35,7 @@ import { useGetAlpacaSymbolQuery } from "@/api/symbols"
 import BidAskBox from "@/components/BidAskBox"
 import CandlestickChart from "@/components/CandlestickChart"
 import Shell from "@/components/Shell"
+import NavigatorContext from "@/contexts/NavigatorContext"
 import { StockLivePricesContext } from "@/contexts/StockLivePricesContext"
 
 type Props = {
@@ -44,13 +44,14 @@ type Props = {
 
 export default function Symbol({ symbol }: Props) {
 	const { data: session } = useSession()
+	const { isBelowSm } = useContext(NavigatorContext)
+	const theme = useMantineTheme()
+
 	const { data: bookmarks } = useGetBookmarksQuery(undefined, {
 		pollingInterval: 60_000,
 		skip: !session,
 	})
 	const [updateBookmarks, { isLoading: updateBookmarksIsLoading }] = useUpdateBookmarksMutation()
-	const theme = useMantineTheme()
-	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const intervals = [
 		{ displayName: "1m", value: "1Min" },

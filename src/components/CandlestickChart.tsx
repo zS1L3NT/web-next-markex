@@ -1,9 +1,11 @@
 import Highcharts from "highcharts/highstock"
 import HighchartsReact from "highcharts-react-official"
-import { useEffect, useRef, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 
 import { useMantineTheme } from "@mantine/core"
-import { useMediaQuery, usePrevious } from "@mantine/hooks"
+import { usePrevious } from "@mantine/hooks"
+
+import NavigatorContext from "@/contexts/NavigatorContext"
 
 export default function CandlestickChart({
 	type,
@@ -25,8 +27,7 @@ export default function CandlestickChart({
 	height?: number | undefined
 }) {
 	const theme = useMantineTheme()
-
-	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
+	const { isBelowSm } = useContext(NavigatorContext)
 
 	const [opacity, setOpacity] = useState(0)
 	const ref = useRef<HighchartsReact.RefObject>(null)

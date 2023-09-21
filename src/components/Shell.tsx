@@ -1,23 +1,21 @@
 import { AxiosError } from "axios"
-import { PropsWithChildren, useEffect, useState } from "react"
+import { PropsWithChildren, useContext, useEffect, useState } from "react"
 import { TypedUseSelectorHook, useSelector } from "react-redux"
 
-import { AppShell, Text, useMantineTheme } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
+import { AppShell, Text } from "@mantine/core"
 import { notifications } from "@mantine/notifications"
 import { IconX } from "@tabler/icons-react"
 
+import NavigatorContext from "@/contexts/NavigatorContext"
 import { RootState } from "@/store"
 
 import Header from "./Header"
 import Navbar from "./Navbar"
 
 export default function Shell(props: PropsWithChildren) {
-	const theme = useMantineTheme()
+	const { isBelowXs } = useContext(NavigatorContext)
 
 	const queries = (useSelector as TypedUseSelectorHook<RootState>)(state => state.api.queries)
-
-	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
 
 	const [notified, setNotified] = useState<string[]>([])
 

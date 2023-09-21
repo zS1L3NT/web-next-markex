@@ -5,6 +5,7 @@ import {
 	ForwardedRef,
 	forwardRef,
 	SetStateAction,
+	useContext,
 	useEffect,
 	useRef,
 	useState,
@@ -22,12 +23,12 @@ import {
 	Text,
 	useMantineTheme,
 } from "@mantine/core"
-import { useMediaQuery } from "@mantine/hooks"
 import { IconArrowLeft, IconLogin, IconLogout, IconMenu2, IconSearch } from "@tabler/icons-react"
 
 import { AlpacaSymbol } from "@/@types/alpaca"
 import { useGetAlpacaSymbolsQuery } from "@/api/symbols"
 import { CURRENCY, CURRENCY_NAMES, CURRENCY_PAIRS } from "@/constants"
+import NavigatorContext from "@/contexts/NavigatorContext"
 
 import Navbar from "./Navbar"
 
@@ -196,15 +197,11 @@ function SearchButtonBar({
 
 export default function Header() {
 	const { data: session } = useSession()
-	const theme = useMantineTheme()
+	const { isBelowXs, isBelowSm, isOpened, setIsOpened } = useContext(NavigatorContext)
 	const router = useRouter()
-
-	const isBelowXs = useMediaQuery(`(max-width: ${theme.breakpoints.xs})`)
-	const isBelowSm = useMediaQuery(`(max-width: ${theme.breakpoints.sm})`)
 
 	const { data: symbols } = useGetAlpacaSymbolsQuery()
 
-	const [isOpened, setIsOpened] = useState(false)
 	const [isSearching, setIsSearching] = useState(false)
 
 	useEffect(() => {
@@ -226,7 +223,7 @@ export default function Header() {
 						<ActionIcon
 							ml={isSearching ? "-28px" : "md"}
 							mr="xs"
-							onClick={() => setIsOpened(o => !o)}>
+							onClick={() => setIsOpened(true)}>
 							<IconMenu2 />
 						</ActionIcon>
 						<SearchButtonBar

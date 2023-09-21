@@ -14,19 +14,19 @@ import { NavigatorProvider } from "@/contexts/NavigatorContext"
 import { StockLivePricesProvider } from "@/contexts/StockLivePricesContext"
 import store from "@/store"
 
-export type BrowserSize = {
-	isBelowXs: boolean
-	isAboveLg: boolean
-}
+export type BrowserSize = Record<
+	`is${"Below" | "Above"}${"Xs" | "Sm" | "Md" | "Lg" | "Xl"}`,
+	boolean
+>
 
 export default function App({
 	Component,
 	pageProps,
 	session,
-	size,
+	width,
 }: AppProps & {
 	session: Session
-	size: BrowserSize | null
+	width: number
 }) {
 	return (
 		<>
@@ -85,7 +85,7 @@ export default function App({
 				<ReduxProvider store={store}>
 					<StockLivePricesProvider>
 						<CurrencyPairPricesProvider>
-							<NavigatorProvider size={size}>
+							<NavigatorProvider width={width}>
 								<MantineProvider
 									withGlobalStyles
 									withNormalizeCSS
@@ -103,7 +103,5 @@ export default function App({
 }
 
 App.getInitialProps = ({ ctx }: { ctx: GetServerSidePropsContext }) => ({
-	size: getCookie("browser-size", ctx)
-		? JSON.parse(getCookie("browser-size", ctx) as string)
-		: null,
+	width: +getCookie("browser-width", ctx)!,
 })

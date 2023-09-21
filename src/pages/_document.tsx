@@ -10,7 +10,10 @@ export default class _Document extends Document {
 	override render() {
 		return (
 			<Html>
-				<Head />
+				<Head>
+					{/* eslint-disable-next-line @next/next/no-sync-scripts */}
+					<script src="/cookie.js"></script>
+				</Head>
 				<body>
 					<Main />
 					<NextScript />

@@ -1,49 +1,40 @@
 import { setCookie } from "cookies-next"
 import { createContext, PropsWithChildren, useCallback, useEffect, useState } from "react"
 
-import { useMantineTheme } from "@mantine/core"
-
 import { BrowserSize } from "@/pages/_app"
 
-const NavigatorContext = createContext({
+const NavigatorContext = createContext<
+	{
+		isOpened: boolean
+		setIsOpened: (opened: boolean) => void
+	} & BrowserSize
+>({
+	isOpened: false,
+	setIsOpened: (() => {}) as (opened: boolean) => void,
 	isBelowXs: false,
+	isBelowSm: false,
+	isBelowMd: false,
+	isBelowLg: false,
+	isBelowXl: false,
+	isAboveXs: false,
+	isAboveSm: false,
+	isAboveMd: false,
 	isAboveLg: false,
-	opened: false,
-	setOpened: (() => {}) as (opened: boolean) => void,
+	isAboveXl: false,
 })
 
 export default NavigatorContext
-export const NavigatorProvider = ({
-	children,
-	size: size_,
-}: PropsWithChildren<{ size: BrowserSize | null }>) => {
-	const theme = useMantineTheme()
-
-	const calculate = useCallback((): BrowserSize => {
-		if ("window" in globalThis) {
-			return {
-				isBelowXs: window.matchMedia(`(max-width: ${theme.breakpoints.xs})`).matches,
-				isAboveLg: window.matchMedia(`(min-width: ${theme.breakpoints.lg})`).matches,
-			}
-		} else {
-			return {
-				isBelowXs: false,
-				isAboveLg: false,
-			}
-		}
-	}, [theme.breakpoints.xs, theme.breakpoints.lg])
-
-	const [size, setSize] = useState(size_ ?? calculate())
-	const [opened, setOpened] = useState(size.isBelowXs !== size.isAboveLg)
+export const NavigatorProvider = (props: PropsWithChildren<{ width: number }>) => {
+	const [width, setWidth] = useState(props.width)
+	const [isOpened, setIsOpened] = useState(false)
 
 	const onResize = useCallback(() => {
-		const size = calculate()
-		setSize(size)
-		setCookie("browser-size", JSON.stringify(size), {
+		setWidth(window.innerWidth)
+		setCookie("browser-width", window.innerWidth, {
 			maxAge: 60 * 60 * 24 * 365,
 			sameSite: true,
 		})
-	}, [calculate])
+	}, [])
 
 	useEffect(() => {
 		onResize()
@@ -54,8 +45,22 @@ export const NavigatorProvider = ({
 	}, [onResize])
 
 	return (
-		<NavigatorContext.Provider value={{ ...size, opened, setOpened }}>
-			{children}
+		<NavigatorContext.Provider
+			value={{
+				isOpened,
+				setIsOpened,
+				isBelowXs: width < 576,
+				isBelowSm: width < 768,
+				isBelowMd: width < 992,
+				isBelowLg: width < 1200,
+				isBelowXl: width < 1408,
+				isAboveXs: width > 576,
+				isAboveSm: width > 768,
+				isAboveMd: width > 992,
+				isAboveLg: width > 1200,
+				isAboveXl: width > 1408,
+			}}>
+			{props.children}
 		</NavigatorContext.Provider>
 	)
 }
