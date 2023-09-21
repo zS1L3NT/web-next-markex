@@ -1,6 +1,7 @@
-import { arrayOf } from "arktype"
+import { arrayOf, type } from "arktype"
 
 import { AlpacaSymbol } from "@/@types/alpaca"
+import { FXEmpireSearchResult } from "@/@types/fxempire"
 import api, { ensureResponseType } from "@/api/api"
 
 const TRADING_API_ENDPOINT = "https://paper-api.alpaca.markets"
@@ -35,6 +36,24 @@ const symbols = api.injectEndpoints({
 			}),
 			transformResponse: ensureResponseType(AlpacaSymbol),
 		}),
+		getFXEmpirePopularSymbols: builder.query<
+			{ category: string; items: FXEmpireSearchResult[] },
+			{ category: string; locale: string; size: number }
+		>({
+			query: ({ category, locale, size }) => ({
+				url:
+					"https://www.fxempire.com/api/v1/en/popular-searches?" +
+					new URLSearchParams({
+						category: category,
+						locale: locale,
+						size: size.toString(),
+					}).toString(),
+				method: "GET",
+			}),
+			transformResponse: ensureResponseType(
+				type({ category: "string", items: arrayOf(FXEmpireSearchResult) }),
+			),
+		}),
 	}),
 })
 
@@ -43,4 +62,6 @@ export const {
 	useLazyGetAlpacaSymbolsQuery,
 	useGetAlpacaSymbolQuery,
 	useLazyGetAlpacaSymbolQuery,
+	useGetFXEmpirePopularSymbolsQuery,
+	useLazyGetFXEmpirePopularSymbolsQuery,
 } = symbols
