@@ -67,6 +67,8 @@ export default function Shell(props: PropsWithChildren) {
 				"& .mantine-AppShell-main": {
 					width: "100%",
 					overflow: "hidden",
+					transition: "padding-left 0.5s ease",
+					paddingLeft: isBelowXs ? "1rem" : undefined,
 				},
 			}}
 			navbar={isBelowXs ? undefined : <Navbar bookmarks={bookmarks} />}

@@ -218,7 +218,10 @@ export default function Header({ bookmarks }: { bookmarks: string[] | undefined 
 
 	return (
 		<MantineHeader
-			sx={{ transition: isBelowSm ? undefined : "left 0.5s ease" }}
+			sx={{
+				transition: isBelowSm ? undefined : "left 0.5s ease",
+				left: isBelowXs ? 0 : undefined,
+			}}
 			height={57}>
 			<Flex
 				h="100%"
