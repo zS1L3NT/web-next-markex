@@ -214,9 +214,14 @@ export default function Navbar({
 					alignItems: "center",
 					gap: "0.5rem",
 					transition: "padding 0.5s ease",
+					color: theme.colors.gray[2],
+					textDecoration: "none",
 				}}
 				px={16}
-				py={8}>
+				py={8}
+				component={Link}
+				href="/"
+				onClick={() => drawer?.close()}>
 				<Box
 					w={24}
 					h={24}
