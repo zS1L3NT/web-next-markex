@@ -1,6 +1,7 @@
 import { getCookie } from "cookies-next"
 import { GetServerSidePropsContext } from "next"
 import { AppProps } from "next/app"
+import dynamic from "next/dynamic"
 import Head from "next/head"
 import { Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
@@ -13,6 +14,10 @@ import { CurrencyPairPricesProvider } from "@/contexts/CurrencyPairPricesContext
 import { MediaQueryProvider } from "@/contexts/MediaQueryContext"
 import { StockLivePricesProvider } from "@/contexts/StockLivePricesContext"
 import store from "@/store"
+
+const PWAUpdaterModal = dynamic(() => import("../components/Modals/PWAUpdaterModal"), {
+	ssr: false,
+})
 
 export default function App({
 	Component,
@@ -85,6 +90,7 @@ export default function App({
 									withGlobalStyles
 									withNormalizeCSS
 									theme={{ colorScheme: "dark" }}>
+									<PWAUpdaterModal />
 									<Notifications />
 									<Component {...pageProps} />
 								</MantineProvider>

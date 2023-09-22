@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
 	reactStrictMode: true,
@@ -6,12 +7,15 @@ const nextConfig = {
 			{
 				protocol: "https",
 				hostname: "editorial.fxstreet.com",
-			}
-		]
-	}
+			},
+		],
+	},
 }
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const withPWA = require("next-pwa")({ dest: "public" })
+const withPWA = require("next-pwa")({
+	dest: "public",
+	disable: process.env.NODE_ENV === "development",
+	runtimeCaching: require("next-pwa/cache"),
+})
 
 module.exports = withPWA(nextConfig)
