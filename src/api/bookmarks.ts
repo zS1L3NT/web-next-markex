@@ -18,6 +18,19 @@ const bookmarks = api.injectEndpoints({
 				auth: true,
 			}),
 			invalidatesTags: ["Bookmarks"],
+			onQueryStarted: async (bookmarks_, { dispatch, queryFulfilled }) => {
+				const patchResult = dispatch(
+					bookmarks.util.updateQueryData("getBookmarks", undefined, draft => {
+						Object.assign(draft, bookmarks_)
+					}),
+				)
+
+				try {
+					await queryFulfilled
+				} catch {
+					patchResult.undo()
+				}
+			},
 		}),
 	}),
 })
