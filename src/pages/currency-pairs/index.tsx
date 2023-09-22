@@ -176,12 +176,8 @@ function CurrencyPair({
 
 export default function CurrencyPairs() {
 	const { data: session } = useSession()
-	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
+	const { prices } = useContext(CurrencyPairPricesContext)
 	const theme = useMantineTheme()
-
-	useEffect(() => {
-		setCurrencyPairs([...CURRENCY_PAIRS])
-	}, [setCurrencyPairs])
 
 	const numericHeaderStyle: CSSProperties = {
 		width: "10%",

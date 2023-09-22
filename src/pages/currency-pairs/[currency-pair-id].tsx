@@ -62,7 +62,7 @@ function LowHighBox({ type, price }: { type: "Low" | "High"; price: number | nul
 export default function CurrencyPair({ currencyPair }: Props) {
 	const [base, quote] = currencyPair.split("_") as [CURRENCY, CURRENCY]
 	const currencyPairPretty = currencyPair?.replace("_", " / ")
-	const { prices, setCurrencyPairs } = useContext(CurrencyPairPricesContext)
+	const { prices } = useContext(CurrencyPairPricesContext)
 	const { isBelowSm } = useContext(MediaQueryContext)
 	const theme = useMantineTheme()
 	const { data: session } = useSession()
@@ -82,10 +82,6 @@ export default function CurrencyPair({ currencyPair }: Props) {
 	const previousPrice = usePrevious(prices[currencyPair])
 
 	const price = prices[currencyPair]
-
-	useEffect(() => {
-		setCurrencyPairs([currencyPair])
-	}, [currencyPair, setCurrencyPairs])
 
 	useEffect(() => {
 		if (price && previousPrice && currencyPair === previousCurrencyPair) {

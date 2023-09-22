@@ -1,43 +1,69 @@
-import { diff } from "fast-array-diff"
-import { createContext, PropsWithChildren, useEffect, useMemo, useState } from "react"
+import { createContext, PropsWithChildren, useCallback, useEffect, useState } from "react"
 
 import { notifications } from "@mantine/notifications"
 import { IconExclamationMark, IconX } from "@tabler/icons-react"
 
 import { OandaPrice } from "@/@types/oanda"
 import { useLazyGetOandaPriceQuery } from "@/api/prices"
-import { CURRENCY_PAIR } from "@/constants"
+import { CURRENCY_PAIR, CURRENCY_PAIRS } from "@/constants"
 
 const CHAR = ""
 
 const CurrencyPairPricesContext = createContext<{
 	prices: Partial<Record<CURRENCY_PAIR, OandaPrice | null>>
-	setCurrencyPairs: (currencyPairs: CURRENCY_PAIR[]) => void
 }>({
 	prices: {} as Partial<Record<CURRENCY_PAIR, OandaPrice | null>>,
-	setCurrencyPairs: () => {},
 })
 
 export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 	const [getOandaPrice] = useLazyGetOandaPriceQuery()
 
-	const socket = useMemo(() => {
-		try {
-			return new WebSocket(
-				"wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets",
-			)
-		} catch (e) {
-			console.error(e)
-			return null
-		}
-	}, [])
+	const [socket, setSocket] = useState<WebSocket | null>(null)
 	const [connected, setConnected] = useState(false)
-	const [pendingCurrencyPairs, setPendingCurrencyPairs] = useState<CURRENCY_PAIR[] | null>(null)
-	const [currencyPairs, setCurrencyPairs] = useState<CURRENCY_PAIR[]>([])
 	const [prices, setPrices] = useState<Partial<Record<CURRENCY_PAIR, OandaPrice | null>>>({})
 
 	useEffect(() => {
-		if (!socket) return
+		if (connected) {
+			let events = ""
+			const interval = setInterval(() => socket?.send(`{"type":6}${CHAR}`), 15_000)
+
+			for (const currencyPair of CURRENCY_PAIRS) {
+				getOandaPrice({ currencyPair }).then(price => {
+					setPrices(prices => ({
+						...prices,
+						[currencyPair]: price.data ?? null,
+					}))
+				})
+
+				events +=
+					JSON.stringify({
+						arguments: [
+							"oanda_priceMessage",
+							{
+								groupName: `instrumentPrice_OAP_${currencyPair}`,
+								ApiKey: "4b12e6bb-7ecd-49f7-9bbc-2e03644ce41f",
+							},
+						],
+						invocationId: "0",
+						target: "subscribe",
+						type: 1,
+					}) + CHAR
+			}
+
+			if (events) {
+				socket?.send(events)
+			}
+
+			return () => clearInterval(interval)
+		}
+
+		return
+	}, [getOandaPrice, socket, connected])
+
+	const connect = useCallback(() => {
+		const socket = new WebSocket(
+			"wss://dashboard.acuitytrading.com/signalRCommonHub?widget=Widgets",
+		)
 
 		socket.onmessage = event => {
 			const events = event.data.split(CHAR).slice(0, -1).map(JSON.parse) as any[]
@@ -78,54 +104,8 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 				return
 			}
 
-			// Acknowledgement of subscription or unsubscription
+			// Acknowledgement of subscriptions without telling me who I'm subscribed to
 			if (events.every(e => e.type === 3)) {
-				const added = events
-					.filter(e => e.target === "subscribe")
-					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
-					.sort()
-				const removed = events
-					.filter(e => e.target === "unsubscribe")
-					.map(e => e.arguments[1].slice("instrumentPrice_OAP_".length))
-					.sort()
-
-				if (pendingCurrencyPairs) {
-					const difference = diff(currencyPairs, pendingCurrencyPairs)
-					if (
-						JSON.stringify(added) === JSON.stringify(difference.added.sort()) &&
-						JSON.stringify(removed) === JSON.stringify(difference.removed.sort())
-					) {
-						setPendingCurrencyPairs(null)
-						setCurrencyPairs(pendingCurrencyPairs)
-					} else {
-						console.warn("Unequal lists of currency pairs", {
-							currencyPairs,
-							pendingCurrencyPairs,
-							events,
-						})
-						// notifications.show({
-						// 	withCloseButton: true,
-						// 	autoClose: 10000,
-						// 	title: "WebSocket Subscription Warning",
-						// 	message: "Unequal lists of currency pairs",
-						// 	color: "orange",
-						// 	icon: <IconExclamationMark />,
-						// })
-					}
-				} else {
-					console.warn("No pending currency pairs but received subscription events", {
-						events,
-					})
-					// notifications.show({
-					// 	withCloseButton: true,
-					// 	autoClose: 10000,
-					// 	title: "WebSocket Subscription Warning",
-					// 	message: "No pending currency pairs but received subscription events",
-					// 	color: "orange",
-					// 	icon: <IconExclamationMark />,
-					// })
-				}
-
 				return
 			}
 
@@ -148,18 +128,18 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 			}
 
 			console.warn("Unhandled WebSocket event", { events })
-			// notifications.show({
-			// 	withCloseButton: true,
-			// 	autoClose: 10000,
-			// 	title: "WebSocket Error",
-			// 	message: "Unhandled WebSocket event",
-			// 	color: "orange",
-			// 	icon: <IconExclamationMark />,
-			// })
 		}
 
-		socket.onopen = () => {
+		socket.onopen = e => {
+			console.log("WebSocket Opened", e)
+			setSocket(socket)
 			socket.send(`{"protocol":"json","version":1}${CHAR}`)
+		}
+
+		socket.onclose = e => {
+			console.log("WebSocket Closed", e)
+			setSocket(null)
+			setTimeout(connect, 1000)
 		}
 
 		socket.onerror = e => {
@@ -177,82 +157,26 @@ export const CurrencyPairPricesProvider = ({ children }: PropsWithChildren) => {
 		socket.onclose = () => {
 			setConnected(false)
 		}
-	}, [socket, currencyPairs, pendingCurrencyPairs])
+	}, [])
 
 	useEffect(() => {
-		if (connected) {
-			for (const currencyPair of currencyPairs) {
-				getOandaPrice({ currencyPair }).then(price => {
-					setPrices(prices => ({
-						...prices,
-						[currencyPair]: price.data ?? null,
-					}))
-				})
-			}
+		try {
+			connect()
+		} catch (e) {
+			console.warn("WebSocket connection failed", e)
+			notifications.show({
+				withCloseButton: true,
+				autoClose: 10000,
+				title: "WebSocket connection failed",
+				message: "The WebSocket threw an error trying to connect",
+				color: "red",
+				icon: <IconX />,
+			})
 		}
-	}, [getOandaPrice, socket, connected, currencyPairs])
-
-	useEffect(() => {
-		if (connected) {
-			const interval = setInterval(() => {
-				socket?.send(`{"type":6}${CHAR}`)
-			}, 15_000)
-
-			return () => clearInterval(interval)
-		}
-
-		return
-	}, [socket, connected])
-
-	useEffect(() => {
-		if (connected && pendingCurrencyPairs) {
-			const difference = diff(currencyPairs, pendingCurrencyPairs)
-			let events = ""
-
-			for (const added of difference.added) {
-				events +=
-					JSON.stringify({
-						arguments: [
-							"oanda_priceMessage",
-							{
-								groupName: `instrumentPrice_OAP_${added}`,
-								ApiKey: "4b12e6bb-7ecd-49f7-9bbc-2e03644ce41f",
-							},
-						],
-						invocationId: "0",
-						target: "subscribe",
-						type: 1,
-					}) + CHAR
-			}
-
-			for (const removed of difference.removed) {
-				events +=
-					JSON.stringify({
-						arguments: [
-							"oanda_priceMessage",
-							{
-								groupName: `instrumentPrice_OAP_${removed}`,
-								ApiKey: "4b12e6bb-7ecd-49f7-9bbc-2e03644ce41f",
-							},
-						],
-						invocationId: "0",
-						target: "unsubscribe",
-						type: 1,
-					}) + CHAR
-			}
-
-			if (events) {
-				socket?.send(events)
-			}
-		}
-	}, [socket, connected, currencyPairs, pendingCurrencyPairs])
+	}, [connect])
 
 	return (
-		<CurrencyPairPricesContext.Provider
-			value={{
-				prices,
-				setCurrencyPairs: setPendingCurrencyPairs,
-			}}>
+		<CurrencyPairPricesContext.Provider value={{ prices }}>
 			{children}
 		</CurrencyPairPricesContext.Provider>
 	)
