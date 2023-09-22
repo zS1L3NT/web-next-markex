@@ -4,7 +4,7 @@
 
 ![License](https://img.shields.io/github/license/zS1L3NT/web-next-markex?style=for-the-badge) ![Languages](https://img.shields.io/github/languages/count/zS1L3NT/web-next-markex?style=for-the-badge) ![Top Language](https://img.shields.io/github/languages/top/zS1L3NT/web-next-markex?style=for-the-badge) ![Commit Activity](https://img.shields.io/github/commit-activity/y/zS1L3NT/web-next-markex?style=for-the-badge) ![Last commit](https://img.shields.io/github/last-commit/zS1L3NT/web-next-markex?style=for-the-badge)
 
-Markex is a website that displays News related to the market, Stock prices and FOREX prices. It also allows users to login with their Fidor account and purchase both Stocks and FOREX in a sandbox environment. Markex fetches data from many different places including Oanda, FXStreet and Alpaca.
+Markex is a website that displays Stock prices, Stock insights, Forex prices, Forex insights, and News related to the markets. Users also can bookmark their favorite Stock companies and Forex pairs to keep track of them.
 
 ## Motivation
 
@@ -59,19 +59,22 @@ Data sources:
         -   [![react](https://img.shields.io/badge/react-18.2.0-red?style=flat-square)](https://npmjs.com/package/react/v/18.2.0)
         -   [![react-dom](https://img.shields.io/badge/react--dom-18.2.0-red?style=flat-square)](https://npmjs.com/package/react-dom/v/18.2.0)
 	-	Mantine
-        -   [![@mantine/core](https://img.shields.io/badge/%40mantine%2Fcore-%5E6.0.10-red?style=flat-square)](https://npmjs.com/package/@mantine/core/v/6.0.10)
-        -   [![@mantine/dates](https://img.shields.io/badge/%40mantine%2Fdates-%5E6.0.11-red?style=flat-square)](https://npmjs.com/package/@mantine/dates/v/6.0.11)
-        -   [![@mantine/form](https://img.shields.io/badge/%40mantine%2Fform-%5E6.0.10-red?style=flat-square)](https://npmjs.com/package/@mantine/form/v/6.0.10)
-        -   [![@mantine/hooks](https://img.shields.io/badge/%40mantine%2Fhooks-%5E6.0.10-red?style=flat-square)](https://npmjs.com/package/@mantine/hooks/v/6.0.10)
-        -   [![@mantine/modals](https://img.shields.io/badge/%40mantine%2Fmodals-%5E6.0.10-red?style=flat-square)](https://npmjs.com/package/@mantine/modals/v/6.0.10)
-        -   [![@mantine/notifications](https://img.shields.io/badge/%40mantine%2Fnotifications-%5E6.0.11-red?style=flat-square)](https://npmjs.com/package/@mantine/notifications/v/6.0.11)
-        -   [![@tabler/icons-react](https://img.shields.io/badge/%40tabler%2Ficons--react-%5E2.18.0-red?style=flat-square)](https://npmjs.com/package/@tabler/icons-react/v/2.18.0)
+        -   [![@emotion/react](https://img.shields.io/badge/%40emotion%2Freact-%5E11.11.1-red?style=flat-square)](https://npmjs.com/package/@emotion/react/v/11.11.1)
+        -   [![@emotion/server](https://img.shields.io/badge/%40emotion%2Fserver-%5E11.11.0-red?style=flat-square)](https://npmjs.com/package/@emotion/server/v/11.11.0)
+        -   [![@mantine/core](https://img.shields.io/badge/%40mantine%2Fcore-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/core/v/6.0.21)
+        -   [![@mantine/dates](https://img.shields.io/badge/%40mantine%2Fdates-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/dates/v/6.0.21)
+        -   [![@mantine/form](https://img.shields.io/badge/%40mantine%2Fform-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/form/v/6.0.21)
+        -   [![@mantine/hooks](https://img.shields.io/badge/%40mantine%2Fhooks-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/hooks/v/6.0.21)
+        -   [![@mantine/modals](https://img.shields.io/badge/%40mantine%2Fmodals-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/modals/v/6.0.21)
+        -   [![@mantine/next](https://img.shields.io/badge/%40mantine%2Fnext-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/next/v/6.0.21)
+        -   [![@mantine/notifications](https://img.shields.io/badge/%40mantine%2Fnotifications-%5E6.0.21-red?style=flat-square)](https://npmjs.com/package/@mantine/notifications/v/6.0.21)
+        -   [![@tabler/icons-react](https://img.shields.io/badge/%40tabler%2Ficons--react-%5E2.34.0-red?style=flat-square)](https://npmjs.com/package/@tabler/icons-react/v/2.34.0)
 	-	Redux Toolkit
         -   [![@reduxjs/toolkit](https://img.shields.io/badge/%40reduxjs%2Ftoolkit-%5E1.9.5-red?style=flat-square)](https://npmjs.com/package/@reduxjs/toolkit/v/1.9.5)
-        -   [![react-redux](https://img.shields.io/badge/react--redux-%5E8.0.5-red?style=flat-square)](https://npmjs.com/package/react-redux/v/8.0.5)
+        -   [![react-redux](https://img.shields.io/badge/react--redux-%5E8.1.2-red?style=flat-square)](https://npmjs.com/package/react-redux/v/8.1.2)
 	-	PostgresQL
         -   [![@prisma/client](https://img.shields.io/badge/%40prisma%2Fclient-4.14.1-red?style=flat-square)](https://npmjs.com/package/@prisma/client/v/4.14.1)
-        -   [![prisma](https://img.shields.io/badge/prisma-%5E4.14.1-red?style=flat-square)](https://npmjs.com/package/prisma/v/4.14.1)
+        -   [![prisma](https://img.shields.io/badge/prisma-%5E4.16.2-red?style=flat-square)](https://npmjs.com/package/prisma/v/4.16.2)
 	-	ESLint
         -   [![@typescript-eslint/eslint-plugin](https://img.shields.io/badge/%40typescript--eslint%2Feslint--plugin-latest-red?style=flat-square)](https://npmjs.com/package/@typescript-eslint/eslint-plugin/v/latest)
         -   [![@typescript-eslint/parser](https://img.shields.io/badge/%40typescript--eslint%2Fparser-latest-red?style=flat-square)](https://npmjs.com/package/@typescript-eslint/parser/v/latest)
@@ -82,12 +85,13 @@ Data sources:
         -   [![eslint-plugin-simple-import-sort](https://img.shields.io/badge/eslint--plugin--simple--import--sort-latest-red?style=flat-square)](https://npmjs.com/package/eslint-plugin-simple-import-sort/v/latest)
         -   [![prettier](https://img.shields.io/badge/prettier-latest-red?style=flat-square)](https://npmjs.com/package/prettier/v/latest)
 	-	Miscellaneous
-        -   [![axios](https://img.shields.io/badge/axios-%5E1.4.0-red?style=flat-square)](https://npmjs.com/package/axios/v/1.4.0)
+        -   [![arktype](https://img.shields.io/badge/arktype-1.0.14--alpha-red?style=flat-square)](https://npmjs.com/package/arktype/v/1.0.14-alpha)
+        -   [![axios](https://img.shields.io/badge/axios-%5E1.5.0-red?style=flat-square)](https://npmjs.com/package/axios/v/1.5.0)
         -   [![cookies-next](https://img.shields.io/badge/cookies--next-%5E4.0.0-red?style=flat-square)](https://npmjs.com/package/cookies-next/v/4.0.0)
         -   [![fast-array-diff](https://img.shields.io/badge/fast--array--diff-%5E1.1.0-red?style=flat-square)](https://npmjs.com/package/fast-array-diff/v/1.1.0)
-        -   [![framer-motion](https://img.shields.io/badge/framer--motion-%5E10.12.12-red?style=flat-square)](https://npmjs.com/package/framer-motion/v/10.12.12)
-        -   [![highcharts](https://img.shields.io/badge/highcharts-%5E11.0.1-red?style=flat-square)](https://npmjs.com/package/highcharts/v/11.0.1)
-        -   [![highcharts-react-official](https://img.shields.io/badge/highcharts--react--official-%5E3.2.0-red?style=flat-square)](https://npmjs.com/package/highcharts-react-official/v/3.2.0)
+        -   [![framer-motion](https://img.shields.io/badge/framer--motion-%5E10.16.4-red?style=flat-square)](https://npmjs.com/package/framer-motion/v/10.16.4)
+        -   [![highcharts](https://img.shields.io/badge/highcharts-%5E11.1.0-red?style=flat-square)](https://npmjs.com/package/highcharts/v/11.1.0)
+        -   [![highcharts-react-official](https://img.shields.io/badge/highcharts--react--official-%5E3.2.1-red?style=flat-square)](https://npmjs.com/package/highcharts-react-official/v/3.2.1)
         -   [![iron-session](https://img.shields.io/badge/iron--session-%5E6.3.1-red?style=flat-square)](https://npmjs.com/package/iron-session/v/6.3.1)
         -   [![next-auth](https://img.shields.io/badge/next--auth-%5E4.23.1-red?style=flat-square)](https://npmjs.com/package/next-auth/v/4.23.1)
         -   [![next-pwa](https://img.shields.io/badge/next--pwa-%5E5.6.0-red?style=flat-square)](https://npmjs.com/package/next-pwa/v/5.6.0)
