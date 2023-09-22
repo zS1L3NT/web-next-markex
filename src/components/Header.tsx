@@ -187,7 +187,12 @@ function SearchButtonBar({
 							: item.label!.toLowerCase().includes(value.toLowerCase())
 					}}
 					data={getResults(symbols)}
-					onChange={e => (e ? router.push(e) : null)}
+					onChange={e => {
+						if (e) {
+							router.push(e)
+							setIsSearching(false)
+						}
+					}}
 					onBlur={() => setIsSearching(false)}
 				/>
 			)}
