@@ -53,6 +53,7 @@
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",
 		"bun-types": "^1.0.21",
+		"dayjs": "^1.11.10",
 		"eslint": "latest",
 		"eslint-config-next": "latest",
 		"eslint-config-prettier": "latest",
