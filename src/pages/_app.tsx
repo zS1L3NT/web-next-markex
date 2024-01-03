@@ -3,8 +3,12 @@ import { GetServerSidePropsContext } from "next"
 import { AppProps } from "next/app"
 import dynamic from "next/dynamic"
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
+import posthog from "posthog-js"
+import { PostHogProvider } from "posthog-js/react"
+import { useEffect } from "react"
 import { Provider as ReduxProvider } from "react-redux"
 
 import { MantineProvider } from "@mantine/core"
@@ -19,6 +23,15 @@ const PWAUpdaterModal = dynamic(() => import("../components/Modals/PWAUpdaterMod
 	ssr: false,
 })
 
+if (typeof window !== "undefined") {
+	posthog.init(process.env.NEXT_PUBLIC_POSTHOG_KEY, {
+		api_host: process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://app.posthog.com",
+		loaded: posthog => {
+			if (process.env.NODE_ENV === "development") posthog.debug()
+		},
+	})
+}
+
 export default function App({
 	Component,
 	pageProps,
@@ -28,6 +41,15 @@ export default function App({
 	session: Session
 	width: number
 }) {
+	const router = useRouter()
+
+	useEffect(() => {
+		const handleRouteChange = () => posthog?.capture("$pageview")
+
+		router.events.on("routeChangeComplete", handleRouteChange)
+		return () => router.events.off("routeChangeComplete", handleRouteChange)
+	}, [router.events])
+
 	return (
 		<>
 			<Head>
@@ -82,22 +104,24 @@ export default function App({
 			</Head>
 
 			<SessionProvider session={session}>
-				<ReduxProvider store={store}>
-					<StockLivePricesProvider>
-						<CurrencyPairPricesProvider>
-							<MediaQueryProvider width={width}>
-								<MantineProvider
-									withGlobalStyles
-									withNormalizeCSS
-									theme={{ colorScheme: "dark" }}>
-									<PWAUpdaterModal />
-									<Notifications />
-									<Component {...pageProps} />
-								</MantineProvider>
-							</MediaQueryProvider>
-						</CurrencyPairPricesProvider>
-					</StockLivePricesProvider>
-				</ReduxProvider>
+				<PostHogProvider client={posthog}>
+					<ReduxProvider store={store}>
+						<StockLivePricesProvider>
+							<CurrencyPairPricesProvider>
+								<MediaQueryProvider width={width}>
+									<MantineProvider
+										withGlobalStyles
+										withNormalizeCSS
+										theme={{ colorScheme: "dark" }}>
+										<PWAUpdaterModal />
+										<Notifications />
+										<Component {...pageProps} />
+									</MantineProvider>
+								</MediaQueryProvider>
+							</CurrencyPairPricesProvider>
+						</StockLivePricesProvider>
+					</ReduxProvider>
+				</PostHogProvider>
 			</SessionProvider>
 		</>
 	)

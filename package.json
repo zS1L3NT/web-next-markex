@@ -1,7 +1,7 @@
 {
 	"name": "web-next-markex",
 	"description": "Major Project for TP",
-	"author": "zS1L3NT <zechariahtan144@gmail.com> (https://www.zectan.com)",
+	"author": "zS1L3NT <dev@zectan.com> (https://www.zectan.com)",
 	"contributors": [
 		{
 			"name": "Tay Rong Xin",
@@ -28,13 +28,11 @@
 		"@prisma/client": "4.14.1",
 		"@reduxjs/toolkit": "^1.9.5",
 		"@tabler/icons-react": "^2.34.0",
-		"@types/node": "20.1.5",
 		"@types/react": "18.2.6",
 		"@types/react-dom": "18.2.4",
 		"arktype": "1.0.14-alpha",
 		"axios": "^1.5.0",
 		"cookies-next": "^4.0.0",
-		"eslint-config-next": "13.4.2",
 		"fast-array-diff": "^1.1.0",
 		"framer-motion": "^10.16.4",
 		"highcharts": "^11.1.0",
@@ -42,6 +40,7 @@
 		"next": "13.4.2",
 		"next-auth": "^4.23.1",
 		"next-pwa": "^5.6.0",
+		"posthog-js": "^1.96.1",
 		"prisma": "^4.16.2",
 		"react": "18.2.0",
 		"react-dom": "18.2.0",
@@ -53,6 +52,7 @@
 	"devDependencies": {
 		"@typescript-eslint/eslint-plugin": "latest",
 		"@typescript-eslint/parser": "latest",
+		"bun-types": "^1.0.21",
 		"eslint": "latest",
 		"eslint-config-next": "latest",
 		"eslint-config-prettier": "latest",
